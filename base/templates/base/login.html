@@ -1,0 +1,27 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+<section id="form">
+    <form method="post" action="">
+        <h1>Login</h1>
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+            <p><span id="error">Enter a Valid Email or Password</span></p>
+        {% endfor %}
+    
+        <p>{{form.username.label_tag}}</p>
+        {{ form.username }} 
+
+        <p>{{form.password.label_tag}}</p>
+        {{form.password}}
+        <p>No Account Yet ? <a href="{% url 'signup' %}">SignUp here</a></p>
+        <button type="submit">Login</button>
+    </form>
+</section>
+
+
+{% endblock %}
+
+
+

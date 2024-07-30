@@ -1,0 +1,26 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<section id="form">
+    <form method="post" action="">
+        <img src="https://static.vecteezy.com/system/resources/previews/018/930/415/non_2x/instagram-logo-instagram-icon-transparent-free-png.png" alt="instagram logo">
+        <h1>IG Integration</h1>
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+            <p><span id="error">{{error}}</span></p>
+        {% endfor %}
+        
+        {% for field in form %}
+        <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
+
+            {{ field }} 
+        {% endfor %}
+        
+        <button type="submit">Integrate</button>
+    </form>
+</section>
+
+
+{% endblock %}

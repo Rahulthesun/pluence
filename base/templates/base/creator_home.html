@@ -1,0 +1,78 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+    <section id="main">
+        {% if account.name %}
+        
+        <p id="account-type"> Creator</p>
+        <div class="header-flex">
+            <div class="account-info">
+                <h1>{{account.name}}</h1>
+                <div class="link-flex">
+                    {% if account.website %}
+                    <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
+                    {% endif %}
+                    {% if account.contact_email %}
+                    <a href="mailto:{{account.contact_email}}"><i class="fa-solid fa-envelope"></i></a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </div>
+            {% if ig_account is not None %}
+            <a href="{% url 'integration_dashboard' ig_account.id %}"><button id="header">Manage Integrations</button></a>
+            {% else %}
+            <a href="{% url 'instagram_integration' %}"><button id="header">Manage Integrations</button></a>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h2>Brand Proposals</h2>
+        <div class="proposal-grid">
+        {% for proposal in proposals %}
+            <div class="proposal-box">
+                
+                <div class="proposal-flex">
+                    <h2 id="amount">${{proposal.proposed_amount|floatformat}}</h2>
+                    <h3>{{proposal.brand.brand_name}}</h3>
+                </div>
+                
+                <p>{{proposal.description}}</p>
+                <div class="button-flex">
+                    <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="view">View</button></a>
+                    <div class="button-accept-flex">
+                        <button id="accept"><i class="fa-solid fa-check"></i></button>
+                        <button id="reject"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        {% empty %}
+       
+            <p>You don't have any Brand Proposals Right Now</p>
+        {% endfor %}        
+        </div>
+
+        {% else %}
+
+        <h1>Complete Your Profile !!</h1>
+        <hr>
+
+        <p>Complete Your Profile So You can Have Better Interactions With Brands.</p>
+        <i>Here's Some of the Information You'll need : </i>
+        <ul>
+            <li><p><b>Name</b></p></li>
+            <li><p><b>Your Contact Email</b></p></li>
+            <li><p><b>Links (if any)</b></p></li>
+        </ul>
+
+        <a href="{% url 'creator_profile_update' account.id %}"><button>Update Profile</button></a>
+        {% endif %}
+
+        
+    </section>
+    
+    
+
+{% endblock %}

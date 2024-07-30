@@ -1,0 +1,21 @@
+from django import forms
+from .models import InstagramAccountDashBoard
+
+account_choices = (
+    ("creator" , "Creator"),
+    ("brand" , "Brand")
+)
+
+class AccountTypeForm(forms.Form):
+    account_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=account_choices,
+        required=True , 
+        label="Select Account"
+    )
+
+class AccountIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = InstagramAccountDashBoard
+        fields = ('username' , 'tags' ,'followers' , 'reach' , 'profile_link_clicks' ,'engagement' , 'audience_country' , 'story_rates' , 'reel_rates')
+        

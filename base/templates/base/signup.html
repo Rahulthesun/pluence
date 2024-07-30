@@ -1,0 +1,38 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<section id="form">
+    <form method="post" action="">
+        {% csrf_token %}
+        <h1>Signup</h1>
+
+        <p>{{form.email.label_tag}}</p>
+
+        {{form.email}}
+        {%for error in form.email.errors %}
+        <p><span id="error">{{error}}</span></p>
+        {% endfor %}
+
+        <p>{{form.password1.label_tag}}</p>
+
+        {{form.password1}}
+        {%for error in form.password1.errors %}
+        <p><span id="error">{{error}}</span></p>
+        {% endfor %}
+
+        <p>{{form.password2.label_tag}}</p>
+
+        {{form.password2}}
+        {%for error in form.password2.errors %}
+        <p><span id="error">{{error}}</span></p>
+        {% endfor %}
+
+        <p>Already Have a Account ? <a href="{% url 'login' %}">Login here</a></p>
+
+        <button type="submit">Signup</button>
+
+    </form>
+</section>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+    <section id="main">
+        <div class="header-flex">
+            <div class="account-info">
+                <h1>{{proposal.creator.name}}</h1>
+                <div class="link-flex">
+                    {% if proposal.creator.contact_email %}
+                    <a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a>
+                    {% endif %}
+                    {% if proposal.creator.website %}
+                    <a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a>
+                    {% endif %}
+                </div>    
+            </div>
+           
+            <a href="{% url 'home' %}"><button id="header">Home</button></a>
+
+        </div>
+        
+        
+        <hr>
+
+            <div class="proposal-detail-box">
+                <div class="brand-image">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrP-nJ_gjguvf8-Kf7pS7_CS1FkEYR_spJpw&s">
+                </div>
+                <h2 id="amount">${{proposal.proposed_amount|floatformat}}</h2>
+                <h2 style="margin-top: 5px;">Brand Proposal From <b style="text-decoration-line: underline;">{{proposal.brand.brand_name | title}}</b></h2>
+                {% if proposal.description %}
+                <p id="description">{{proposal.description}}</p>
+                {% endif %}
+
+                <div class="proposal-detail-flex">
+                    <h2>Timeline</h2>
+                    <p id="sub">{{proposal.timeline}} Days</p>
+                </div>
+
+                    {% if proposal.item_link %}
+                    <a href="{{proposal.item_link}}"><button id="header">Item Link</button></a>
+                    {% endif %}
+
+                    <div class="button-flex">
+                        <a href=""><button id="view">Accept Brand Proposal</button></a>
+                        <div class="button-accept-flex">
+                            <a href=""><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
+                        </div>
+                        
+                    </div>
+
+
+                
+
+                
+
+
+                
+            </div>
+
+    </section>
+
+{% endblock %}

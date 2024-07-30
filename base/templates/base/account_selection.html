@@ -1,0 +1,29 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+<section id="form">
+    <form method="post" action="">
+        <h1>Account</h1>
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+            <p><span id="error">Select an Account Type</span></p>
+        {% endfor %}
+
+        <div id="id_account_type">
+            {% for radio in form.account_type %}
+                <label id="radio-label" for="{{ radio.id_for_label }}">
+                    {{ radio.tag }}
+                    {{ radio.choice_label }}
+                </label>
+                
+            {% endfor %}
+        </div>
+
+        <button type="submit">Create Account</button>
+    </form>
+</section>
+
+
+
+{% endblock %}

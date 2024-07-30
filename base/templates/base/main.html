@@ -1,0 +1,374 @@
+{% include 'base/setup.html' %}
+
+<style>
+  html,
+  body {
+    font-family: "Poppins", sans-serif;
+    color: black;
+    margin: 0;
+    padding: 0;
+  }
+
+  #form {
+    text-align: center;
+    width: 30%;
+    margin: 5px auto;
+  }
+
+  #form p {
+    text-align: left;
+    margin-bottom: 5px;
+  }
+
+  #form input[type="text"],
+  #form input[type="password"],
+  #form input[type="email"] ,
+  #form input[type="url"] ,
+  #form input[type="number"] ,
+  #form select ,
+  #form textarea,
+  .search-flex select,
+  .search-flex input[type='search']{
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    padding: 1px 5px;
+    border: 2px solid black;
+  }
+
+  .search-flex select , .search-flex input[type='search']  {
+    height: 50px;
+  }
+
+
+
+  .search-flex , .search-flex form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin:20px auto; 
+  }
+
+  .search-flex form {
+    justify-content: center;
+    align-items: bottom;
+    margin: 5px 5px;
+  }
+
+  .search-flex form#search-form {
+    width: 50%;
+  }
+
+  button#submit {
+    margin-top: 0px;
+    padding: 5px 20px;
+  }
+
+  #required {
+    color: red;
+  }
+
+  #form textarea {
+    height: 80px;
+    resize: vertical;
+  }
+
+  #form h1 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  button {
+    padding: 10px 50px;
+    font-size: 25px;
+    font-weight: 600;
+    color: white;
+    background-color: black;
+    border: none;
+    margin-top: 20px;
+  }
+
+  button:hover {
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+  }
+
+  #error {
+    font-size: 15px;
+    color: rgb(190, 2, 2);
+  }
+
+  a {
+    color: black;
+    margin-top: 10px;
+  }
+
+  #id_account_type {
+      margin: 20px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #form input[type="radio"] {
+      margin-right: 10px;
+  }
+
+  #form label#radio-label {
+  display: flex;
+  flex-direction: row;
+    padding: 10px 40px;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  #form input[type="radio"]:checked + label {
+    border-color: green;
+  }
+
+  #form img {
+    width: 60%;
+  }
+
+  #main {
+    width: 90%;
+    margin: 20px auto
+  }
+
+  #main hr {
+    border:1.5px solid rgba(168, 168, 168, 0.658) ;
+  }
+
+  #main h1 {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    margin-bottom: 10px;
+  }
+
+  #main h2 {
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  #main h3 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .link-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: bottom;
+  }
+
+  .link-flex a {
+    color: rgb(0, 0, 0);
+    font-size: 25px;
+    margin-right: 20px;
+    
+
+  }
+
+  .proposal-grid , .social-grid , .creator-grid {
+    display: grid;
+    grid-template-columns:  repeat(2, minmax(0, 0.8fr));
+    gap: 2em;  
+  }
+
+  .creator-grid {
+    width: 100%;
+    grid-template-columns: repeat(3 , minmax(0, 1.5fr)) ;
+    gap: 2em;
+  }
+
+  .social-grid {
+    grid-template-columns:  repeat(1, minmax(0, 1.5fr));
+  }
+
+  .proposal-box  , .social-box , .proposal-detail-box  , .creator-box{
+    padding: 20px;
+    border-radius: 20px;
+    width: 90%;
+    height: 280px;
+    border: 2px solid rgba(53, 53, 53, 0.658);
+  }
+
+  .proposal-detail-box {
+    width: 50%;
+    margin-top: 50px;
+    margin: 50px auto;
+    height: auto;
+  }
+
+  .social-box , .creator-box{
+    width: 85%;
+    height: auto;
+  }
+
+  .social-box {
+    width: 30%;
+  }
+
+  .social-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+  }
+  .social-flex img {
+    width: 35px;
+    height: auto;
+    margin-right: 10px;
+  }
+
+  .proposal-box p {
+    width: 85%;
+    height: 80px;
+    overflow: hidden;
+    word-wrap: normal;
+  }
+
+  .proposal-flex , .proposal-detail-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+  }
+
+  .proposal-detail-flex {
+    justify-content: left;
+    margin-top: 0px;
+  }
+
+  .proposal-flex h2#amount , .proposal-detail-box h2#amount{
+    font-size: 50px;
+  }
+
+  .proposal-detail-box h2#amount {
+    margin: 0px auto ;
+    margin-top: 20px;
+    font-size: 60px;
+    font-weight: 700;
+  }
+
+  .proposal-detail-box p#sub {
+    font-weight: 500;
+    font-size: 30px;
+  }
+
+  .proposal-detail-flex h2 {
+    margin-right: 50px;
+  }
+
+  .button-flex {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: top;
+  }
+
+  .button-flex a {
+    margin-top: 0px;
+  }
+
+
+  button#view {
+    padding: 10px 80px;
+  }
+
+  .button-accept-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  button#accept , button#reject {
+    padding: 10px 20px;
+  }
+
+  button#accept:hover {
+    background-color: rgb(2, 197, 2);
+    color: white;
+  }
+
+  button#reject:hover {
+    background-color: rgb(182, 5, 5);
+    color: white;
+  }
+
+  .header-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  button#header {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+  }
+
+  h1#title {
+    text-align: center;
+    font-size: 60px;
+    font-weight: 800;
+    margin-bottom: 0px;
+
+  }
+
+  .social-image , .brand-image{
+    width: 100%;
+    border-radius: 20px 20px 0px 0px;
+    height: 250px;
+    overflow: hidden;
+  }
+
+  .brand-image {
+    height: 150px;
+  }
+
+  .social-image img, .brand-image img{
+    width: 100%;
+    height: auto;
+  }
+
+  p#account-type {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 0px;
+  }
+
+  .proposal-detail-box p#description {
+    width: 90%;
+    height: auto;
+    overflow-x : hidden
+  }
+  
+
+
+</style>
+
+<body>
+  {% block content %} {% endblock content %}
+</body>
+
+<script>
+
+</script>
+
