@@ -56,8 +56,17 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
                     <p>{{creator.username}}</p>
                 </div>
+
+                <div class="rate-flex">
+                    <h1 id="rate"> $ {{creator.average_rate | floatformat}} </h1>
+                    <p>Average Rate / Post</p>
+                </div>
+
+                <div class="tags">
+                    <p><b>{% if creator.tags %}{{creator.tags}}{% else %} No Tags {%endif%}</b></p>
+                </div>
                 
-                <p><b>{% if creator.tags %}{{creator.tags}}{% else %} No Tags {%endif%}</b></p>
+                
                 <p> <b>{{creator.followers}} </b>Followers </p>
                 <p> <b>{{creator.reach}}</b>  Accounts Reached </p>
                 <p> <b>{{creator.profile_link_clicks}}</b> Profile Link Clicks </p>
@@ -65,7 +74,7 @@
                 
 
                 <p>{% if creator.audience_country == "None" %} No Data on Audience Country {% else %} <b>{{creator.audience_country}}</b> {% endif %}</p>
-                <a href=""><button>Send Proposal</button></a>
+                <a href="{% url 'create_brand_proposal' creator.creator.id %}"><button>Send Proposal</button></a>
             </div>
 
         {% empty %}

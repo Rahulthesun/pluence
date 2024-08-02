@@ -1,0 +1,54 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+    <section id="main">
+        
+        <div class="header-flex">
+            <div class="account-info">
+                <h1>{{account.name}}</h1>
+                <div class="link-flex">
+                    {% if account.website %}
+                    <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
+                    {% endif %}
+                    {% if account.contact_email %}
+                    <a href="mailto:{{account.contact_email}}"><i class="fa-solid fa-envelope"></i></a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </div>
+            <div class="link-flex">
+            
+            <a href="{% url 'home' %}"><button id="header">Home</button></a>
+            
+            </div>
+            
+        </div>
+
+        <hr>
+
+        <h2>Active Proposals</h2>
+
+            
+        <div class="active-proposal-box">
+            {% for proposal in active_proposals %}    
+
+            <div class="active-proposal-flex">
+                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
+                <p>{{proposal.brand.brand_name}}</p>
+                <p id="sub">{{proposal.content_type}}</p>
+                <p id="sub">{{proposal.duration_left.days}} Days Left</p>
+                <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
+            </div>   
+
+            
+                
+            {% empty %}
+        </div> 
+            <p>You don't have any Brand Proposals Right Now</p>
+            
+            {% endfor %}    
+           
+
+    </section>
+
+{% endblock %}

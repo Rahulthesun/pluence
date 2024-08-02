@@ -12,7 +12,7 @@
   #form {
     text-align: center;
     width: 30%;
-    margin: 5px auto;
+    margin: 50px auto;
   }
 
   #form p {
@@ -219,12 +219,33 @@
     width: 30%;
   }
 
-  .social-flex {
+  .social-flex , .rate-flex {
     display: flex;
     flex-direction: row;
     justify-content: left;
     align-items: center;
   }
+
+  .social-flex {
+    margin-bottom: 0px;
+  }
+
+  .rate-flex {
+    margin: 0px auto;
+    flex-direction: column;
+    justify-content: left;
+    align-items: flex-start;
+    padding: 0px 0px;
+    
+  }
+
+   h1#rate {
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -3px;
+    margin-bottom: 0px;
+  }
+
   .social-flex img {
     width: 35px;
     height: auto;
@@ -354,12 +375,44 @@
     margin-bottom: 0px;
   }
 
-  .proposal-detail-box p#description {
+  .proposal-detail-box p#description  {
     width: 90%;
     height: auto;
     overflow-x : hidden
   }
-  
+
+  .tags {
+    width: 95%;
+    height: 74px;
+    overflow-y: hidden;
+  }
+
+  .active-proposal-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: bottom;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border: 2px solid rgb(121, 121, 121);
+    box-shadow: 4.0px 8.0px 8.0px hsla(0, 0%, 25%, 0.38);
+    margin-bottom: 40px;
+  }
+
+  button#proposal-view {
+    margin: auto 0px;
+  }
+
+
+
+  .active-proposal-flex p {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .active-proposal-flex p#amount {
+    font-size: 30px;
+    margin: auto 0px;
+  }
 
 
 </style>

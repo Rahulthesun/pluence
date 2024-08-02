@@ -5,7 +5,7 @@ from django.urls import reverse_lazy , reverse
 from django.http import HttpResponse 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm
 from users.models import EmailUser
 from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard
 
@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView , FormView , UpdateView
 from django.contrib.auth.views import LoginView , LogoutView
 
-import requests
+import requests , datetime
 
 code = ""
 client_id = '2221760501509247'
@@ -37,8 +37,16 @@ def home(request):
     brand_account = BrandProfile.objects.filter(user = request.user)
     context = {}
     if creator_account.exists():
-        proposals = BrandProposal.objects.filter(creator = creator_account[0])
+        proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
         ig_account = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
+        active_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.PAID)
+        
+        if active_proposals.exists():
+            context['active_proposals'] = active_proposals
+
+        elif not active_proposals.exists():
+            context['active_proposals'] = None
+
         if proposals.exists():
             context['proposals'] = proposals
 
@@ -53,7 +61,6 @@ def home(request):
         context['account'] = creator_account[0]
         template = 'base/creator_home.html'
     elif brand_account.exists():
-        proposals = BrandProposal.objects.filter(brand = brand_account[0])
         search_query = request.GET.get("search" , "")
         sort_query = request.GET.get("sort" , "")
         if not search_query:
@@ -170,9 +177,10 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
     def form_valid(self, form):
         creator = get_object_or_404(CreatorProfile ,user = self.request.user)
         avg_rate = (form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
+        formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
             creator = creator,
-            tags = form.cleaned_data['tags'],
+            tags = formatted_tags,
             username = form.cleaned_data['username'],
             followers = form.cleaned_data['followers'],
             reach = form.cleaned_data['reach'],
@@ -194,6 +202,13 @@ class AccountIntegrationUpdate(LoginRequiredMixin , UpdateView):
     form_class = AccountIntegrationForm
     template_name = 'base/account_integration.html'
 
+    def form_valid(self, form):
+        dashboard = form.save(commit=False)
+        dashboard.tags = dashboard.tags.replace("#" , " #")
+        dashboard.average_rate = ((dashboard.story_rates + dashboard.reel_rates) // 2)
+        dashboard.save()
+        return super().form_valid(form)
+
 
 
     def get_success_url(self):
@@ -209,4 +224,61 @@ def creator_proposal_view(request , pk):
 
     return render(request , 'base/creator_proposal_view.html' , context)
 
+
+class CreateBrandProposal(LoginRequiredMixin , FormView):
+    form_class = BrandProposalForm
+    template_name = "base/create_proposal.html"
+    success_url = reverse_lazy("home")
+
+
+    def form_valid(self, form):
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
+        proposal, created = BrandProposal.objects.get_or_create(
+            brand = brand,
+            creator = creator,
+            
+            description = form.cleaned_data['description'],
+            timeline = form.cleaned_data['timeline'],
+            proposed_amount = form.cleaned_data['proposed_amount'],
+            item_link = form.cleaned_data['item_link'],
+            content_type = form.cleaned_data['content_type'],
+            proposal_status = BrandProposal.Proposal_Status.REQUESTED
+
+            )
+        
+        return super().form_valid(form)
+
+def accept_brand_proposal(request , proposal_id):
+    proposal = get_object_or_404(BrandProposal , id = proposal_id)
+    proposal.proposal_status = BrandProposal.Proposal_Status.ACCEPTED
+    proposal.save()
+
+    return redirect(reverse_lazy("home"))
+
+def reject_brand_proposal(request , proposal_id):
+    proposal = get_object_or_404(BrandProposal , id = proposal_id)
+    proposal.proposal_status = BrandProposal.Proposal_Status.REJECTED
+    proposal.save()
+
+    return redirect(reverse_lazy("home"))
+
+def creator_active_proposals(request , creator_id):
+    creator = get_object_or_404(CreatorProfile , id = creator_id)
+    active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    context = {
+        "account":creator
+    }
     
+    if active_proposals.exists():
+        context['active_proposals'] = active_proposals
+        for proposal in active_proposals :
+            if not proposal.duration_left:
+                proposal.duration_left = datetime.timedelta(days=proposal.timeline)
+                proposal.save()
+            else:
+                pass
+    else:
+        context['active_proposals'] = None
+
+    return render(request , 'base/creator_active_proposals.html' , context)

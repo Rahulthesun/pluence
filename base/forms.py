@@ -1,5 +1,5 @@
 from django import forms
-from .models import InstagramAccountDashBoard
+from .models import InstagramAccountDashBoard , BrandProposal
 
 account_choices = (
     ("creator" , "Creator"),
@@ -18,4 +18,9 @@ class AccountIntegrationForm(forms.ModelForm):
     class Meta:
         model = InstagramAccountDashBoard
         fields = ('username' , 'tags' ,'followers' , 'reach' , 'profile_link_clicks' ,'engagement' , 'audience_country' , 'story_rates' , 'reel_rates')
+
+class BrandProposalForm(forms.ModelForm):
+    class Meta:
+        model = BrandProposal
+        fields = ('description' , 'timeline', 'content_type' , 'proposed_amount' , 'item_link' )
         

@@ -18,18 +18,25 @@
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
             </div>
+            <div class="link-flex">
+            {% if active_proposals is not None %}
+            <a href="{% url 'creator_active_proposals' account.id %}"><button id="header">Active Proposals</button></a>
+            {% endif %}
+
             {% if ig_account is not None %}
             <a href="{% url 'integration_dashboard' ig_account.id %}"><button id="header">Manage Integrations</button></a>
             {% else %}
             <a href="{% url 'instagram_integration' %}"><button id="header">Manage Integrations</button></a>
             {% endif %}
+            </div>
+            
         </div>
 
         <hr>
 
         <h2>Brand Proposals</h2>
         <div class="proposal-grid">
-        {% for proposal in proposals %}
+            {% for proposal in proposals %}
             <div class="proposal-box">
                 
                 <div class="proposal-flex">
@@ -48,10 +55,10 @@
                 </div>
                 
             </div>
-        {% empty %}
+            {% empty %}
        
             <p>You don't have any Brand Proposals Right Now</p>
-        {% endfor %}        
+            {% endfor %}        
         </div>
 
         {% else %}
