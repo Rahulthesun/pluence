@@ -17,7 +17,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView , FormView , UpdateView
 from django.contrib.auth.views import LoginView , LogoutView
 
-import requests , datetime
+import requests , datetime , decimal
+from paypal.standard.forms import PayPalPaymentsForm
 
 code = ""
 client_id = '2221760501509247'
@@ -64,8 +65,8 @@ def home(request):
         search_query = request.GET.get("search" , "")
         sort_query = request.GET.get("sort" , "")
         if not search_query:
-            if sort_query =="all":
-                creator_accounts = InstagramAccountDashBoard.objects.all()
+            if sort_query =="":
+                creator_accounts = InstagramAccountDashBoard.objects.all().order_by("-date_created")
             elif sort_query == "followers-asc" :
                 creator_accounts = InstagramAccountDashBoard.objects.all().order_by("followers")
             else:
@@ -78,12 +79,6 @@ def home(request):
                 creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('followers')
             else:
                 creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('-followers')
-
-
-        if proposals.exists():
-            context['proposals'] = proposals
-        else:
-            context['proposals'] = None
             
         context['creators'] = creator_accounts
         context['account'] = brand_account[0]
@@ -282,3 +277,39 @@ def creator_active_proposals(request , creator_id):
         context['active_proposals'] = None
 
     return render(request , 'base/creator_active_proposals.html' , context)
+
+def creator_payment_dashboard(request , creator_id):
+    creator = get_object_or_404(CreatorProfile , id = creator_id)
+    paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    pending_payment = decimal.Decimal("0.00")
+    for proposal in paid_proposals:
+        pending_payment += proposal.proposed_amount
+    context = {
+        'pending_payment' : pending_payment,
+        'paid_proposals' : paid_proposals,
+        'account':creator
+    }
+
+    return render(request , 'base/creator_payment_dashboard.html' , context)
+
+def brand_proposal_payment(request , proposal_id):
+    proposal = get_object_or_404(BrandProposal , id = proposal_id)
+
+    paypal_dict = {
+        'business': 'wearaiofficial@gmail.com',
+        'amount': proposal.proposed_amount,
+        'currency_code':'USD',
+        'item_name': "Branded Content Promotion" ,
+        'return': request.build_absolute_uri(reverse_lazy("home")), #change this
+        'cancel_return':request.build_absolute_uri(reverse_lazy("home")) #change this 
+    }
+
+    form = PayPalPaymentsForm(initial = paypal_dict)
+    context = {
+        'proposal':proposal,
+        'form': form
+    }
+
+    return render(request , "base/brand_proposal_payment.html" ,context)
+
+

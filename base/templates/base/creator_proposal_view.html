@@ -33,10 +33,18 @@
                 <p id="description">{{proposal.description}}</p>
                 {% endif %}
 
+                {% if proposal.duration_left %}
+                    <h2>{{proposal.duration_left.days}} Days Left</h2>
+                {% else %}
+
                 <div class="proposal-detail-flex">
                     <h2>Timeline</h2>
                     <p id="sub">{{proposal.timeline}} Days</p>
                 </div>
+
+                {% endif %}
+
+                
 
                 <div class="proposal-detail-flex">
                     <h2>Content</h2>
@@ -48,13 +56,22 @@
                     <a href="{{proposal.item_link}}"><button id="header">Item Link</button></a>
                     {% endif %}
 
-                    <div class="button-flex">
+                
+                    
+                
+                <div class="button-flex">
+                    {% if proposal.proposal_status == "Paid" or proposal.proposal_status == "Accepted" %}
+                        <a href=""><button id="view">Submit For Approval</button></a>
+
+                    {% else %}
                         <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
                         <div class="button-accept-flex">
                             <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
                         </div>
+
+                    {% endif %}
                         
-                    </div>
+                </div>
 
 
                 

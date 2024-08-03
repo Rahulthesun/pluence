@@ -19,6 +19,7 @@
                 </div>
             </div>
             <div class="link-flex">
+            <a href="{% url 'creator_payment_dashboard' account.id %}"><button id="header">Payment</button></a>
             {% if active_proposals is not None %}
             <a href="{% url 'creator_active_proposals' account.id %}"><button id="header">Active Proposals</button></a>
             {% endif %}

@@ -1,0 +1,22 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<section id="main">
+    <div class="paypal-payment">
+        <h1> Paypal Payment </h1>
+
+        <div class="payment-flex">
+            <h1 id="paypal">${{proposal.proposed_amount}}</h1>
+        </div>
+
+        {{form.render}}    
+    </div>
+
+</section>
+
+
+
+
+
+{% endblock %}

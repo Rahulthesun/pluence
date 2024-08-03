@@ -27,6 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+PAYPAL_CLIENT_ID = 'AZN1XtT7BFQTqP9nWN6LDnNZLzK0Trux7wdSC3kEU0zXTK5HHOndatEBdUde5qRUQqvNOWJUPdF95iG0'
+
+PAYPAL_CLIENT_SECRET = 'EAD_qRm0E1guMZqYjU46qhRMMQ6vXVAny9HcpOx-KU0ubSj2CPA5DjC9A2Tm1lKErwGth60V78iL5ZCp'
+
+PAYPAL_TEST = False
+
+PAYPAL_RECEIVER_EMAIl = "wearaiofficial@gmail.com"
 
 # Application definition
 
@@ -38,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'paypal.standard.ipn',
 ]
 
 AUTH_USER_MODEL = 'users.EmailUser'

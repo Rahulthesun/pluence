@@ -15,6 +15,8 @@ urlpatterns = [
     path("brand_proposal/accept/<int:proposal_id>/" , views.accept_brand_proposal , name='accept_brand_proposal' ),
     path("brand_proposal/reject/<int:proposal_id>/" , views.reject_brand_proposal , name='reject_brand_proposal' ),
     path("creator/active_proposals/<int:creator_id>/" , views.creator_active_proposals ,name='creator_active_proposals'),
+    path("creator/payment_dashboard/<int:creator_id>/" , views.creator_payment_dashboard ,name='creator_payment_dashboard'),
+    path("brand/proposal_payment/<int:proposal_id>/" , views.brand_proposal_payment ,name='brand_proposal_payment'),
 
     path("account_selection/", AccountType.as_view() , name="account_selection"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),

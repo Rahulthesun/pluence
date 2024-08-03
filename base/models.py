@@ -10,6 +10,8 @@ class CreatorProfile(models.Model):
     website = models.URLField(max_length=60 , null=True , blank=True)
     bio = models.TextField(null=True , blank=True)
 
+    balance= models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
+
 
     active = models.BooleanField(default=False)
 
@@ -143,6 +145,9 @@ class InstagramAccountDashBoard(models.Model):
     reel_rates = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 ,blank=True)
     
     average_rate = models.DecimalField(default=0 , decimal_places=2 , max_digits=10)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return f"{self.username} - IG Account"
