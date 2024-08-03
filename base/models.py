@@ -42,8 +42,17 @@ class BrandProposal(models.Model):
     proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
     item_link = models.URLField(null=True , blank=True)
 
+    class Content_Choices(models.TextChoices):
+        REELS = 'Reels'
+        STORY = 'Story'
+        POST = 'Post'
+        ALL = 'Reels + Post + Story'
+
+    content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.ALL)
+
     class Proposal_Status(models.TextChoices):
         REQUESTED = 'Requested'
+        REJECTED = 'Rejected'
         ACCEPTED = 'Accepted'
         PAID = 'Paid'
         COMPLETED ='Completed'
@@ -51,6 +60,9 @@ class BrandProposal(models.Model):
     proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
+
+    duration_left = models.DurationField(null=True , blank=True)
+
     date_completed = models.DateTimeField(null=True , blank=True)
 
     def __str__(self):

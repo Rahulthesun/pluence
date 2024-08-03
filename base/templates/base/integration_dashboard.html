@@ -32,9 +32,17 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
                     <p>{{dashboard.username}}</p>
                 </div>
-                
+               
+                <div class="rate-flex">
+                    <h1 id="rate"> ${{dashboard.average_rate | floatformat}} </h1>
+                    <p>Average Rate / Post</p>
+                </div>
+
                 {% if dashboard.tags %}
-                <p><b>{{dashboard.tags}}</b></p>
+                <div class="tags">
+                    <p><b>{{dashboard.tags}}</b></p>
+                </div>
+                
                 {% endif %}
                 
                 <p> <b>{{dashboard.followers}} </b>Followers </p>
