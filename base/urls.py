@@ -1,6 +1,6 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
-from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate
+from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate,get_proposal_details
 
 urlpatterns = [
 
@@ -16,4 +16,5 @@ urlpatterns = [
     path("account_selection/", AccountType.as_view() , name="account_selection"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),
     path("update_profile/brand/<int:pk>/" , BrandProfileUpdate.as_view(), name="brand_profile_update" ),
+    path('proposal/<int:pk>/', get_proposal_details, name='proposal_details'),
 ]

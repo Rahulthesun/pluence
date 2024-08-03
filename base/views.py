@@ -209,4 +209,14 @@ def creator_proposal_view(request , pk):
 
     return render(request , 'base/creator_proposal_view.html' , context)
 
-    
+
+
+
+def get_proposal_details(request, proposal_id):
+    proposal = get_object_or_404(BrandProposal, id=proposal_id)
+    creator = proposal.creator
+    context = {
+        'proposal': proposal,
+        'creator': creator,
+    }
+    return render(request, 'proposal_detail.html', context)

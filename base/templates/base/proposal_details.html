@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Details</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'myapp/styles.css' %}">
+    <style>
+        /* General Styles */
+        html, body {
+            font-family: "Poppins", sans-serif;
+            color: black;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container for Proposal Details */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            margin: 20px auto;
+            border: 1px solid rgba(53, 53, 53, 0.658);
+            border-radius: 20px;
+            width: 90%;
+        }
+
+        .left, .right {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .left {
+            /* Adjust CSS if needed */
+            border-right: 1px solid rgba(53, 53, 53, 0.658);
+        }
+
+        .right {
+            border-left: 1px solid rgba(53, 53, 53, 0.658);
+        }
+
+        /* Header */
+        h1 {
+            font-size: 60px;
+            font-weight: 800;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Proposal Details Box */
+        .proposal-detail-box {
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(53, 53, 53, 0.658);
+            margin-top: 20px;
+            width: 90%;
+            margin: 20px auto;
+        }
+
+        .proposal-detail-box h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .proposal-detail-box p {
+            font-size: 20px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            background-color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            color: black;
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        /* Link Styles */
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Styles */
+        #form {
+            text-align: center;
+            width: 30%;
+            margin: 5px auto;
+        }
+
+        #form input[type="text"],
+        #form input[type="password"],
+        #form input[type="email"],
+        #form input[type="url"],
+        #form input[type="number"],
+        #form select,
+        #form textarea {
+            width: 100%;
+            height: 40px;
+            font-size: 20px;
+            padding: 1px 5px;
+            border: 2px solid black;
+        }
+
+        #form textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        /* Flexbox Layouts */
+        .proposal-flex, .proposal-detail-flex {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            height: 100px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left, .right {
+                border: none;
+                border-bottom: 1px solid rgba(53, 53, 53, 0.658);
+                padding: 10px;
+            }
+
+            .right {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Proposal Details</h1>
+    <div class="container">
+        <div class="left">
+            <h2>Brand Proposal</h2>
+            <p><strong>Description:</strong> {{ proposal.description }}</p>
+            <p><strong>Timeline:</strong> {{ proposal.timeline }} days</p>
+            <p><strong>Proposed Amount:</strong> ${{ proposal.proposed_amount }}</p>
+            <p><strong>Status:</strong> {{ proposal.proposal_status }}</p>
+        </div>
+        <div class="right">
+            <h2>Creator Details</h2>
+            <p><strong>Name:</strong> {{ creator.name }}</p>
+            <p><strong>Email:</strong> {{ creator.contact_email }}</p>
+            <p><strong>Website:</strong> <a href="{{ creator.website }}" target="_blank">{{ creator.website }}</a></p>
+            <p><strong>Bio:</strong> {{ creator.bio }}</p>
+        </div>
+    </div>
+</body>
+</html>
