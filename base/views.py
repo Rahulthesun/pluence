@@ -220,6 +220,18 @@ def creator_proposal_view(request , pk):
     return render(request , 'base/creator_proposal_view.html' , context)
 
 
+
+
+
+def get_proposal_details(request, proposal_id):
+    proposal = get_object_or_404(BrandProposal, id=proposal_id)
+    creator = proposal.creator
+    context = {
+        'proposal': proposal,
+        'creator': creator,
+    }
+    return render(request, 'proposal_detail.html', context)
+
 class CreateBrandProposal(LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
     template_name = "base/create_proposal.html"
@@ -278,6 +290,7 @@ def creator_active_proposals(request , creator_id):
 
     return render(request , 'base/creator_active_proposals.html' , context)
 
+<<<<<<< HEAD
 def creator_payment_dashboard(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
@@ -313,3 +326,5 @@ def brand_proposal_payment(request , proposal_id):
     return render(request , "base/brand_proposal_payment.html" ,context)
 
 
+=======
+>>>>>>> c6fa13ee430259171070f8fc67945ce8d79c1f03
