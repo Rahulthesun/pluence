@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
     'users.apps.UsersConfig',
-    'reviews'
 ]
 
 AUTH_USER_MODEL = 'users.EmailUser'
