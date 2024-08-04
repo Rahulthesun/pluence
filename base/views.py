@@ -19,6 +19,7 @@ from django.contrib.auth.views import LoginView , LogoutView
 from django.contrib import messages
 
 import requests , datetime , decimal
+from django.utils import timezone
 from paypal.standard.forms import PayPalPaymentsForm
 import sib_api_v3_sdk
 
@@ -273,13 +274,18 @@ def creator_proposal_view(request , pk):
 
 
 def get_brand_proposals(request, brand_id):
-    proposal = get_object_or_404(BrandProposal, brand= brand_id)
-    creator = proposal.creator
+    brand = get_object_or_404(BrandProfile , id = brand_id)
+    proposals = BrandProposal.objects.filter(brand = brand , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
+    accepted_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.ACCEPTED)
+    paid_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.PAID)
+
     context = {
-        'proposal': proposal,
-        'creator': creator,
+        'account':brand,
+        'proposals': proposals,
+        'accepted_proposals' : accepted_proposals,
+        'paid_proposals' : paid_proposals
     }
-    return render(request, 'base/proposal_details.html', context)
+    return render(request, 'base/brand_proposals.html', context)
 
 class CreateBrandProposal(LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
@@ -290,9 +296,11 @@ class CreateBrandProposal(LoginRequiredMixin , FormView):
     def form_valid(self, form):
         brand = get_object_or_404(BrandProfile ,user = self.request.user)
         creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
+        ig_account = get_object_or_404(InstagramAccountDashBoard , creator = creator)
         proposal, created = BrandProposal.objects.get_or_create(
             brand = brand,
             creator = creator,
+            account = ig_account,
             
             description = form.cleaned_data['description'],
             timeline = form.cleaned_data['timeline'],
@@ -329,11 +337,9 @@ def creator_active_proposals(request , creator_id):
     if active_proposals.exists():
         context['active_proposals'] = active_proposals
         for proposal in active_proposals :
-            if not proposal.duration_left:
-                proposal.duration_left = datetime.timedelta(days=proposal.timeline)
+                proposed_date = proposal.date_paid + datetime.timedelta(days = proposal.timeline)
+                proposal.duration_left = proposed_date - timezone.now()
                 proposal.save()
-            else:
-                pass
     else:
         context['active_proposals'] = None
 
@@ -361,8 +367,8 @@ def brand_proposal_payment(request , proposal_id):
         'amount': proposal.proposed_amount,
         'currency_code':'USD',
         'item_name': "Branded Content Promotion" ,
-        'return': request.build_absolute_uri(reverse_lazy("home")), #change this
-        'cancel_return':request.build_absolute_uri(reverse_lazy("home")) #change this 
+        'return': request.build_absolute_uri(reverse("successfull_payment" , kwargs={"proposal_id": proposal.id})), #change this
+        'cancel_return':request.build_absolute_uri(reverse("payment_failed" , kwargs={"brand_id":proposal.brand.id})) #change this 
     }
 
     form = PayPalPaymentsForm(initial = paypal_dict)
@@ -373,4 +379,21 @@ def brand_proposal_payment(request , proposal_id):
 
     return render(request , "base/brand_proposal_payment.html" ,context)
 
+
+def successfull_payment(request , proposal_id):
+    proposal = get_object_or_404(BrandProposal , id= proposal_id)
+    
+    proposal.proposal_status = BrandProposal.Proposal_Status.PAID
+    proposal.date_paid = timezone.now()
+    proposal.save()
+    
+    return render(request , 'base/successfull_payment.html')
+
+def payment_failed(request , brand_id):
+    
+    context = {
+        'brand_id':brand_id
+    }
+    
+    return render(request , 'base/payment_failed.html', context)
 

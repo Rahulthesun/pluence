@@ -1,0 +1,105 @@
+{% extends 'base/main.html' %}
+
+
+{% block content %}
+
+    <section id="main">
+        <div class="header-flex">
+            <div class="account-info">
+                <h1>{{account.brand_name}}</h1>
+                <div class="link-flex">
+                    {% if account.email %}
+                    <a href="mailto:{{account.email}}"><i class="fa-solid fa-envelope"></i></a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>    
+            </div>
+           
+            <a href="{% url 'home' %}"><button id="header">Home</button></a>
+    
+        </div>
+        
+        <hr>
+
+            {% if accepted_proposals %}
+            <h2>Payment Pending</h2>
+            <div class="active-proposal-box">
+            {% for proposal in accepted_proposals %}
+
+            <div class="active-proposal-flex">
+                <div class="link-flex">
+                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
+                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
+                    <p>{{proposal.account.username}}</p>
+                </div>
+                <p id="sub">{{proposal.proposal_status}}</p>
+                <p id="sub">{{proposal.content_type}}</p>
+                <p id="sub">{{proposal.timeline}} Days</p>
+                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
+                <a href="{% url 'brand_proposal_payment' proposal.id %}"><button id="proposal-view">Pay</button></a>
+            
+            </div>
+            
+            {% endfor %}
+
+            {% endif %}
+
+            {% if paid_proposals %}
+            <h2>Active Campaigns</h2>
+            <div class="active-proposal-box">
+            {% for proposal in paid_proposals %}
+
+            <div class="active-proposal-flex">
+                <div class="link-flex">
+                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
+                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
+                    <p>{{proposal.account.username}}</p>
+                </div>
+                <p id="sub">{{proposal.proposal_status}}</p>
+                <p id="sub">{{proposal.content_type}}</p>
+                <p id="sub">{{proposal.timeline}} Days</p>
+                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
+                <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
+            
+            </div>
+            
+            {% endfor %}
+
+            {% endif %}
+
+            <h2>Brand Proposals</h2>
+            <div class="active-proposal-box">
+            {% for proposal in proposals %}
+
+            <div class="active-proposal-flex">
+                <div class="link-flex">
+                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
+                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
+                    <p>{{proposal.account.username}}</p>
+                </div>
+                <p>Pending Approval</p>
+                <p id="sub">{{proposal.content_type}} Content</p>
+                <p id="sub">{{proposal.timeline}} Days</p>
+                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
+                <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
+            </div>
+            
+
+            {% empty %}
+                <p>You have not Created any Brand Proposals</p>
+            {% endfor %}
+            
+
+        </div>
+
+    </section>
+
+{% endblock %}
+ 
+ 
+ 
+    
+
+
+    
+

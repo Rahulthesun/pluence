@@ -7,7 +7,7 @@ from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorPr
 
 urlpatterns = [
 
-    path("" , views.home , name='home'),
+    path("home/" , views.home , name='home'),
     path("login/" , EmailLogin.as_view() , name="login"),
     path("logout/" , LogoutView.as_view(next_page = 'login'), name="logout"),
     path("signup/" , EmailSignUp.as_view() , name="signup"),
@@ -22,6 +22,8 @@ urlpatterns = [
     path("creator/payment_dashboard/<int:creator_id>/" , views.creator_payment_dashboard ,name='creator_payment_dashboard'),
     path("brand/proposal_payment/<int:proposal_id>/" , views.brand_proposal_payment ,name='brand_proposal_payment'),
     path('brand/proposal/<int:brand_id>/', views.get_brand_proposals, name='brand_proposals'),
+    path("successfull_payment/<int:proposal_id>/" , views.successfull_payment  , name="successfull_payment"),
+    path("failed_payment/<int:brand_id>/" , views.payment_failed  , name="payment_failed"),
 
     path("account_selection/", AccountType.as_view() , name="account_selection"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),

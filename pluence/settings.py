@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&62%_%xn@&vv=+0m+d$nd7k85c%0d4foo*@6+w=jgwxzxj2^m7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["51.20.5.251" , "pluence.com"]
 
 PAYPAL_CLIENT_ID = 'AZN1XtT7BFQTqP9nWN6LDnNZLzK0Trux7wdSC3kEU0zXTK5HHOndatEBdUde5qRUQqvNOWJUPdF95iG0'
 

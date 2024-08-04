@@ -33,44 +33,7 @@ class BrandProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.email.split('@')[0]} - Brand Profile "
-    
 
-class BrandProposal(models.Model):
-    brand = models.ForeignKey(BrandProfile , on_delete= models.SET_NULL , null = True)
-    creator = models.ForeignKey(CreatorProfile , on_delete= models.SET_NULL , null=True)
-    
-    description = models.TextField(null=True , blank=True)
-    timeline = models.IntegerField(default=3 , blank=False)
-    proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
-    item_link = models.URLField(null=True , blank=True)
-
-    class Content_Choices(models.TextChoices):
-        REELS = 'Reels'
-        STORY = 'Story'
-        POST = 'Post'
-        ALL = 'Reels + Post + Story'
-
-    content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.ALL)
-
-    class Proposal_Status(models.TextChoices):
-        REQUESTED = 'Requested'
-        REJECTED = 'Rejected'
-        ACCEPTED = 'Accepted'
-        PAID = 'Paid'
-        COMPLETED ='Completed'
-
-    proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
-
-    date_created = models.DateTimeField(auto_now_add=True)
-
-    duration_left = models.DurationField(null=True , blank=True)
-
-    date_completed = models.DateTimeField(null=True , blank=True)
-
-    def __str__(self):
-        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]}"
-    
-    
 class InstagramAccountDashBoard(models.Model):
     creator = models.OneToOneField(CreatorProfile , on_delete=models.CASCADE)
     username = models.CharField(max_length=200 , null=True , blank = False)
@@ -151,6 +114,47 @@ class InstagramAccountDashBoard(models.Model):
 
     def __str__(self):
         return f"{self.username} - IG Account"
+
+class BrandProposal(models.Model):
+    brand = models.ForeignKey(BrandProfile , on_delete= models.SET_NULL , null = True)
+    creator = models.ForeignKey(CreatorProfile , on_delete= models.SET_NULL , null=True)
+    account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
+
+    description = models.TextField(null=True , blank=True)
+    timeline = models.IntegerField(default=3 , blank=False)
+    proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
+    item_link = models.URLField(null=True , blank=True)
+
+    class Content_Choices(models.TextChoices):
+        REELS = 'Reels'
+        STORY = 'Story'
+        POST = 'Post'
+        ALL = 'Reels + Post + Story'
+
+    content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.ALL)
+
+    class Proposal_Status(models.TextChoices):
+        REQUESTED = 'Requested'
+        REJECTED = 'Rejected'
+        ACCEPTED = 'Accepted'
+        PAID = 'Paid'
+        COMPLETED ='Completed'
+
+    proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    date_paid = models.DateTimeField(null=True , blank=True)
+
+    duration_left = models.DurationField(null=True , blank=True)
+
+    date_completed = models.DateTimeField(null=True , blank=True)
+
+    def __str__(self):
+        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]}"
+    
+    
+
 
     
 
