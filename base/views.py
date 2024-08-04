@@ -16,9 +16,16 @@ from django.contrib.auth import login , authenticate
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView , FormView , UpdateView
 from django.contrib.auth.views import LoginView , LogoutView
+from django.contrib import messages
 
 import requests , datetime , decimal
 from paypal.standard.forms import PayPalPaymentsForm
+import sib_api_v3_sdk
+
+
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = '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'
+api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
 
 code = ""
 client_id = '2221760501509247'
@@ -149,11 +156,53 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
     template_name = "base/update_profile.html"
     success_url= reverse_lazy("home")
 
+    def form_valid(self, form):
+        creator_profile = form.save()
+        create_contact = sib_api_v3_sdk.CreateContact(
+            email = creator_profile.email,
+            update_enabled=True , 
+            attributes={
+                'FNAME':creator_profile.brand_name,
+                'LNAME':" "
+            },
+            list_ids=[6]
+        )
+        
+        try:
+            api_response = api_instance.create_contact(create_contact)
+        except sib_api_v3_sdk.ApiException as e:
+            print(f"ERROR: {e}")
+            messages.add_message(self.request , messages.ERROR , e)
+            return self.render_to_response(self.get_context_data(form = form))
+        else:
+            return super().form_valid(form)
+
 class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
     model = BrandProfile
     fields = ['brand_name' , 'email' , 'about']
     template_name = "base/update_profile.html"
     success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        profile = form.save()
+        create_contact = sib_api_v3_sdk.CreateContact(
+            email = profile.email,
+            update_enabled=True , 
+            attributes={
+                'FNAME':profile.brand_name,
+                'LNAME':" "
+            },
+
+            list_ids=[5]
+        )
+        
+        try:
+            api_response = api_instance.create_contact(create_contact)
+        except sib_api_v3_sdk.ApiException as e:
+            messages.add_message(self.request , messages.ERROR , e)
+            return self.render_to_response(self.get_context_data(form = form))
+        else:
+            return super().form_valid(form)
 
 def integration_dashboard(request , pk):
     dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
@@ -223,14 +272,14 @@ def creator_proposal_view(request , pk):
 
 
 
-def get_proposal_details(request, proposal_id):
-    proposal = get_object_or_404(BrandProposal, id=proposal_id)
+def get_brand_proposals(request, brand_id):
+    proposal = get_object_or_404(BrandProposal, brand= brand_id)
     creator = proposal.creator
     context = {
         'proposal': proposal,
         'creator': creator,
     }
-    return render(request, 'proposal_detail.html', context)
+    return render(request, 'base/proposal_details.html', context)
 
 class CreateBrandProposal(LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
@@ -290,7 +339,6 @@ def creator_active_proposals(request , creator_id):
 
     return render(request , 'base/creator_active_proposals.html' , context)
 
-<<<<<<< HEAD
 def creator_payment_dashboard(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
@@ -326,5 +374,3 @@ def brand_proposal_payment(request , proposal_id):
     return render(request , "base/brand_proposal_payment.html" ,context)
 
 
-=======
->>>>>>> c6fa13ee430259171070f8fc67945ce8d79c1f03

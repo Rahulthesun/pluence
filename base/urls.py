@@ -1,7 +1,7 @@
 from django.urls import path,include
 from . import views
 
-from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate,get_proposal_details,CreateBrandProposal
+from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal
 
 
 
@@ -21,9 +21,10 @@ urlpatterns = [
     path("creator/active_proposals/<int:creator_id>/" , views.creator_active_proposals ,name='creator_active_proposals'),
     path("creator/payment_dashboard/<int:creator_id>/" , views.creator_payment_dashboard ,name='creator_payment_dashboard'),
     path("brand/proposal_payment/<int:proposal_id>/" , views.brand_proposal_payment ,name='brand_proposal_payment'),
+    path('brand/proposal/<int:brand_id>/', views.get_brand_proposals, name='brand_proposals'),
 
     path("account_selection/", AccountType.as_view() , name="account_selection"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),
     path("update_profile/brand/<int:pk>/" , BrandProfileUpdate.as_view(), name="brand_profile_update" ),
-    path('proposal/<int:pk>/', get_proposal_details, name='proposal_details'),
+    
 ]
