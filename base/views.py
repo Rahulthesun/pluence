@@ -5,9 +5,9 @@ from django.urls import reverse_lazy , reverse
 from django.http import HttpResponse 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard
+from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images
 
 
 
@@ -17,16 +17,29 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView , FormView , UpdateView
 from django.contrib.auth.views import LoginView , LogoutView
 from django.contrib import messages
+from django.core.mail import send_mail
 
-import requests , datetime , decimal
+import requests , datetime , decimal , base64
 from django.utils import timezone
 from paypal.standard.forms import PayPalPaymentsForm
 import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
+imgbb_key = '4293ead9e871a798ed6d0580bb00f15c'
+imgbb_url = 'https://api.imgbb.com/1/upload'
+
+payload = {
+            'key': imgbb_key
+        }
 
 
 configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key['api-key'] = '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'
 api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+
+'''
+INSTAGRAM GRAPH API & FACEBOOK AUTH
 
 code = ""
 client_id = '2221760501509247'
@@ -36,8 +49,18 @@ instagram_auth_url = 'https://api.instagram.com/oauth/authorize'
 scope = 'instagram_basic,instagram_manage_insights'
 response_type = 'code'
 
+'''
+
+
 
 # Create your views here.
+
+def landing_page(request):
+    context = {
+        'delay': 3,
+        'redirect_url': reverse_lazy("home")
+    }
+    return render(request ,'base/temp_landing.html' , context)
 
 
 @login_required
@@ -90,6 +113,7 @@ def home(request):
             
         context['creators'] = creator_accounts
         context['account'] = brand_account[0]
+        context['pending_proposals'] = BrandProposal.objects.filter(proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
         template = 'base/brand_home.html'
     elif not creator_account.exists() and not brand_account.exists():        
         return redirect(reverse_lazy("account_selection"))
@@ -160,10 +184,10 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
     def form_valid(self, form):
         creator_profile = form.save()
         create_contact = sib_api_v3_sdk.CreateContact(
-            email = creator_profile.email,
+            email = creator_profile.contact_email,
             update_enabled=True , 
             attributes={
-                'FNAME':creator_profile.brand_name,
+                'FNAME':creator_profile.name,
                 'LNAME':" "
             },
             list_ids=[6]
@@ -171,7 +195,7 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
         
         try:
             api_response = api_instance.create_contact(create_contact)
-        except sib_api_v3_sdk.ApiException as e:
+        except ApiException as e:
             print(f"ERROR: {e}")
             messages.add_message(self.request , messages.ERROR , e)
             return self.render_to_response(self.get_context_data(form = form))
@@ -199,7 +223,7 @@ class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
         
         try:
             api_response = api_instance.create_contact(create_contact)
-        except sib_api_v3_sdk.ApiException as e:
+        except ApiException as e:
             messages.add_message(self.request , messages.ERROR , e)
             return self.render_to_response(self.get_context_data(form = form))
         else:
@@ -254,7 +278,32 @@ class AccountIntegrationUpdate(LoginRequiredMixin , UpdateView):
         dashboard.save()
         return super().form_valid(form)
 
+    def get_success_url(self):
+        id = self.kwargs.get('pk')
+        return reverse("integration_dashboard" , kwargs= {"pk": id})
+    
+class DashboardImageUpdate(LoginRequiredMixin , FormView):
+    form_class = DashboardImageForm
+    template_name = 'base/dashboard_img_form.html'
 
+    def form_valid(self, form):
+        account = get_object_or_404(InstagramAccountDashBoard , id = self.kwargs.get('pk'))
+        img = form.cleaned_data['dashboard_img'].read()
+        payload['image'] = base64.b64encode(img).decode('utf-8')
+        response = requests.post(imgbb_url, data=payload)
+        print(f"Response status code: {response.status_code}")
+        
+        json_response = response.json()
+
+        if response.status_code == 200:
+            img_url = json_response['data']['url']
+            account.dashboard_img = img_url
+            account.save()
+            return super().form_valid(form)
+            
+        else:
+            print("Error uploading image to imgbb:", json_response)
+            messages.add_message(self.request, messages.ERROR, "Error uploading image to Server")
 
     def get_success_url(self):
         id = self.kwargs.get('pk')
@@ -390,10 +439,115 @@ def successfull_payment(request , proposal_id):
     return render(request , 'base/successfull_payment.html')
 
 def payment_failed(request , brand_id):
-    
     context = {
         'brand_id':brand_id
     }
     
     return render(request , 'base/payment_failed.html', context)
+    
 
+def content_approval_process(request, proposal_id):
+    transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    creator = get_object_or_404(CreatorProfile, user=request.user)
+    proposal = get_object_or_404(BrandProposal, id=proposal_id)
+    
+    if request.method == 'POST':
+        media = request.FILES.getlist("media")
+        # Sending using Brevo Email API
+        
+        template_id = 7
+        # Ensure this is uncommented if needed
+        approve_url = request.build_absolute_uri(reverse("approve_content", kwargs={"proposal_id": proposal.id}))
+
+    
+        to = [{"email": proposal.brand.email}]
+        
+        files = len(media)
+        for i in range(files):
+            img = media[i].read()
+            payload['image'] = base64.b64encode(img).decode('utf-8')
+            response = requests.post(imgbb_url, data=payload)
+            
+            print(f"Response status code: {response.status_code}")
+            json_response = response.json()
+
+            if response.status_code == 200:
+                img_url = json_response['data']['url']
+                Content_Approval_Images.objects.create(
+                    proposal = proposal,
+                    url = img_url
+                )
+            else:
+                print("Error uploading image to imgbb:", json_response)
+                messages.add_message(request, messages.ERROR, "Error uploading image to Server")
+                return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
+
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+        )
+
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+            messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
+        else:
+            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
+            proposal.save()           
+        return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
+
+    else:
+        return render(request, 'base/content_approval_form.html')
+
+def brand_pending_approval_view(request):
+    brand_profile = get_object_or_404(BrandProfile , user = request.user)
+    proposals = BrandProposal.objects.filter(proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+
+    context = {
+        "pending_proposals": proposals,
+        "account": brand_profile,
+    }
+
+    return render(request , 'base/brand_content_approval.html' , context)
+
+def brand_content_review(request , proposal_id):
+    approval_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id)
+
+    context = {
+        "content": approval_content[0],
+        "content_list": approval_content
+    }
+    return render(request , 'base/brand_content_review.html' , context) 
+
+def approve_content(request , proposal_id):
+    unapproved_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id , verified = False)
+    for i in unapproved_content:
+        i.verified = True 
+        i.save()
+    proposal = get_object_or_404(BrandProposal , id=proposal_id)
+    proposal.proposal_status = BrandProposal.Proposal_Status.POSTING_CONTENT
+    proposal.save()
+
+    transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    template_id = 8
+
+    to = [{"email": proposal.creator.contact_email}]
+
+    
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+        )
+    
+    try:
+        api_response = transac_api_instance.send_transac_email(send_smtp_email)
+        print("API Response:", api_response)
+    except ApiException as e:
+        print(f"Error: {e}")
+        messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
+    else:
+        return render(request , 'base/approved.html')
+    

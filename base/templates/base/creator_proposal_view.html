@@ -61,7 +61,7 @@
                 
                 <div class="button-flex">
                     {% if proposal.proposal_status == "Paid" or proposal.proposal_status == "Accepted" %}
-                        <a href=""><button id="view">Submit For Approval</button></a>
+                        <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit For Approval</button></a>
 
                     {% else %}
                         <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>

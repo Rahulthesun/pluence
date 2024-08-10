@@ -37,6 +37,7 @@
                 <p>{{proposal.brand.brand_name}}</p>
                 <p id="sub">{{proposal.content_type}}</p>
                 <p id="sub">{{proposal.duration_left.days}} Day{%if proposal.duration_left.days > 1%}s{%endif%} Left</p>
+                <p><span id="green">{{proposal.proposal_status}}</span></p>
                 <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
             </div>   
 

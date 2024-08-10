@@ -35,6 +35,7 @@ class BrandProfile(models.Model):
         return f"{self.user.email.split('@')[0]} - Brand Profile "
 
 class InstagramAccountDashBoard(models.Model):
+    dashboard_img = models.URLField(null=True , blank=False)
     creator = models.OneToOneField(CreatorProfile , on_delete=models.CASCADE)
     username = models.CharField(max_length=200 , null=True , blank = False)
     tags = models.TextField(null=True , blank=False)
@@ -132,12 +133,14 @@ class BrandProposal(models.Model):
         ALL = 'Reels + Post + Story'
 
     content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.ALL)
-
+    
     class Proposal_Status(models.TextChoices):
         REQUESTED = 'Requested'
         REJECTED = 'Rejected'
         ACCEPTED = 'Accepted'
         PAID = 'Paid'
+        CONTENT_APPROVAL_PENDING = 'Content Approval Pending'
+        POSTING_CONTENT = 'Posting Content'
         COMPLETED ='Completed'
 
     proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
@@ -151,10 +154,13 @@ class BrandProposal(models.Model):
     date_completed = models.DateTimeField(null=True , blank=True)
 
     def __str__(self):
-        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]}"
-    
-    
+        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]} - {self.id}"
 
+class Content_Approval_Images(models.Model):
+    proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)
+    url = models.URLField(null=True)
+    verified = models.BooleanField(default=False)
+   
 
     
 

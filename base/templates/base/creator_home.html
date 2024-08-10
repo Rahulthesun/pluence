@@ -49,8 +49,8 @@
                 <div class="button-flex">
                     <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="view">View</button></a>
                     <div class="button-accept-flex">
-                        <button id="accept"><i class="fa-solid fa-check"></i></button>
-                        <button id="reject"><i class="fa-solid fa-xmark"></i></button>
+                        <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="accept"><i class="fa-solid fa-check"></i></button></a>
+                        <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
                     </div>
                     
                 </div>
