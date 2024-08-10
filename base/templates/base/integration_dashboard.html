@@ -26,7 +26,11 @@
         <div class="social-grid">
             <div class="social-box">
                 <div class="social-image">
+                    {% if dashboard.dashboard_img %}
+                    <img src = {{dashboard.dashboard_img}}>
+                    {% else %}
                     <img src="https://edgy.app/wp-content/uploads/2017/07/instagram-account.jpg">
+                    {% endif %} 
                 </div>
                 <div class="social-flex">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
@@ -51,7 +55,14 @@
                 <p> <b>{{dashboard.engagement}}</b> Accounts Engaged </p>
     
                 <p>{% if dashboard.audience_country == "NONE" %} No Data {% else %} <b>{{dashboard.audience_country}}</b> {% endif %}</p>
-                <a href="{% url 'instagram_integration_update' dashboard.id %}"><button>Edit</button></a>
+                <div class="button-distance-flex">
+                    <a href="{% url 'instagram_integration_update' dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>
+                    <a href="{% url 'dashboard_image_update' dashboard.id %}"><button id="small">
+                        {% if dashboard.dashboard_img %}Edit Image{% else %}Upload Image{% endif %}</button></a>
+                </div>
+
+                
+                
             </div>
         </div>
         

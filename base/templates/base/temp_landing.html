@@ -1,0 +1,14 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- META TAG USED TO DELAY THE CONTENT-->
+    <meta http-equiv="refresh" content="{{ delay }};url={{ redirect_url }}">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <img src="{% static 'base/images/brand_deal.png' %}">
+    <h1>This is a temporary Landing Page</h1>
+    <p>You will be redirected in 3s</p>
+</body>
+</html>

@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&62%_%xn@&vv=+0m+d$nd7k85c%0d4foo*@6+w=jgwxzxj2^m7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True#False
 
-ALLOWED_HOSTS = ["51.20.5.251" , "pluence.com"]
+ALLOWED_HOSTS = ["127.0.0.1","51.20.5.251" , "pluence.com"]
 
 PAYPAL_CLIENT_ID = 'AZN1XtT7BFQTqP9nWN6LDnNZLzK0Trux7wdSC3kEU0zXTK5HHOndatEBdUde5qRUQqvNOWJUPdF95iG0'
 
@@ -133,7 +133,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'base' / 'static'
+]
+
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -142,3 +153,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 LOGIN_URL = '/login/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+
+

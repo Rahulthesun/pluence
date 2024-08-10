@@ -18,8 +18,13 @@
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
             </div>
-
-            <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
+            <div class="link-flex">
+                {% if pending_proposals %}
+                <a href="{% url 'pending_content_approval'%}"><button id="header">Content Review</button></a>
+                {% endif %}
+                <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
+                
+            </div>
 
         </div>
 
@@ -50,7 +55,12 @@
        
             <div class="creator-box">
                 <div class="social-image">
+                    {% if creator.dashboard_img %}
+                    <img src = {{creator.dashboard_img}}>
+                    {% else %}
                     <img src="https://edgy.app/wp-content/uploads/2017/07/instagram-account.jpg">
+                    {% endif %} 
+                    
                 </div>
                 <div class="social-flex">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">

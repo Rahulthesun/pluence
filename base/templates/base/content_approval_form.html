@@ -1,0 +1,31 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<section id="form">
+    <form method="post" enctype="multipart/form-data">
+        <h1>Content Approval</h1>
+        {% csrf_token %}
+
+        <p>Upload Content (Images)</p>
+        <input type="file" name="media" accept=".png,.jpg,.pdf" multiple required>
+
+        <button type="submit">Send For Approval</button>
+    </form>
+</section>
+
+<script>
+    // Maximum number of files allowed
+    const maxFiles = 3;
+
+    function validateFiles(input) {
+        // Check the number of files selected
+        if (input.files.length > maxFiles) {
+            alert(`You can only upload up to ${maxFiles} files.`);
+            // Clear the input if the user exceeds the limit
+            input.value = '';
+        }
+    }
+</script>
+
+{% endblock %}

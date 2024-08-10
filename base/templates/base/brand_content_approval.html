@@ -1,0 +1,61 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+    <section id="main">
+        {% if account.brand_name %}
+
+        <p id="account-type"> Brand</p>
+        <div class="header-flex">
+            <div class="account-info">
+                <h1>{{account.brand_name}}</h1>
+                <div class="link-flex">
+                    {% if account.website %}
+                    <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
+                    {% endif %}
+                    {% if account.email %}
+                    <a href="mailto:{{account.email}}"><i class="fa-solid fa-envelope"></i></a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </div>
+
+            <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
+
+        </div>
+
+        <hr>
+
+
+        {% if pending_proposals %}
+            <h2>Content Approval Requests</h2>
+            <div class="active-proposal-box">
+            {% for proposal in pending_proposals %}
+
+            <div class="active-proposal-flex">
+                <div class="link-flex">
+                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
+                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
+                    <p>{{proposal.account.username}}</p>
+                </div>
+                <p id="sub">{{proposal.proposal_status}}</p>
+                <p id="sub">{{proposal.content_type}}</p>
+                <p id="sub">{{proposal.timeline}} Days</p>
+                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
+                <a href="{% url 'brand_content_review' proposal.id %}"><button id="proposal-view">View Content</button></a>
+            
+            </div>
+            {% empty %}
+            
+            <h2>No Content Approval Requests Left!!</h2>
+    
+            
+            {% endfor %}
+
+            {% endif %}
+            
+        {% endif %}
+    </section>
+
+    
+
+{% endblock %}
