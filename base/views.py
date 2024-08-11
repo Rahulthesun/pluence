@@ -56,11 +56,13 @@ response_type = 'code'
 # Create your views here.
 
 def landing_page(request):
-    context = {
-        'delay': 3,
-        'redirect_url': reverse_lazy("home")
-    }
-    return render(request ,'base/temp_landing.html' , context)
+    return render(request ,'base/landing_brand.html')
+
+def landing_page_creator(request):
+    return render(request , 'base/landing_creator.html')
+
+def landing_page_pricing(request):
+    return render(request , 'base/landing_pricing.html')
 
 
 @login_required

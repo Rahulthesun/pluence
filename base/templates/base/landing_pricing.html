@@ -2,23 +2,20 @@
 
 {% block content %}
 {% load static %}
-<body>
+
   {% include 'base/landing_header.html' %}
 
   <div class="main-content">
     <div class="main-text">
-      <h1>Get Brand </h1>
-      <h1>Deals For Your</h1>
-      <h1>Content</h1>
+      <h1>No SignUp Fee<br>No Subscriptions<br>No Credit Card</h1>
       <a href="{% url 'signup' %}" class="signup-now">Sign Up Now</a>
     </div>
     <div class="main-image">
-      <img src="{% static 'base/images/brand_deal.png' %}" >
+      <img src="{% static 'base/images/pricing.png'  %}" >
     </div>
   </div>
 
   {% include 'base/landing_footer.html' %}
-  
-</body>
+
 
 {% endblock %}

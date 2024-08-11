@@ -5,7 +5,9 @@ from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorPr
 
 urlpatterns = [
 
-    path("" , views.landing_page , name="temp_landing"),
+    path("" , views.landing_page , name="landing_page"),
+    path("creator/" , views.landing_page_creator , name="landing_page_creator"),
+    path("pricing/" , views.landing_page_pricing , name="landing_page_pricing"),
     path("home/" , views.home , name='home'),
     path("login/" , EmailLogin.as_view() , name="login"),
     path("logout/" , LogoutView.as_view(next_page = 'login'), name="logout"),

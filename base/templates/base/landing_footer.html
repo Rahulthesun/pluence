@@ -1,0 +1,13 @@
+{% extends 'base/landing_main.html' %}
+
+{% block content %}
+
+<div class="bottom-nav">
+    <a href="{% url 'landing_page' %}" id="bottom-pluence">Pluence</a>
+    <a href="{% url 'landing_page' %}" class="bottom_brand">Brands</a>
+    <a href="{% url 'landing_page_creator' %}" class="bottom_creator">Creators</a>
+    <a href="{% url 'landing_page_pricing' %}" class="bottom_pricing">Pricing</a>
+</div>
+
+
+{% endblock %}
