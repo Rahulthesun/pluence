@@ -1,9 +1,9 @@
-{% include 'base/setup.html' %} 
-
+{% include 'base/setup.html' %}
 
 <style>
   body {
     margin: 0;
+    padding: 0;
     font-family: "Poppins", sans-serif;
     background-color: #ffffff;
   }
@@ -78,20 +78,18 @@
     max-width: 480px;
   }
   .bottom-nav {
-    background: rgba(139, 139, 139, 0.486);
     display: flex;
+    flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    bottom: 0;
     width: 100%;
-    height: 80px;
-
-    
+    height: auto;
+    border : 2px solid red
   }
 
   .bottom-nav a {
     text-decoration: none;
-    color: #000;
+    color: white;
     font-weight: 500;
     font-size: 18px;
     letter-spacing: -0.08em;
@@ -105,32 +103,34 @@
     font-size: 32px;
     line-height: 48px;
     letter-spacing: -0.08em;
-    color: #000000;
+    color: white;
     margin: 0 20px;
   }
 
   /* CSS BATCH 2 */
 
-
   .main-text h1 {
     line-height: 0.7;
   }
 
-
-    /* CSS BATCH 3 */
+  /* CSS BATCH 3 */
 
   .main-text h1 {
     line-height: 1.2;
   }
 
+  #footer {
+    margin-top: 50px;
+    width: 100%;
+    background: rgba(4, 3, 3, 0.88);
+    text-align: center;
+    padding: 10px 0px;
+    padding-bottom: 20px;
+    margin-bottom: 0px;
+    border: 2px solid red;
+  }
 </style>
 
-
-
 <body>
-
   {% block content %} {% endblock content %}
-
-
-</body> 
-
+</body>
