@@ -176,6 +176,14 @@
     }
 },
 {
+    "model": "sessions.session",
+    "pk": "xczrv161i06glz1wuzf7ngh9uh8kgmtp",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAQRf-FtSFQpuC4dN9vaJgZkKqBpI-V8d-1SRe6veec-1Jj3NYybkuax0nURVl1-t0o8iPVHcg91lvT3Oo6T6R3RR900UOT9Lwe7t9BiUv51iGgBIAsPmUWNJYRCHpKXWSTrUEw7HtD3Almn4kEHLqz9Bhs6JxT7w_zPTff:1secQM:ykqRqSl2q6jyhMznWiUnFQA7y_rmhW2vpXp_Gtp-9-0",
+        "expire_date": "2024-08-29T15:30:02.595Z"
+    }
+},
+{
     "model": "base.instagramaccountdashboard",
     "pk": 2,
     "fields": {
@@ -454,7 +462,7 @@
     "model": "users.emailuser",
     "fields": {
         "password": "pbkdf2_sha256$600000$Q3bRriW3ccyHuluFauHN5B$sspqkTlaNT2R8O1T2KSIeIcP91IPAf5upaeSU16Vvtg=",
-        "last_login": "2024-08-15T14:57:49.090Z",
+        "last_login": "2024-08-15T15:30:02.334Z",
         "email": "rahulthesun82@gmail.com",
         "is_active": true,
         "is_staff": true,
