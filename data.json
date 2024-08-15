@@ -1,0 +1,1983 @@
+[
+{
+    "model": "sessions.session",
+    "pk": "0ksfonthejm4uz7tytubowy2cdrvgp0o",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1saYIg:SOl37n9NcsgvJpHMqHkS7I4HqKSGP9UUx_c9TPaNG-s",
+        "expire_date": "2024-08-18T10:17:18.517Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "0mwm5ieyajmp8ua2xy1wf86rbhalx2z0",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sc3Q0:3R7iDOjC6NDiM2nPPAluIr5MWd5NWx9yeUiRkVvPxhY",
+        "expire_date": "2024-08-22T13:43:04.215Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "1v9mgwppok4zda93nwvuv35ji2i9t6mg",
+    "fields": {
+        "session_data": "e30:1sVAU2:TSjMmRmWh_mCq68mu2WfFxcpg59OS74QGzg3BYZ1foE",
+        "expire_date": "2024-08-03T13:50:46.416Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "25v457a1yur4fj207nh7oqdv4sf41u4b",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sVtYo:McVCBYhfZV8kKPyaV5cgtAWByQjwoS2DVL-TJUYP7lI",
+        "expire_date": "2024-08-05T13:58:42.980Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "4hkxumtrt5kx7y2dr0w76lik64efwbkw",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAUBf-FtSHALSAu3fsN5D5QqoYmpV0Z_12bdKHbMzPnpTKuS81rL3MeRZ2Ui-rwOxLyo7SNyB3bbdI8tWUeSW-K3mnXl0nK87y7fwcVe_3WaDwRyHGwzALEHCiSJGeiCS6CT0gmWhrEAQp6ie5qA1CyNgQE49T7Axn6N-A:1sZDR6:-8f5Lv2tGMT_10PagC_XSPQ1g5PyuDH6dHO6vdWot3Y",
+        "expire_date": "2024-08-14T17:48:28.145Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "5k3hdtjkm60xpq94etnuafkluduw1dnn",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sXPQr:VOpDZaxnDt-wgpa-19ki2ne07fANpPxH84tV40Rp8nc",
+        "expire_date": "2024-08-09T18:12:45.333Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "67z9nf3j6u01xiru6l7bfflet9phn5k5",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sZkUh:xgrAhkb3BTw0XYRptMi87VgiEKKEDAGxEciBGWZN3jg",
+        "expire_date": "2024-08-16T05:06:23.779Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "b4g33ezc9q10zlo6a29s67prujge8wyj",
+    "fields": {
+        "session_data": "e30:1sV9q1:VQNXhkGLEC8h4CoR9e0sQAj_gu6D94ZG-P7PM20on9A",
+        "expire_date": "2024-08-03T13:09:25.803Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "cs0gsi4n23iteugn17vlztak3vakot14",
+    "fields": {
+        "session_data": "e30:1sV9pl:b_xrL55z_PCGxsH5Q6l_Q04xcizlNUOWYhDVSRYOVkk",
+        "expire_date": "2024-08-03T13:09:09.902Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "dit9ehd0uwijpxwavtjdma21kgl55b20",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAUBf-FtSHALSAu3fsN5D5QqoYmpV0Z_12bdKHbMzPnpTKuS81rL3MeRZ2Ui-rwOxLyo7SNyB3bbdI8tWUeSW-K3mnXl0nK87y7fwcVe_3WaDwRyHGwzALEHCiSJGeiCS6CT0gmWhrEAQp6ie5qA1CyNgQE49T7Axn6N-A:1scU9u:iwHSXaP48cZRFlqDwL3ewRt3msPjSi4LrxG-Z6duixs",
+        "expire_date": "2024-08-23T18:16:14.601Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "ew3j99kcud9c9ro5llb7aqx3cfg9lg8q",
+    "fields": {
+        "session_data": "e30:1sV9oR:RHSxIo3F6q4sI8_LOwKfDv5tcx2t-Dt7Y5oK2esjuT8",
+        "expire_date": "2024-08-03T13:07:47.815Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "ewc5zyeniwmzp88z13sg72nowqosyfs7",
+    "fields": {
+        "session_data": "e30:1sVASr:Sb5nBif1mhDFGyQyub4m1_8BZpD8u-aD0fSa9HVlLos",
+        "expire_date": "2024-08-03T13:49:33.070Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "f7eh26x6eggz7xqmo19yqaze5tdfku92",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sVEPA:9OTj5DX-acLp1lAXYMfXScKvAxbuQO5Cp8RjjA-bCtk",
+        "expire_date": "2024-08-03T18:02:00.606Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "gekitfofof38ujmdjupacwpwpn594yzi",
+    "fields": {
+        "session_data": "e30:1sVAoi:Ma1fnEJoJ4-hDK8btJhnQrPbIGoqYcLtNnhi9FD63nA",
+        "expire_date": "2024-08-03T14:12:08.499Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "i74r41n6lmnh9pq57l83wacg56skw8mv",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sZkuI:7ZOHxXypC_ZouoqxEm36KS-lHqjHZVcwKM8E1p4To4Y",
+        "expire_date": "2024-08-16T05:32:50.991Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "jx41c8s90fmrlz8gw26smjb3ozc5nr83",
+    "fields": {
+        "session_data": ".eJxVjEEOwiAQRe_C2pApHaB16d4zkIGZStVAUtqV8e7apAvd_vfef6lA25rD1mQJM6uzMoM6_Y6R0kPKTvhO5VZ1qmVd5qh3RR-06WtleV4O9-8gU8vf2kWhKbH3aBIiO4EIHTo0IBMgD52Nhr0F6sVSSowI1nq04Hh0_cjq_QEUSzfL:1sZyp2:AlStomVNc1weZn8sphdGfZBTtvg1PZV1qs8EnFBW_9M",
+        "expire_date": "2024-08-16T20:24:20.785Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "nv6y4zvwtv0cuz4o2zhn2flrfzf16og6",
+    "fields": {
+        "session_data": "e30:1sV8mG:Vhk-OwjwM_tE6E6aokF1InzIyYT_ycEcA_1aHg6lv6s",
+        "expire_date": "2024-08-03T12:01:28.935Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "oa2iiz8vbzyimf67alrnsazu4yvh7jrv",
+    "fields": {
+        "session_data": "e30:1sV9uf:DrzPsfT2PJO56j19co4nCXna1DiBPRGiotHfvUAW--A",
+        "expire_date": "2024-08-03T13:14:13.130Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "qyerle95avvc5oc0n1591ulvrys6unvp",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sazwz:QrJ4fSGP08h_mvR3Hi6Hg0JP5BglZnJsr-zPQjyvJQs",
+        "expire_date": "2024-08-19T15:48:45.134Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "r30wwcu9b0htsdvohr9zy9iciokikqt5",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sb1bc:ksO2yLQkW89gwALNGClCUNPQETdp0BFJDCTQKZNeD2I",
+        "expire_date": "2024-08-19T17:34:48.552Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "u23fcniucboazet9swwaufg1d3u60k78",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGln-bGyWkj5niLy7NgkgW8qnQtwdIqWA9s3Me6khbes4bEueh0nURTl1-t0o8SPXHcg91VvT3Oo6T6R3RR900X2T_Lwe7t_BmJbxW8eIEgGKhFxY0FhGIOgou8SmWINgOHSG2AmWUIgEPPqzdBhtdN6r9wfz1jfg:1sYnXO:BJAxjZTnuZJ_a9b_FBTzdSIGbuBOHS9aCxbpSF08RIw",
+        "expire_date": "2024-08-13T14:09:14.116Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "vqqwzlulhw3z0nyeo77ske39pzyt1nmc",
+    "fields": {
+        "session_data": "e30:1sVASL:oN83yDzLfWikJGsj2i7mqsiGpmTcenTPgXlH8UoxGKo",
+        "expire_date": "2024-08-03T13:49:01.723Z"
+    }
+},
+{
+    "model": "base.instagramaccountdashboard",
+    "pk": 2,
+    "fields": {
+        "dashboard_img": "https://i.ibb.co/zHCwJPr/aad0c064733f.png",
+        "creator": 9,
+        "username": "lenovotest2",
+        "tags": "#cars   #coffee   #instagram   #creators   #cars   #coffee   #instagram   #creators\r\n  #cars   #coffee   #instagram   #creators",
+        "followers": 400,
+        "reach": 20,
+        "profile_link_clicks": 500,
+        "engagement": 40,
+        "audience_country": "South Korea",
+        "story_rates": "10.00",
+        "reel_rates": "40.00",
+        "average_rate": "25.00",
+        "date_created": "2024-08-02T20:29:12.293Z"
+    }
+},
+{
+    "model": "base.instagramaccountdashboard",
+    "pk": 3,
+    "fields": {
+        "dashboard_img": null,
+        "creator": 8,
+        "username": "lenovo",
+        "tags": null,
+        "followers": 400,
+        "reach": 30,
+        "profile_link_clicks": 77,
+        "engagement": 5546563,
+        "audience_country": "Russia",
+        "story_rates": "700.00",
+        "reel_rates": "900.00",
+        "average_rate": "800.00",
+        "date_created": "2024-08-02T20:29:12.293Z"
+    }
+},
+{
+    "model": "base.instagramaccountdashboard",
+    "pk": 4,
+    "fields": {
+        "dashboard_img": null,
+        "creator": 10,
+        "username": "69-er",
+        "tags": null,
+        "followers": 6000,
+        "reach": 400,
+        "profile_link_clicks": 500,
+        "engagement": 400,
+        "audience_country": "None",
+        "story_rates": "50.00",
+        "reel_rates": "39.98",
+        "average_rate": "44.00",
+        "date_created": "2024-08-02T20:29:12.293Z"
+    }
+},
+{
+    "model": "base.instagramaccountdashboard",
+    "pk": 5,
+    "fields": {
+        "dashboard_img": null,
+        "creator": 11,
+        "username": "lenovo",
+        "tags": " #coffee #file #tag #instagram #new #carsofinstagram",
+        "followers": 500,
+        "reach": 500,
+        "profile_link_clicks": 500,
+        "engagement": 500,
+        "audience_country": "None",
+        "story_rates": "10.00",
+        "reel_rates": "10.00",
+        "average_rate": "10.00",
+        "date_created": "2024-08-02T20:29:12.293Z"
+    }
+},
+{
+    "model": "base.instagramaccountdashboard",
+    "pk": 6,
+    "fields": {
+        "dashboard_img": "https://i.ibb.co/rM4wQj8/ac28dfc5aa1d.jpg",
+        "creator": 12,
+        "username": "50000",
+        "tags": "2000",
+        "followers": 459,
+        "reach": 4000,
+        "profile_link_clicks": 300250,
+        "engagement": 40000,
+        "audience_country": "None",
+        "story_rates": "20.00",
+        "reel_rates": "50.00",
+        "average_rate": "35.00",
+        "date_created": "2024-08-02T20:29:12.293Z"
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 1,
+    "fields": {
+        "brand": 3,
+        "creator": 8,
+        "account": null,
+        "description": ".......",
+        "timeline": 3,
+        "proposed_amount": "500.00",
+        "item_link": "https://www.amazon.com/CyberPowerPC-i7-13700F-GeForce-Windows-GXiVR8040A14/dp/B0CBL8N3FC/ref=sr_1_3?_encoding=UTF8&content-id=amzn1.sym.6afe7900-0834-4d0d-afa0-213431caed72&dib=eyJ2IjoiMSJ9.b9H5IAiiB3",
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Requested",
+        "date_created": "2024-07-20T20:26:29.724Z",
+        "date_paid": "2024-08-04T10:21:26.021Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 2,
+    "fields": {
+        "brand": 4,
+        "creator": 8,
+        "account": null,
+        "description": "This is a brand profile for the company Blahblahblah , and we would like you to create content for us , and we would like to appreciate your conecern .dsjdadsdadjsdjssdadasdweaeaedaedaed and this is my blah blha blah . \r\nLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+        "timeline": 3,
+        "proposed_amount": "50.00",
+        "item_link": "https://www.amazon.in/boAt-Launched-Airdopes-125-Interstellar/dp/B0CJMGXGVJ/ref=sr_1_25?dib=eyJ2IjoiMSJ9.p6waed4wSyAB3EqJgrUagFaovQNs6i2KPo9jNyr4UBh5p9jH48NqlcA5uP2lYHHYUJYdVkHiDITmW4WJeDVP26gmWa6cXjj",
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Requested",
+        "date_created": "2024-07-22T14:04:09.985Z",
+        "date_paid": "2024-08-04T10:21:26.021Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 3,
+    "fields": {
+        "brand": 4,
+        "creator": 8,
+        "account": null,
+        "description": "dcxvxvcxvcxDKJSDKashdkHDkHASDhDShDUIHDAWHDkADHukdhkaDkAHDNWDd",
+        "timeline": 3,
+        "proposed_amount": "400.00",
+        "item_link": "https://www.amazon.com/CyberPowerPC-i7-13700F-GeForce-Windows-GXiVR8040A14/dp/B0CBL8N3FC/ref=sr_1_3?_encoding=UTF8&content-id=amzn1.sym.6afe7900-0834-4d0d-afa0-213431caed72&dib=eyJ2IjoiMSJ9.b9H5IAiiB3",
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Requested",
+        "date_created": "2024-07-26T21:33:16.526Z",
+        "date_paid": "2024-08-04T10:21:26.021Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 4,
+    "fields": {
+        "brand": 4,
+        "creator": 9,
+        "account": null,
+        "description": "LOREMMM is my name and im the biggest loremm in the whole wide universe",
+        "timeline": 3,
+        "proposed_amount": "500.00",
+        "item_link": null,
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Rejected",
+        "date_created": "2024-07-30T14:12:37.746Z",
+        "date_paid": "2024-08-04T10:21:26.021Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 5,
+    "fields": {
+        "brand": 5,
+        "creator": 11,
+        "account": null,
+        "description": "This is a demo brand proposal",
+        "timeline": 4,
+        "proposed_amount": "500.00",
+        "item_link": null,
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Requested",
+        "date_created": "2024-07-31T17:46:56.626Z",
+        "date_paid": "2024-08-04T10:21:26.021Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 6,
+    "fields": {
+        "brand": 5,
+        "creator": 9,
+        "account": 4,
+        "description": "BLAH BLAH BLAH",
+        "timeline": 4,
+        "proposed_amount": "50.00",
+        "item_link": null,
+        "content_type": "Reels",
+        "proposal_status": "Content Approval Pending",
+        "date_created": "2024-08-02T08:05:10.709Z",
+        "date_paid": "2024-08-04T10:21:26Z",
+        "duration_left": "-2 19:09:18.463747",
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 7,
+    "fields": {
+        "brand": 6,
+        "creator": 9,
+        "account": 5,
+        "description": "",
+        "timeline": 6,
+        "proposed_amount": "500.00",
+        "item_link": null,
+        "content_type": "Post",
+        "proposal_status": "content_approval_pending",
+        "date_created": "2024-08-04T09:55:24.712Z",
+        "date_paid": "2024-08-04T10:21:26Z",
+        "duration_left": "19:27:41.217699",
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 8,
+    "fields": {
+        "brand": 6,
+        "creator": 10,
+        "account": 2,
+        "description": "",
+        "timeline": 3,
+        "proposed_amount": "50.00",
+        "item_link": null,
+        "content_type": "Reels + Post + Story",
+        "proposal_status": null,
+        "date_created": "2024-08-04T10:56:16.202Z",
+        "date_paid": null,
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.brandproposal",
+    "pk": 9,
+    "fields": {
+        "brand": 6,
+        "creator": 9,
+        "account": 3,
+        "description": "ddddawd",
+        "timeline": 5,
+        "proposed_amount": "50.00",
+        "item_link": null,
+        "content_type": "Reels + Post + Story",
+        "proposal_status": "Accepted",
+        "date_created": "2024-08-04T10:56:41.210Z",
+        "date_paid": "2024-08-04T11:14:00Z",
+        "duration_left": null,
+        "date_completed": null
+    }
+},
+{
+    "model": "base.content_approval_images",
+    "pk": 1,
+    "fields": {
+        "proposal": 6,
+        "url": "https://i.ibb.co/yhRFqsS/31a365900888.png",
+        "verified": true
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$Q3bRriW3ccyHuluFauHN5B$sspqkTlaNT2R8O1T2KSIeIcP91IPAf5upaeSU16Vvtg=",
+        "last_login": "2024-08-15T14:57:49.090Z",
+        "email": "rahulthesun82@gmail.com",
+        "is_active": true,
+        "is_staff": true,
+        "is_superuser": true,
+        "date_created": "2024-07-17T10:42:19.803Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$zyTboMYvXaSAuNeULpJV0K$y7Ij5d+uNFk9W9dzZnKVvrVgnJkv1tPhzZUuSAFUIwg=",
+        "last_login": "2024-07-26T21:34:01.405Z",
+        "email": "rahulthesun92@gmail.com",
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "date_created": "2024-07-20T14:21:18.875Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$Gf0nwNQmlhFubGFv0odoGT$XbpExzg47xV3yO3VLMTQ0g2xzzOgz9eg8NFYukzXKGM=",
+        "last_login": "2024-08-02T06:12:37.365Z",
+        "email": "rahulthesun900@gmail.com",
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "date_created": "2024-07-20T14:49:40.962Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$ETBn8i0yFnioAq661naG7n$aPq7iNZ1Di+LcPY3OCKKeJBgvviReGwJqzfHDrUW2oM=",
+        "last_login": "2024-07-20T15:07:09.698Z",
+        "email": "rahulthesun400@gmail.com",
+        "is_active": true,
+        "is_staff": true,
+        "is_superuser": true,
+        "date_created": "2024-07-20T15:06:42.252Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$1FiAfyff2HtKX0Rt9BAd7X$lOXuueC41K4miJuuOKLGn42bBl0f2+Op4idldAW3qf4=",
+        "last_login": "2024-07-27T18:08:23.010Z",
+        "email": "iwanna69her@gmail.com",
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "date_created": "2024-07-27T18:08:22.982Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$WP7m3HtQMHfrVW83ba8ruq$mdyJ6n6fBm/ef1jTxCu6DLPhKaPTe+MPQqSyzJUsusU=",
+        "last_login": "2024-08-10T13:15:43.724Z",
+        "email": "testuser@gmail.com",
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "date_created": "2024-07-27T18:58:16.197Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.emailuser",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$XTea5FkjVAbP72LH9RqFNK$ZJdK+5XBLw+PbrLKvMINi3vs8RrH0D/ZL8DPsuzUwVA=",
+        "last_login": "2024-08-09T18:17:46.824Z",
+        "email": "testuser1@gmail.com",
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "date_created": "2024-08-02T20:24:20.754Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "base.brandprofile",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "rahulthesun400@gmail.com"
+        ],
+        "brand_name": "pluncetest",
+        "email": null,
+        "about": null,
+        "active": true,
+        "date_created": "2024-07-20T20:24:56.037Z"
+    }
+},
+{
+    "model": "base.brandprofile",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "brand_name": "pluence",
+        "email": null,
+        "about": null,
+        "active": true,
+        "date_created": "2024-07-22T14:02:56.127Z"
+    }
+},
+{
+    "model": "base.brandprofile",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "testuser@gmail.com"
+        ],
+        "brand_name": "PLuence test user",
+        "email": "pluence.tech@gmail.com",
+        "about": "We connect Creators with Brands for Awesome Collaborations.",
+        "active": true,
+        "date_created": "2024-07-27T18:58:21.716Z"
+    }
+},
+{
+    "model": "base.brandprofile",
+    "pk": 6,
+    "fields": {
+        "user": [
+            "testuser1@gmail.com"
+        ],
+        "brand_name": "Profluence testuser1",
+        "email": "rahulthesun82@gmail.com",
+        "about": "Blah blah Blah",
+        "active": true,
+        "date_created": "2024-08-02T20:24:23.415Z"
+    }
+},
+{
+    "model": "base.creatorprofile",
+    "pk": 8,
+    "fields": {
+        "user": [
+            "rahulthesun92@gmail.com"
+        ],
+        "name": "Rahul Ramesh 92",
+        "contact_email": "rahulthesun82@gmail.com",
+        "website": "https://www.instagram.com/lame_mind.secretly/",
+        "bio": "",
+        "balance": "0.00",
+        "active": true,
+        "date_created": "2024-07-20T18:15:11.983Z"
+    }
+},
+{
+    "model": "base.creatorprofile",
+    "pk": 9,
+    "fields": {
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "name": "Rahul Ramesh 82",
+        "contact_email": "rahulthesun82@gmail.com",
+        "website": "https://www.instagram.com/lame_mind.secretly/",
+        "bio": "Im a influencer",
+        "balance": "0.00",
+        "active": true,
+        "date_created": "2024-07-22T13:58:46.999Z"
+    }
+},
+{
+    "model": "base.creatorprofile",
+    "pk": 10,
+    "fields": {
+        "user": [
+            "iwanna69her@gmail.com"
+        ],
+        "name": "69-er",
+        "contact_email": "iwanna69her@gmail.com",
+        "website": "https://69-her.com",
+        "bio": "loves 69s",
+        "balance": "0.00",
+        "active": true,
+        "date_created": "2024-07-27T18:08:35.062Z"
+    }
+},
+{
+    "model": "base.creatorprofile",
+    "pk": 11,
+    "fields": {
+        "user": [
+            "rahulthesun900@gmail.com"
+        ],
+        "name": "Rahul Ramesh",
+        "contact_email": "rahulthesun82@gmail.com",
+        "website": "https://www.instagram.com/lame_mind.secretly/",
+        "bio": "",
+        "balance": "0.00",
+        "active": false,
+        "date_created": "2024-07-28T07:16:27.452Z"
+    }
+},
+{
+    "model": "base.creatorprofile",
+    "pk": 12,
+    "fields": {
+        "user": [
+            "testuser@gmail.com"
+        ],
+        "name": "Creator test",
+        "contact_email": "rahulthesun82@gmail.com",
+        "website": "https://www.instagram.com/lame_mind.secretly/",
+        "bio": "SMDNDNANDAND",
+        "balance": "0.00",
+        "active": false,
+        "date_created": "2024-08-02T20:22:32.144Z"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+        "action_time": "2024-07-17T10:43:58.458Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "3",
+        "object_repr": "testuser@gmail.com",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+        "action_time": "2024-07-17T10:44:06.445Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "3",
+        "object_repr": "testuser@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+        "action_time": "2024-07-20T09:05:40.278Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "1",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+        "action_time": "2024-07-20T09:13:02.610Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "1",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 2,
+        "change_message": "[]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+        "action_time": "2024-07-20T11:38:08.504Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "1",
+        "object_repr": "rahulthesun82 - Brand Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+        "action_time": "2024-07-20T11:45:16.771Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - Brand Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 8,
+    "fields": {
+        "action_time": "2024-07-20T11:45:23.924Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "1",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 9,
+    "fields": {
+        "action_time": "2024-07-20T12:07:38.708Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "8",
+        "object_repr": "rahulthesun12@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 10,
+    "fields": {
+        "action_time": "2024-07-20T12:07:38.724Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "7",
+        "object_repr": "rahulthesun22@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 11,
+    "fields": {
+        "action_time": "2024-07-20T12:07:38.730Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "6",
+        "object_repr": "rahulthesun32@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 12,
+    "fields": {
+        "action_time": "2024-07-20T12:07:38.734Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "5",
+        "object_repr": "rahulthesun42@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 13,
+    "fields": {
+        "action_time": "2024-07-20T12:07:38.734Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun92@gmail.com",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 14,
+    "fields": {
+        "action_time": "2024-07-20T12:14:35.434Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 15,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.724Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "16",
+        "object_repr": "rahulthesun162",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 16,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.745Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "15",
+        "object_repr": "testuser",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 17,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.755Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "14",
+        "object_repr": "rahulthesun22",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 18,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.761Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "13",
+        "object_repr": "rahulthesun12",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 19,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.784Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "12",
+        "object_repr": "rahulthesun142",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 20,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.798Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "11",
+        "object_repr": "rahulthesun122",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 21,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.817Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "10",
+        "object_repr": "rahulthesun92",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 22,
+    "fields": {
+        "action_time": "2024-07-20T13:05:26.829Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "9",
+        "object_repr": "rahulthesun72",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 28,
+    "fields": {
+        "action_time": "2024-07-20T15:02:05.570Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "24",
+        "object_repr": "rahulthesun400",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 29,
+    "fields": {
+        "action_time": "2024-07-20T15:05:01.826Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "users",
+            "emailuser"
+        ],
+        "object_id": "24",
+        "object_repr": "rahulthesun400",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 30,
+    "fields": {
+        "action_time": "2024-07-20T18:14:49.870Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "7",
+        "object_repr": "rahulthesun400 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 31,
+    "fields": {
+        "action_time": "2024-07-20T18:14:49.886Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "6",
+        "object_repr": "rahulthesun900 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 32,
+    "fields": {
+        "action_time": "2024-07-20T18:14:49.891Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "5",
+        "object_repr": "rahulthesun92 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 33,
+    "fields": {
+        "action_time": "2024-07-20T18:14:49.897Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 34,
+    "fields": {
+        "action_time": "2024-07-20T20:24:56.053Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "3",
+        "object_repr": "rahulthesun400 - Brand Profile ",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 35,
+    "fields": {
+        "action_time": "2024-07-20T20:26:29.747Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "1",
+        "object_repr": "rahulthesun400 - rahulthesun92",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 36,
+    "fields": {
+        "action_time": "2024-07-22T14:02:56.140Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - Brand Profile ",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 37,
+    "fields": {
+        "action_time": "2024-07-22T14:04:09.999Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - rahulthesun92",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 38,
+    "fields": {
+        "action_time": "2024-07-22T14:14:16.692Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - rahulthesun92",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 39,
+    "fields": {
+        "action_time": "2024-07-22T14:14:45.635Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - rahulthesun92",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 40,
+    "fields": {
+        "action_time": "2024-07-22T14:15:47.142Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "2",
+        "object_repr": "rahulthesun82 - rahulthesun92",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 41,
+    "fields": {
+        "action_time": "2024-07-22T15:03:27.607Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - Brand Profile ",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Brand name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 42,
+    "fields": {
+        "action_time": "2024-07-22T15:03:38.660Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "3",
+        "object_repr": "rahulthesun400 - Brand Profile ",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Brand name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 43,
+    "fields": {
+        "action_time": "2024-07-26T21:14:14.628Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "1",
+        "object_repr": "None - IG Account",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 44,
+    "fields": {
+        "action_time": "2024-07-26T21:32:29.639Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "9",
+        "object_repr": "rahulthesun82 - Creator Profile ",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 45,
+    "fields": {
+        "action_time": "2024-07-26T21:32:34.307Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "8",
+        "object_repr": "rahulthesun92 - Creator Profile ",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 46,
+    "fields": {
+        "action_time": "2024-07-26T21:33:16.541Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "3",
+        "object_repr": "rahulthesun82 - rahulthesun92",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 47,
+    "fields": {
+        "action_time": "2024-07-28T07:16:27.469Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "11",
+        "object_repr": "rahulthesun900 - Creator Profile ",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 48,
+    "fields": {
+        "action_time": "2024-07-28T07:17:09.312Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "5",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 49,
+    "fields": {
+        "action_time": "2024-07-28T07:57:42.127Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "5",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 50,
+    "fields": {
+        "action_time": "2024-07-30T14:12:37.750Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - rahulthesun82",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 51,
+    "fields": {
+        "action_time": "2024-07-30T14:20:49.240Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 52,
+    "fields": {
+        "action_time": "2024-08-02T05:40:14.982Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "5",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\", \"Followers\", \"Reel rates\", \"Average rate\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 53,
+    "fields": {
+        "action_time": "2024-08-02T05:49:01.076Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "5",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 54,
+    "fields": {
+        "action_time": "2024-08-02T05:50:35.216Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "5",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 55,
+    "fields": {
+        "action_time": "2024-08-02T06:23:10.159Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "2",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 56,
+    "fields": {
+        "action_time": "2024-08-02T06:23:32.688Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "2",
+        "object_repr": "lenovo - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 57,
+    "fields": {
+        "action_time": "2024-08-02T08:05:10.730Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 58,
+    "fields": {
+        "action_time": "2024-08-02T08:05:24.324Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 59,
+    "fields": {
+        "action_time": "2024-08-02T08:38:46.596Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 60,
+    "fields": {
+        "action_time": "2024-08-02T16:14:23.248Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandprofile"
+        ],
+        "object_id": "5",
+        "object_repr": "testuser - Brand Profile ",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Brand name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 61,
+    "fields": {
+        "action_time": "2024-08-02T16:14:46.325Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 62,
+    "fields": {
+        "action_time": "2024-08-02T16:15:00.945Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "4",
+        "object_repr": "rahulthesun82 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 63,
+    "fields": {
+        "action_time": "2024-08-02T20:22:32.146Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "creatorprofile"
+        ],
+        "object_id": "12",
+        "object_repr": "testuser - Creator Profile ",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 64,
+    "fields": {
+        "action_time": "2024-08-02T20:23:45.999Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "6",
+        "object_repr": "50000 - IG Account",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 65,
+    "fields": {
+        "action_time": "2024-08-04T10:17:41.527Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "7",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Account\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 66,
+    "fields": {
+        "action_time": "2024-08-04T10:56:16.207Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "8",
+        "object_repr": "testuser1 - iwanna69her",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 67,
+    "fields": {
+        "action_time": "2024-08-04T10:56:41.226Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "9",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 68,
+    "fields": {
+        "action_time": "2024-08-04T10:57:10.967Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "9",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 69,
+    "fields": {
+        "action_time": "2024-08-04T10:57:32.611Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "9",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 70,
+    "fields": {
+        "action_time": "2024-08-04T11:44:19.207Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "9",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 71,
+    "fields": {
+        "action_time": "2024-08-04T11:48:25.007Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "7",
+        "object_repr": "testuser1 - rahulthesun82",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 72,
+    "fields": {
+        "action_time": "2024-08-08T13:43:49.492Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82 - 6",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Account\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 73,
+    "fields": {
+        "action_time": "2024-08-08T14:58:56.365Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82 - 6",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 74,
+    "fields": {
+        "action_time": "2024-08-09T15:12:04.935Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82 - 6",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 75,
+    "fields": {
+        "action_time": "2024-08-09T16:47:02.361Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82 - 6",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 76,
+    "fields": {
+        "action_time": "2024-08-09T18:01:02.363Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "brandproposal"
+        ],
+        "object_id": "6",
+        "object_repr": "testuser - rahulthesun82 - 6",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Proposal status\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 77,
+    "fields": {
+        "action_time": "2024-08-10T13:15:00.117Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "2",
+        "object_repr": "lenovotest2 - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Dashboard img\", \"Tags\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 78,
+    "fields": {
+        "action_time": "2024-08-10T13:17:24.207Z",
+        "user": [
+            "rahulthesun82@gmail.com"
+        ],
+        "content_type": [
+            "base",
+            "instagramaccountdashboard"
+        ],
+        "object_id": "6",
+        "object_repr": "50000 - IG Account",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Dashboard img\"]}}]"
+    }
+}
+]
