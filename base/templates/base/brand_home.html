@@ -4,7 +4,6 @@
     <section id="main">
         {% if account.brand_name %}
 
-        <p id="account-type"> Brand</p>
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.brand_name}}</h1>
@@ -17,8 +16,9 @@
                     {% endif %}
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
+                <p id="account-type"> Brand</p>
             </div>
-            <div class="link-flex">
+            <div class="link-flex-box">
                 {% if pending_proposals %}
                 <a href="{% url 'pending_content_approval'%}"><button id="header">Content Review</button></a>
                 {% endif %}

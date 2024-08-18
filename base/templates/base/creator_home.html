@@ -4,10 +4,11 @@
     <section id="main">
         {% if account.name %}
         
-        <p id="account-type"> Creator</p>
+        
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.name}}</h1>
+                <p id="account-type"> Creator</p>
                 <div class="link-flex">
                     {% if account.website %}
                     <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
@@ -18,20 +19,20 @@
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
             </div>
-            <div class="link-flex">
+            <div class="link-flex-box">
             <a href="{% url 'creator_payment_dashboard' account.id %}"><button id="header">Payment</button></a>
             {% if active_proposals is not None %}
             <a href="{% url 'creator_active_proposals' account.id %}"><button id="header">Active Proposals</button></a>
             {% endif %}
 
             {% if ig_account is not None %}
-            <a href="{% url 'integration_dashboard' ig_account.id %}"><button id="header">Manage Integrations</button></a>
+            <a href="{% url 'integration_dashboard' ig_account.id %}"><button id="header">Integrations</button></a>
             {% else %}
             <a href="{% url 'instagram_integration' %}"><button id="header">Manage Integrations</button></a>
             {% endif %}
-            </div>
-            
+            </div>   
         </div>
+        
 
         <hr>
 

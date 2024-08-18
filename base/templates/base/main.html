@@ -164,14 +164,14 @@
     font-weight: 500;
   }
 
-  .link-flex {
+  .link-flex , .link-flex-box {
     display: flex;
     flex-direction: row;
     justify-content: left;
     align-items: bottom;
   }
 
-  .link-flex a {
+  .link-flex a , .link-flex-box  a {
     color: rgb(0, 0, 0);
     font-size: 25px;
     margin-right: 20px;
@@ -488,6 +488,167 @@
     }
 
   }
+
+  @media (max-width: 768px) {
+  html, body {
+    font-size: 14px;
+  }
+
+  #form {
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  #form h1 {
+    font-size: 28px;
+  }
+
+  #form input[type="text"],
+  #form input[type="password"],
+  #form input[type="email"],
+  #form input[type="url"],
+  #form input[type="number"],
+  #form select,
+  #form textarea,
+  .search-flex select,
+  .search-flex input[type="search"] {
+    font-size: 16px;
+  }
+
+  .search-flex input[type="search"] , .search-flex select{
+    width: 80%;
+  }
+
+  .search-flex button#submit {
+    width: 20%;
+    padding: 5px 5px;
+  }
+
+  .search-flex form#search-form , .search-flex form#sort-form {
+    width: 95%;
+  }
+
+  .search-flex {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .search-flex form {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  #main {
+    width: 100%;
+    padding: 10px;
+  }
+
+  #main h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  #main h2 {
+    font-size: 24px;
+  }
+
+  #main h3 {
+    font-size: 18px;
+  }
+
+  .link-flex , .link-flex-box{
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .link-flex-box {
+    width: 60%;
+    flex-direction: column-reverse;
+  }
+
+  .link-flex-box button#header {
+    padding: 15px 40px;
+  }
+
+  .link-flex a {
+    font-size: 30px;
+    margin: 10px 0;
+    margin-right: 20px;
+  }
+
+  .proposal-grid,
+  .social-grid,
+  .creator-grid {
+    grid-template-columns: auto;
+  }
+
+  .proposal-box,
+  .social-box,
+  .proposal-detail-box,
+  .creator-box {
+    width: 90%;
+    padding: 10px;
+  }
+
+  .proposal-detail-box {
+    width: 85%;
+  }
+
+  .button-flex {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+  }
+
+  .social-image,
+  .brand-image {
+    height: 300px;
+  }
+
+  .social-image img,
+  .brand-image img {
+    width: 100%;
+  }
+
+  #title {
+    font-size: 36px;
+  }
+
+  .payment-flex {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .payment-flex h1#payment {
+    font-size: 48px;
+  }
+
+  .payment-flex p#sub {
+    font-size: 24px;
+  }
+
+  .active-proposal-flex {
+    width: 90%;
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .active-proposal-flex button#proposal-view {
+    width: 80%;
+  }
+}
+
+/* Toggle Menu Display */
+.menu-open .menu-items {
+  display: flex;
+}
+
 
 </style>
 

@@ -14,8 +14,10 @@
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>    
             </div>
-           
+           <div class="link-flex-box">
             <a href="{% url 'home' %}"><button id="header">Home</button></a>
+           </div>
+            
     
         </div>
         
@@ -27,11 +29,7 @@
             {% for proposal in accepted_proposals %}
 
             <div class="active-proposal-flex">
-                <div class="link-flex">
-                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
-                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
-                    <p>{{proposal.account.username}}</p>
-                </div>
+                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
                 <p id="sub">{{proposal.proposal_status}}</p>
                 <p id="sub">{{proposal.content_type}}</p>
                 <p id="sub">{{proposal.timeline}} Days</p>
@@ -67,6 +65,7 @@
 
             {% endif %}
 
+            {% if proposals %}
             <h2>Brand Proposals</h2>
             <div class="active-proposal-box">
             {% for proposal in proposals %}
@@ -83,11 +82,12 @@
                 <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
                 <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
             </div>
-            
-
-            {% empty %}
-                <p>You have not Created any Brand Proposals</p>
+                
             {% endfor %}
+
+            {% else %}
+                <p>You have no Pending Brand Proposals</p>
+            {% endif %}
             
 
         </div>

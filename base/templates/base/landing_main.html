@@ -88,6 +88,7 @@
 
   .main img {
     width: 60%;
+    
   }
 
   .main-image img {
@@ -151,6 +152,161 @@
     flex-direction: column;
     margin-top: auto;
   }
+
+  .mobile-navlinks {
+  display: none; /* Hide by default on larger screens */
+  cursor: pointer;
+}
+
+.mobile-navlinks i {
+  font-size: 30px;
+  color: #000;
+}
+
+.mobile-nav-menu {
+  display: none; /* Hide menu by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  padding: 50px 20px;
+  z-index: 999;
+}
+
+a#close-menu{
+  font-size: 30px;
+  cursor: pointer;
+  color: black;
+  text-align: left;
+  margin-left: 50px;
+}
+
+
+  /* Responsive Styles for Mobile Devices */
+
+@media (max-width: 768px) {
+
+  .nav-links {
+    display: none; /* Hide original nav links on mobile */
+  }
+
+  .mobile-navlinks {
+    display: block; /* Show mobile nav toggle button */
+  }
+
+  .mobile-nav-menu  {
+    flex-direction: column;
+    justify-content: left;
+    margin: 20px auto;
+    text-align: left;
+  }
+
+  .mobile-nav-menu a {
+    margin-left: 50px;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 600;
+    margin-top: 40px;
+    color: black;
+  }
+
+  .top-nav {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 20px;
+  }
+
+
+  .top-nav a {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+
+  
+
+  .main-content {
+    width: 100%;
+    flex-direction: column-reverse;
+    padding: 0px 0px;
+    min-height: 80vh;
+    margin-bottom: 20px;
+  }
+
+  .main-text {
+    max-width: 100%;
+    width: 300px;
+    text-align: center;
+    
+  }
+
+  .main-text h1 {
+    text-align: left;
+    font-size: 80px;
+    line-height: 60px;
+  }
+
+  .main-text .signup-now {
+    font-size: 40px;
+    padding: 10px 20px;
+    margin-left: 0px;
+  }
+
+  .main-image {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .main-image img {
+    width: 100%;
+    max-width: none; /* Remove max-width restriction */
+    margin-left: 10px;
+  }
+
+  .bottom-nav {
+    justify-content: center;
+    align-items: center;
+  }
+
+  #bottom-pluence {
+    font-size: 20px;
+    line-height: 28px;
+    margin: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-nav {
+    padding: 10px;
+  }
+
+  .top-nav a {
+    font-size: 14px;
+  }
+
+  .main-text h1 {
+    font-size: 8vw;
+  }
+
+  .main-text .signup-now {
+    font-size: 5vw;
+    padding: 15px 30px;
+  }
+
+  #bottom-pluence {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  #footer {
+    padding: 5px 0;
+  }
+}
+
+  
 </style>
 
 <body>
@@ -166,5 +322,29 @@
 
   gtag('config', 'G-VMJN5EMEWJ');
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuButton = document.querySelector('.mobile-navlinks a');
+    const mobileMenu = document.querySelector('.mobile-nav-menu');
+    const closeMenuButton = document.querySelector('#close-menu');
+
+    menuButton.addEventListener('click', function (e) {
+      e.preventDefault(); // Prevent default action
+      mobileMenu.style.display = 'flex';
+    });
+
+    closeMenuButton.addEventListener('click', function () {
+      mobileMenu.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+      if (event.target === mobileMenu) {
+        mobileMenu.style.display = 'none';
+      }
+    });
+  });
+</script>
+
 
 </html>

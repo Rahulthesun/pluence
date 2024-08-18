@@ -4,7 +4,6 @@
     <section id="main">
         {% if account.brand_name %}
 
-        <p id="account-type"> Brand</p>
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.brand_name}}</h1>
@@ -17,6 +16,7 @@
                     {% endif %}
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
+                <p id="account-type"> Brand</p>
             </div>
 
             <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
@@ -32,12 +32,8 @@
             {% for proposal in pending_proposals %}
 
             <div class="active-proposal-flex">
-                <div class="link-flex">
-                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
-                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
-                    <p>{{proposal.account.username}}</p>
-                </div>
-                <p id="sub">{{proposal.proposal_status}}</p>
+                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
+                <p id="sub">Approval Pending</p>
                 <p id="sub">{{proposal.content_type}}</p>
                 <p id="sub">{{proposal.timeline}} Days</p>
                 <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
