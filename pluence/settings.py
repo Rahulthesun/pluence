@@ -39,7 +39,7 @@ PAYPAL_CLIENT_SECRET = 'EAD_qRm0E1guMZqYjU46qhRMMQ6vXVAny9HcpOx-KU0ubSj2CPA5DjC9
 
 PAYPAL_TEST = False
 
-PAYPAL_RECEIVER_EMAIl = "wearaiofficial@gmail.com"
+PAYPAL_RECEIVER_EMAIL = "wearaiofficial@gmail.com" #might be buggy , leave it for now
 
 # Application definition
 
