@@ -1,7 +1,7 @@
 {% include 'base/setup.html' %}
 
 <style>
-  body {
+  body , html {
     margin: 0;
     padding: 0;
     font-family: "Poppins", sans-serif;
@@ -25,7 +25,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 50px;
+    padding: 20px 40px;
     background-color: #fff;
   }
   .top-nav a {
@@ -39,23 +39,28 @@
   .top-nav .top_signup {
     background-color: #000;
     color: #fff;
-    padding: 10px 30px;
+    padding: 10px 40px;
     border-radius: 25px;
     font-weight: 600;
   }
   .main-content {
     display: flex;
     flex-direction: row;
+    min-height: 90vh;
+    height: auto;
     justify-content: space-between;
     align-items: center;
-    padding: 70px;
+    padding: 0px 70px;
     padding-top: 0px;
+    padding-bottom: 0px;
   }
   .main-text {
-    max-width: 55%;
+    max-width: 60%;
+
+
   }
   .main-text h1 {
-    font-size: 65px;
+    font-size: 5vw;
     font-weight: 600;
     line-height: 80px;
     margin: 0;
@@ -67,10 +72,12 @@
     padding: 15px 50px;
     border-radius: 30px;
     font-weight: 600;
-    font-size: 30px;
+    font-size: 2vw;
     display: inline-block;
     margin-top: 20px;
     text-decoration: none;
+    
+
   }
 
   .main-text .signup-now:hover {
@@ -79,8 +86,14 @@
     color: black;
   }
 
+  .main img {
+    width: 60%;
+  }
+
   .main-image img {
-    max-width: 480px;
+    max-width: 450px;
+    width: 100%;
+
   }
   .bottom-nav {
     display: flex;
@@ -98,6 +111,7 @@
     font-size: 18px;
     letter-spacing: -0.08em;
     margin: 0 15px;
+
   }
 
   #bottom-pluence {
@@ -124,7 +138,6 @@
   }
 
   #footer {
-    margin-top: 50px;
     width: 100%;
     height: auto;
     background: rgba(4, 3, 3, 0.88);
@@ -132,6 +145,11 @@
     padding: 10px 0px;
     padding-bottom: 20px;
     margin-bottom: 0px;
+
+    min-height: 10vh;
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
   }
 </style>
 
@@ -148,3 +166,5 @@
 
   gtag('config', 'G-VMJN5EMEWJ');
 </script>
+
+</html>
