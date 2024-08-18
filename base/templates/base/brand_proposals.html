@@ -48,11 +48,7 @@
             {% for proposal in paid_proposals %}
 
             <div class="active-proposal-flex">
-                <div class="link-flex">
-                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
-                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
-                    <p>{{proposal.account.username}}</p>
-                </div>
+                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
                 <p id="sub">{{proposal.proposal_status}}</p>
                 <p id="sub">{{proposal.content_type}}</p>
                 <p id="sub">{{proposal.timeline}} Days</p>
@@ -71,12 +67,8 @@
             {% for proposal in proposals %}
 
             <div class="active-proposal-flex">
-                <div class="link-flex">
-                    <p><a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a></p>
-                    <p><a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a></p>
-                    <p>{{proposal.account.username}}</p>
-                </div>
-                <p>Pending Approval</p>
+                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
+                <p>{{proposal.proposal_status}}</p>
                 <p id="sub">{{proposal.content_type}} Content</p>
                 <p id="sub">{{proposal.timeline}} Days</p>
                 <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
