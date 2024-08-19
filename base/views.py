@@ -5,9 +5,9 @@ from django.urls import reverse_lazy , reverse
 from django.http import HttpResponse 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images
+from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail
 
 
 
@@ -36,7 +36,7 @@ payload = {
 configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key['api-key'] = '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'
 api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
-
+transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
 '''
 INSTAGRAM GRAPH API & FACEBOOK AUTH
@@ -56,7 +56,10 @@ response_type = 'code'
 # Create your views here.
 
 def landing_page(request):
-    return render(request ,'base/landing_brand.html')
+    if request.user.is_authenticated:
+        return redirect(reverse_lazy("home"))
+    else:
+        return render(request ,'base/landing_brand.html')
 
 def landing_page_creator(request):
     return render(request , 'base/landing_creator.html')
@@ -169,9 +172,9 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
     def form_valid(self, form):
         account_type = form.cleaned_data['account_type']
         if account_type == "brand":
-            account,created = BrandProfile.objects.get_or_create(user = self.request.user)
+            account,created = BrandProfile.objects.get_or_create(user = self.request.user , email = self.request.user.email)
         else:
-            account,created = CreatorProfile.objects.get_or_create(user = self.request.user)
+            account,created = CreatorProfile.objects.get_or_create(user = self.request.user, contact_email =self.request.user.email)
         account.active = True
         account.save()
         return super().form_valid(form)
@@ -181,55 +184,127 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
     model = CreatorProfile
     fields = ['name' , 'bio' ,'contact_email' , 'website' ]
     template_name = "base/update_profile.html"
-    success_url= reverse_lazy("home")
 
+    #Sends user to verify_email first and then adds email to contact , and updates creator_profile
     def form_valid(self, form):
-        creator_profile = form.save()
-        create_contact = sib_api_v3_sdk.CreateContact(
+        creator_profile = form.save(commit=False)
+        verification , created = VerifyEmail.objects.get_or_create(
             email = creator_profile.contact_email,
-            update_enabled=True , 
-            attributes={
-                'FNAME':creator_profile.name,
-                'LNAME':" "
-            },
-            list_ids=[6]
+            account_type = VerifyEmail.AccountType.CREATOR,
         )
-        
-        try:
-            api_response = api_instance.create_contact(create_contact)
-        except ApiException as e:
-            print(f"ERROR: {e}")
-            messages.add_message(self.request , messages.ERROR , e)
-            return self.render_to_response(self.get_context_data(form = form))
-        else:
-            return super().form_valid(form)
+        creator_profile.contact_email = None
+        verification.generate_verification_code()
+        self.verify_id = verification.id
 
+
+        #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
+        if verification.verification_code:
+            email_sent = verification.send_verification_email()
+        if email_sent == False:
+            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+            return redirect(reverse_lazy("home"))
+        else:
+            creator_profile.save()
+            return super().form_valid(form)
+        
+    # sends creator user to verify email 
+    def get_success_url(self):
+        return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
+        
+#similiar to CreatorProfileUpdate but with different fields and BrandProfile
 class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
     model = BrandProfile
     fields = ['brand_name' , 'email' , 'about']
     template_name = "base/update_profile.html"
-    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
-        profile = form.save()
-        create_contact = sib_api_v3_sdk.CreateContact(
-            email = profile.email,
-            update_enabled=True , 
-            attributes={
-                'FNAME':profile.brand_name,
-                'LNAME':" "
-            },
-
-            list_ids=[5]
-        )
+        brand_profile = form.save(commit=False)
         
-        try:
-            api_response = api_instance.create_contact(create_contact)
-        except ApiException as e:
-            messages.add_message(self.request , messages.ERROR , e)
-            return self.render_to_response(self.get_context_data(form = form))
+        #the account type and email fields change
+        verification , created = VerifyEmail.objects.get_or_create(
+            email =brand_profile.email,
+            account_type = VerifyEmail.AccountType.BRAND,
+        )
+
+        brand_profile.email = None
+        brand_profile.save()
+        verification.generate_verification_code()
+        self.verify_id = verification.id
+
+        #same method as in CreatorProfileUpdate
+        if verification.verification_code:
+            email_sent = verification.send_verification_email()
+        if email_sent == False:
+            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+            return redirect(reverse_lazy("home"))
         else:
+            brand_profile.save()
             return super().form_valid(form)
+        
+        
+    # sends brand user to verify email 
+    def get_success_url(self):
+        return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
+
+class EmailVerification(LoginRequiredMixin , FormView):
+    form_class = EmailVerificationForm
+    template_name = "base/email_verification.html"
+
+    def form_valid(self, form):
+        email_list_id = []
+        email_code = form.cleaned_data['email_code']
+        verification = get_object_or_404(VerifyEmail , id = self.kwargs.get("verify_id"))
+        if email_code == verification.verification_code:
+            if verification.account_type == VerifyEmail.AccountType.CREATOR:
+                profile = get_object_or_404(CreatorProfile , id=self.kwargs.get("pk"))
+                profile.contact_email = verification.email #profile object is being saved below
+                email_list_id.append(6)
+                create_contact = sib_api_v3_sdk.CreateContact(
+                    email = verification.email,
+                    update_enabled=True , 
+                    attributes={
+                        "FIRSTNAME": profile.name,
+                    },
+                    list_ids=email_list_id
+                )   
+
+            elif verification.account_type == VerifyEmail.AccountType.BRAND:
+                profile = get_object_or_404(BrandProfile , id=self.kwargs.get("pk"))
+                profile.email = verification.email 
+                email_list_id.append(5)
+                create_contact = sib_api_v3_sdk.CreateContact(
+                    email = verification.email,
+                    update_enabled=True , 
+                    attributes={
+                        "FIRSTNAME": profile.brand_name,
+                    },
+                    list_ids=email_list_id
+                )   
+   
+            
+
+            try:
+                print(f"Attributes being sent: {create_contact.attributes}")
+                print("Contact being added")
+                api_response = api_instance.create_contact(create_contact)
+                print(f"API Response: {api_response}")
+            except ApiException as e:
+                print("API ERROR{e}")
+                messages.add_message(self.request , messages.ERROR , f"{e} Error : Try Again")
+                return self.render_to_response(self.get_context_data(form = form))
+            else:
+                print("SUCCESSFULL")
+                verification.verified = True
+                profile.save()
+                verification.save()
+                return super().form_valid(form)
+        else:
+            print(f"Code Incorrect")
+            messages.add_message(self.request , messages.ERROR , "Verification code is Incorrect!! Try Again")
+            return self.render_to_response(self.get_context_data(form = form))
+
+    def get_success_url(self):
+        return reverse_lazy("home")
 
 def integration_dashboard(request , pk):
     dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
