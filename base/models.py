@@ -168,8 +168,8 @@ class InstagramAccountDashBoard(models.Model):
         return f"{self.username} - IG Account"
 
 class BrandProposal(models.Model):
-    brand = models.ForeignKey(BrandProfile , on_delete= models.SET_NULL , null = True)
-    creator = models.ForeignKey(CreatorProfile , on_delete= models.SET_NULL , null=True)
+    brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
+    creator = models.ForeignKey(CreatorProfile , on_delete= models.CASCADE , null=True)
     account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
 
     description = models.TextField(null=True , blank=True)
@@ -205,7 +205,9 @@ class BrandProposal(models.Model):
     date_completed = models.DateTimeField(null=True , blank=True)
 
     def __str__(self):
-        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]} - {self.id}"
+        brand_user_email = self.brand.user.email.split('@')[0] if self.brand and self.brand.user else "No Brand"
+        creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
+        return f"{brand_user_email} - {creator_user_email} - {self.id}"
 
 class Content_Approval_Images(models.Model):
     proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)
