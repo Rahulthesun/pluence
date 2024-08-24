@@ -1,7 +1,3 @@
-{% extends 'base/landing_main.html' %}
-
-{% block content %}
-
 <div class="top-nav">
     <a href="{% url 'landing_page' %}" id="top-pluence">Pluence</a>
     <div class="nav-links">
@@ -10,7 +6,18 @@
       <a href="{% url 'landing_page_pricing' %}" class="top_pricing">Pricing</a>
       <a href="{% url 'signup' %}" class="top_signup">Sign Up</a>
     </div>
+
+    <div class="mobile-navlinks">
+      <a href=""><i class="fa-solid fa-bars"></i></a>
+    </div>
+</div>
+
+<div class="mobile-nav-menu">
+  <a href="#" id="close-menu"><i class="fa-solid fa-x"></i></a>
+  <a href="{% url 'landing_page' %}">Brands</a>
+  <a href="{% url 'landing_page_creator' %}">Creators</a>
+  <a href="{% url 'landing_page_pricing' %}">Pricing</a>
+  <a href="{% url 'signup' %}">Sign Up</a>
 </div>
 
 
-{% endblock %}

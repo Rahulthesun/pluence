@@ -4,7 +4,7 @@
     <section id="main">
         {% if content.proposal.brand.brand_name %}
 
-        <p id="account-type"> Brand</p>
+        
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{content.proposal.brand.brand_name}}</h1>
@@ -17,9 +17,13 @@
                     {% endif %}
                     <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
+                <p id="account-type"> Brand</p>
             </div>
 
-            <a href="{% url 'home' %}"><button id="header">Home</button></a>
+            <div class="link-flex-box">
+                <a href="{% url 'home' %}"><button id="header">Home</button></a>
+            </div>
+            
 
         </div>
 
@@ -28,7 +32,12 @@
 
         <div class="proposal-detail-box">
             <div class="brand-image">
+                {% if content.proposal.account.dashboard_img %}
+                <img src="{{content.proposal.account.dashboard_img}}">
+                {% else %}
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrP-nJ_gjguvf8-Kf7pS7_CS1FkEYR_spJpw&s">
+                {% endif %}
+                
             </div>
             <h2 id="amount">${{content.proposal.proposed_amount|floatformat}}</h2>
             <h2 style="margin-top: 5px;">Content By <b style="text-decoration-line: underline;"> {{content.proposal.account.username | title}}</b></h2>

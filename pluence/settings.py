@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import dj_database_url , os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,21 +24,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&62%_%xn@&vv=+0m+d$nd7k85c%0d4foo*@6+w=jgwxzxj2^m7'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["127.0.0.1","51.20.5.251" , "pluence.in" ,"www.pluence.in", "18.233.97.170"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS' , '').split(',')
 
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 
-PAYPAL_CLIENT_ID = 'AZN1XtT7BFQTqP9nWN6LDnNZLzK0Trux7wdSC3kEU0zXTK5HHOndatEBdUde5qRUQqvNOWJUPdF95iG0'
+PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
 
-PAYPAL_CLIENT_SECRET = 'EAD_qRm0E1guMZqYjU46qhRMMQ6vXVAny9HcpOx-KU0ubSj2CPA5DjC9A2Tm1lKErwGth60V78iL5ZCp'
+PAYPAL_TEST = os.getenv("PAYPAL_TEST")
 
-PAYPAL_TEST = False
-
-PAYPAL_RECEIVER_EMAIl = "wearaiofficial@gmail.com"
+PAYPAL_RECEIVER_EMAIL = "wearaiofficial@gmail.com" #might be buggy , leave it for now
 
 # Application definition
 
@@ -98,6 +101,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
 
 # Password validation

@@ -34,3 +34,10 @@ class BrandProposalForm(forms.ModelForm):
         fields = ('description' , 'timeline', 'content_type' , 'proposed_amount' , 'item_link' )
 
 
+class EmailVerificationForm(forms.Form):
+    email_code = forms.CharField(max_length=200 ,
+                                 min_length=4, 
+                                 required=True , 
+                                 widget=forms.TextInput(attrs={'placeholder':"Enter 4 Digit Verification Code"}), 
+                                 help_text="Enter 4 digit Code Sent to Your Email"
+                                 )

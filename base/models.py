@@ -1,5 +1,13 @@
 from django.db import models
 from users.models import EmailUser
+import random
+from django.utils import timezone
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = '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'
+transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
 # Create your models here.
 
@@ -12,17 +20,60 @@ class CreatorProfile(models.Model):
 
     balance= models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
 
-
     active = models.BooleanField(default=False)
 
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.email.split('@')[0]} - Creator Profile "
+        return f"{self.user.email.split('@')[0]} - Creator Profile"
     
+class VerifyEmail(models.Model):
+    email = models.EmailField(max_length=60 , null=False , blank= False)
+    class AccountType(models.TextChoices):
+        CREATOR='Creator'
+        BRAND='BRAND'
+
+    account_type = models.CharField(max_length=100 , choices=AccountType.choices , null=False , blank=False)
+    
+    verification_code = models.CharField(max_length=200 ,null=True , blank=True)
+    code_sent_at = models.DateTimeField(null=True , blank=True)
+
+    verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.email}-{self.verified}"
+
+    def generate_verification_code(self):
+        self.verification_code = "".join(random.choices("0123456789", k=4))
+        self.code_sent_at = timezone.now()
+        self.save()
+
+    def send_verification_email(self):
+        template_id = 12
+        to = [{"email": self.email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+            params={
+                'code': self.verification_code
+            }
+        )
+
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+            return False
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
+        else:       
+            return True
+        
 class BrandProfile(models.Model):
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
-    brand_name = models.CharField(max_length=200 , null=True , blank=False)
+    brand_name = models.CharField(max_length=200 , null=True , blank=True)
     email = models.EmailField(max_length=60 , null=True , blank=False)
     
     about = models.TextField(null=True , blank=True)
@@ -32,7 +83,7 @@ class BrandProfile(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.email.split('@')[0]} - Brand Profile "
+        return f"{self.user.email.split('@')[0]} -{self.brand_name} Brand "
 
 class InstagramAccountDashBoard(models.Model):
     dashboard_img = models.URLField(null=True , blank=False)
@@ -117,8 +168,8 @@ class InstagramAccountDashBoard(models.Model):
         return f"{self.username} - IG Account"
 
 class BrandProposal(models.Model):
-    brand = models.ForeignKey(BrandProfile , on_delete= models.SET_NULL , null = True)
-    creator = models.ForeignKey(CreatorProfile , on_delete= models.SET_NULL , null=True)
+    brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
+    creator = models.ForeignKey(CreatorProfile , on_delete= models.CASCADE , null=True)
     account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
 
     description = models.TextField(null=True , blank=True)
@@ -154,7 +205,9 @@ class BrandProposal(models.Model):
     date_completed = models.DateTimeField(null=True , blank=True)
 
     def __str__(self):
-        return f"{self.brand.user.email.split('@')[0]} - {self.creator.user.email.split('@')[0]} - {self.id}"
+        brand_user_email = self.brand.user.email.split('@')[0] if self.brand and self.brand.user else "No Brand"
+        creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
+        return f"{brand_user_email} - {creator_user_email} - {self.id}"
 
 class Content_Approval_Images(models.Model):
     proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)
