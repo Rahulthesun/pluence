@@ -14,7 +14,7 @@ transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiC
 class CreatorProfile(models.Model):
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
     name = models.CharField(max_length=200 , null=True , blank=True)
-    contact_email = models.EmailField(max_length=200 , null=True , blank=True)
+    contact_email = models.EmailField(max_length=200 , null=True , blank=False)
     website = models.URLField(max_length=60 , null=True , blank=True)
     bio = models.TextField(null=True , blank=True)
 

@@ -649,11 +649,24 @@
   display: flex;
 }
 
+.error-msg {
+  font-size: 30px;
+  color: rgb(182, 6, 6);
+}
+
+
 
 </style>
 
 <body>
-  {% block content %} {% endblock content %}
+  {% block content %} 
+  <!-- MESSAGE DISPLAY -->
+   {% if messages %}
+    {% for message in messages %}
+      <p class="error-msg">{{message}}</p> 
+    {% endfor %}
+   {% endif %} 
+  {% endblock content %}
 </body>
 
 <!-- Google tag (gtag.js) -->

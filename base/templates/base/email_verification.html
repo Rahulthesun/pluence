@@ -10,11 +10,15 @@
         {% for error in form.non_field_errors %}
             <p><span id="error">{{error}}</span></p>
         {% endfor %}
+
         
         {% for field in form %}
         <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
 
-            {{ field }} 
+            {{ field }}
+            {% for error in field.errors %}
+                <p><span id="error">{{error}}</span></p>
+            {% endfor %}
         {% endfor %}
         
         <button type="submit">Verify Email</button>
