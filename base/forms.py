@@ -41,3 +41,11 @@ class EmailVerificationForm(forms.Form):
                                  widget=forms.TextInput(attrs={'placeholder':"Enter 4 Digit Verification Code"}), 
                                  help_text="Enter 4 digit Code Sent to Your Email"
                                  )
+    
+class BrandSubscriptionForm(forms.Form):
+    months = forms.IntegerField(max_value=24 ,
+                                min_value=1 ,
+                                label='Subscription Months',
+                                required=True)
+    
+    

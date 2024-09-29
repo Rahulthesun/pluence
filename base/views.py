@@ -5,7 +5,7 @@ from django.urls import reverse_lazy , reverse
 from django.http import HttpResponse 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
 from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail
 
@@ -156,7 +156,6 @@ class EmailSignUp(UserPassesTestMixin , FormView):
 class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
     form_class = AccountTypeForm
     template_name = "base/account_selection.html"
-    success_url = reverse_lazy("home")
     
     def test_func(self):
         creator_account = CreatorProfile.objects.filter(user = self.request.user)
@@ -170,14 +169,27 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
         return HttpResponseRedirect(reverse_lazy("home"))
 
     def form_valid(self, form):
+        self.brand_account = False
         account_type = form.cleaned_data['account_type']
         if account_type == "brand":
+            self.brand_account = True
             account,created = BrandProfile.objects.get_or_create(user = self.request.user , email = self.request.user.email)
         else:
             account,created = CreatorProfile.objects.get_or_create(user = self.request.user, contact_email =self.request.user.email)
         account.active = True
         account.save()
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        if self.brand_account:
+            return reverse()
+        else:
+            return reverse_lazy("home")
+    
+
+class BrandAccountSubscription(FormView):
+    template_name = 'base/brand_subscription.html'
+    form_class = BrandSubscriptionForm
     
 
 class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):

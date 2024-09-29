@@ -5,16 +5,69 @@
 
   {% include 'base/landing_header.html' %}
 
-  <div class="main-content">
-    <div class="main-text">
-      <h1>No SignUp Fee<br>No Subscriptions<br>No Credit Card</h1>
-      <a href="{% url 'signup' %}" class="signup-now">Sign Up Now</a>
+  <div class="pricing-content">
+    <div class="pricing-heading">
+      <h1>Simple Transparent Pricing</h1>
     </div>
-    <div class="main-image">
-      <img src="{% static 'base/images/pricing.png'  %}" >
+
+    <div class="pricing-types">
+      <div class="pricing-box">
+        <h2>For Brands</h2>
+        <div class="pricing-box-price">
+          <h1>$5</h1>
+          <p>/month</p>
+        </div>
+
+        <div class="pricing-box-features">
+          <h3>Features</h3>
+          <ul>
+            <li>Access to Database of Creators</li>        
+            <li>Email Updates</li>
+            <li>Quick Response Rates From Creators.</li>
+            <li>Safe Payments with Payment Hold.</li>
+            <li>Content Verification Process</li>
+          </ul>
+        </div>
+
+        <div class="pricing-signup">
+          <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+        </div>
+        
+        
+      
+      </div>
+
+      <div class="pricing-box">
+        <h2>For Creators</h2>
+        <div class="pricing-box-price">
+          <h1>$0</h1>
+          <p>+5% on every deal</p>
+        </div>
+
+        <div class="pricing-box-features">
+          <h3>Features</h3>
+          <ul>
+            <li>Secure Payment Process to protect Creators.</li>
+            <li>Brand Visibility</li>
+            <li>Brief & Simple Brand Proposals</li>
+            <li>Email Updates on Brand Deals.</li>
+          </ul>
+        
+        </div>
+
+        <div class="pricing-signup">
+          <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+        </div>
+        
+        
+      </div>
+
     </div>
+
+    
   </div>
 
+  
   {% include 'base/landing_footer.html' %}
 
 
