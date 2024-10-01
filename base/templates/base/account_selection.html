@@ -1,29 +1,70 @@
 {% extends 'base/main.html' %}
 
 {% block content %}
-<section id="form">
-    <form method="post" action="">
-        <h1>Account</h1>
+<section id="selection-form">
+    <form method="post" action="" id="account-form">
         {% csrf_token %}
 
         {% for error in form.non_field_errors %}
             <p><span id="error">Select an Account Type</span></p>
         {% endfor %}
-
-        <div id="id_account_type">
-            {% for radio in form.account_type %}
-                <label id="radio-label" for="{{ radio.id_for_label }}">
-                    {{ radio.tag }}
-                    {{ radio.choice_label }}
-                </label>
-                
-            {% endfor %}
+    
+        <div style="display: none;">
+            {{ form.account_type }}
         </div>
 
-        <button type="submit">Create Account</button>
+        <div class="pricing-content">
+            <h1>Account Selection</h1>
+            <div class="pricing-types">
+                <div class="pricing-box">
+                    <h2>For Brands</h2>
+                    
+                    <div class="pricing-box-price">
+                        <h1>$5</h1>
+                        <p>/month</p>
+                    </div>
+
+                    <div class="pricing-signup">
+                        <button type="button" data-account-type="{{ form.account_type.1.id_for_label }}" class="submit-button">
+                            Brand Account
+                        </button>
+                    </div>
+                </div>
+   
+                <div class="pricing-box">
+                    <h2>For Creators</h2>
+                    <div class="pricing-box-price">
+                        <h1>$0</h1>
+                        <p>+5% on every deal</p>
+                    </div>
+
+                    <div class="pricing-signup">
+                        <button type="button" data-account-type="{{ form.account_type.0.id_for_label }}" class="submit-button">
+                            Creator Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'landing_page_pricing' %}">Check Full Feature List & Detailed Pricing</a>
+        </div>
+
+        <script>
+            // Attach click event to all signup buttons
+            document.querySelectorAll('.submit-button').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    // Find the corresponding radio button and check it
+                    const accountType = document.getElementById(this.getAttribute('data-account-type'));
+                    if (accountType) {
+                        accountType.checked = true;
+                    }
+
+                    // Submit the form
+                    document.getElementById('account-form').submit();
+                });
+            });
+        </script>
     </form>
 </section>
-
-
-
 {% endblock %}
+
+

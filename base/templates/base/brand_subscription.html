@@ -1,0 +1,31 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+    
+
+    <section id="form">
+        <form method="post" action="">
+            <h1>Subscription</h1>
+            {% csrf_token %}
+    
+            {% for error in form.non_field_errors %}
+                <p><span id="error">{{error}}</span></p>
+            {% endfor %}
+            
+            {% for field in form %}
+            <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
+    
+                {{ field }} 
+            {% endfor %}
+
+            <p>Total cost: <span id="cost">$5</span></p>
+            
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+
+    <script>
+
+    </script>
+{% endblock  %}

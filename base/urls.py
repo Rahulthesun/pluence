@@ -3,7 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal , DashboardImageUpdate , EmailVerification
+from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal , DashboardImageUpdate , EmailVerification , BrandAccountSubscription
 
 urlpatterns = [
 
@@ -37,6 +37,7 @@ urlpatterns = [
 
 
     path("account_selection/", AccountType.as_view() , name="account_selection"),
+    path("brand_subscription/", BrandAccountSubscription.as_view() , name="brand_subscription"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),
     path("update_profile/brand/<int:pk>/" , BrandProfileUpdate.as_view(), name="brand_profile_update" ),
     path("email_verification/<int:verify_id>/<int:pk>/" , EmailVerification.as_view(), name="email_verification" ),

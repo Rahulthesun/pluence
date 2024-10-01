@@ -19,7 +19,7 @@ class CreatorProfile(models.Model):
 
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
     name = models.CharField(max_length=200 , null=True , blank=True)
-    contact_email = models.EmailField(max_length=200 , null=True , blank=True)
+    contact_email = models.EmailField(max_length=200 , null=True , blank=False , unique=True)
     website = models.URLField(max_length=60 , null=True , blank=True)
     bio = models.TextField(null=True , blank=True)
 
@@ -79,7 +79,7 @@ class VerifyEmail(models.Model):
 class BrandProfile(models.Model):
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
     brand_name = models.CharField(max_length=200 , null=True , blank=True)
-    email = models.EmailField(max_length=60 , null=True , blank=False)
+    email = models.EmailField(max_length=60 , null=True , blank=False , unique=True)
     
     about = models.TextField(null=True , blank=True)
 

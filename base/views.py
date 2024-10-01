@@ -5,7 +5,7 @@ from django.urls import reverse_lazy , reverse
 from django.http import HttpResponse 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
 from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral
 
@@ -179,7 +179,6 @@ class EmailSignUp(UserPassesTestMixin , FormView):
 class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
     form_class = AccountTypeForm
     template_name = "base/account_selection.html"
-    success_url = reverse_lazy("home")
     
     def test_func(self):
         creator_account = CreatorProfile.objects.filter(user = self.request.user)
@@ -193,14 +192,27 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
         return HttpResponseRedirect(reverse_lazy("home"))
 
     def form_valid(self, form):
+        self.brand_account = False
         account_type = form.cleaned_data['account_type']
         if account_type == "brand":
+            self.brand_account = True
             account,created = BrandProfile.objects.get_or_create(user = self.request.user , email = self.request.user.email)
         else:
             account,created = CreatorProfile.objects.get_or_create(user = self.request.user, contact_email =self.request.user.email)
         account.active = True
         account.save()
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        if self.brand_account:
+            return reverse()
+        else:
+            return reverse_lazy("home")
+    
+
+class BrandAccountSubscription(FormView):
+    template_name = 'base/brand_subscription.html'
+    form_class = BrandSubscriptionForm
     
 
 class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
@@ -215,24 +227,31 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
             email = creator_profile.contact_email,
             account_type = VerifyEmail.AccountType.CREATOR,
         )
-        creator_profile.contact_email = None
-        verification.generate_verification_code()
-        self.verify_id = verification.id
-
-
-        #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
-        if verification.verification_code:
-            email_sent = verification.send_verification_email()
-        if email_sent == False:
-            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
-            return redirect(reverse_lazy("home"))
+        if created == False and verification.verified == True:
+            form.save(commit=True)
+            self.verify_id = None
         else:
-            creator_profile.save()
-            return super().form_valid(form)
+            creator_profile.contact_email = None
+            verification.generate_verification_code()
+            self.verify_id = verification.id
+            
+            #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
+            if verification.verification_code:
+                email_sent = verification.send_verification_email()
+                if email_sent == False:
+                    messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+                    return redirect(reverse_lazy("home"))
+        
+        return super().form_valid(form)
+
+            
         
     # sends creator user to verify email 
     def get_success_url(self):
-        return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
+        if self.verify_id == None :
+            return reverse_lazy("home")
+        else:
+            return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
         
 #similiar to CreatorProfileUpdate but with different fields and BrandProfile
 class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
@@ -249,25 +268,31 @@ class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
             account_type = VerifyEmail.AccountType.BRAND,
         )
 
-        brand_profile.email = None
-        brand_profile.save()
-        verification.generate_verification_code()
-        self.verify_id = verification.id
-
-        #same method as in CreatorProfileUpdate
-        if verification.verification_code:
-            email_sent = verification.send_verification_email()
-        if email_sent == False:
-            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
-            return redirect(reverse_lazy("home"))
+        if created == False and verification.verified == True:
+            form.save(commit=True)
+            self.verify_id = None
         else:
+            brand_profile.email = None
             brand_profile.save()
-            return super().form_valid(form)
+            verification.generate_verification_code()
+            self.verify_id = verification.id
+
+            #same method as in CreatorProfileUpdate
+            if verification.verification_code:
+                email_sent = verification.send_verification_email()
+                if email_sent == False:
+                    messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+                    return redirect(reverse_lazy("home"))
+        
+        return super().form_valid(form)
         
         
     # sends brand user to verify email 
     def get_success_url(self):
-        return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
+        if self.verify_id == None:
+            return reverse_lazy("home")
+        else:
+            return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
 
 class EmailVerification(LoginRequiredMixin , FormView):
     form_class = EmailVerificationForm
@@ -313,8 +338,9 @@ class EmailVerification(LoginRequiredMixin , FormView):
                 print(f"API Response: {api_response}")
             except ApiException as e:
                 print("API ERROR{e}")
-                messages.add_message(self.request , messages.ERROR , f"{e} Error : Try Again")
-                return self.render_to_response(self.get_context_data(form = form))
+                #messages.add_message(self.request , messages.ERROR , f"{e} Error : Try Again")
+                form.add_error('email_code' ,  f"{e} Error : Try Again" )
+                return self.form_invalid(form)
             else:
                 print("SUCCESSFULL")
                 verification.verified = True
@@ -323,9 +349,15 @@ class EmailVerification(LoginRequiredMixin , FormView):
                 return super().form_valid(form)
         else:
             print(f"Code Incorrect")
-            messages.add_message(self.request , messages.ERROR , "Verification code is Incorrect!! Try Again")
-            return self.render_to_response(self.get_context_data(form = form))
-
+            #messages.add_message(self.request , messages.ERROR , "Verification code is Incorrect!! Try Again")
+            form.add_error('email_code' , "Verification code is Incorrect!! Try Again")
+            return self.form_invalid(form)
+        
+    def form_invalid(self, form):
+        # Return the invalid form (with errors) to the template
+        print(form.errors)
+        return self.render_to_response(self.get_context_data(form=form))
+    
     def get_success_url(self):
         return reverse_lazy("home")
 

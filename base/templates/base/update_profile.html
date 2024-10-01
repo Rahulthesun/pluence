@@ -13,7 +13,12 @@
 
         {% for field in form %}
             <p>{{field.label_tag}}</p>
+
             {{field}}
+            {% for error in field.errors %}
+            <p><span id="error">{{ error }}</span></p>
+            {% endfor %}
+
         {% endfor %}
  
         <button type="submit">Update Profile</button>
