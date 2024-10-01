@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Referral Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 18px;
+        }
+        .referral-link {
+            padding: 10px;
+            background-color: #e9f7ff;
+            border: 1px solid #c8e0ef;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+        .statistics {
+            margin-top: 20px;
+        }
+        .claim-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .claim-btn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-$END$
+    <div class="container">
+        <h2>Referral Dashboard</h2>
+
+        <h3>Your Referral Link</h3>
+        <div class="referral-link">{{ referral_link }}</div>
+
+        <div class="statistics">
+            <p>Total Referrals: {{ num_referrals }}</p>
+            <p>Referral Bonus: ${{ referral_bonus }}</p>
+        </div>
+
+        <button class="claim-btn" onclick="claimReferralBonus()">Claim Referral Bonus</button>
+
+        <p id="balance-info"></p>
+    </div>
+
+    <script>
+        function claimReferralBonus() {
+            fetch("{% url 'claim_referral_bonus' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("balance-info").innerText = "New Balance: $" + data.new_balance;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
 </body>
 </html>

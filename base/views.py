@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail
+from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral
 
 
 
@@ -70,6 +70,10 @@ def landing_page_pricing(request):
 
 @login_required
 def home(request):
+    referral = Referral.objects.get(user=request.user)
+    context['referral_code'] = referral.code
+
+
     creator_account = CreatorProfile.objects.filter(user = request.user)
     brand_account = BrandProfile.objects.filter(user = request.user)
     context = {}
@@ -143,6 +147,25 @@ class EmailSignUp(UserPassesTestMixin , FormView):
     def form_valid(self , form):
         user = form.save()
         if user is not None:
+            referral_code = Referral.generate_code()
+            Referral.objects.create(user=user, code=referral_code)
+
+            # Handle the referral logic
+            ref_code = self.request.GET.get('ref', None)
+            if ref_code:
+                try:
+                    referrer = Referral.objects.get(code=ref_code).user
+                    referrer_profile = referrer.creatorprofile if hasattr(referrer,
+                                                                          'creatorprofile') else referrer.brandprofile
+                    referrer_profile.referrals += 1
+                    referrer_profile.save()
+
+                    # Optional: Give reward for referral
+                    messages.success(self.request,
+                                     f"Referral successful! Thank you for joining via {referrer.username}'s referral.")
+                except Referral.DoesNotExist:
+                    messages.error(self.request, "Invalid referral code.")
+
             login(self.request , user)
         return super(EmailSignUp,self).form_valid(form)    
     
@@ -627,4 +650,18 @@ def approve_content(request , proposal_id):
         messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
     else:
         return render(request , 'base/approved.html')
+
+
+def claim_referral_bonus(request):
+    profile = get_object_or_404(CreatorProfile, user=request.user)
+
+    total_referrals = profile.referrals.count()  # Adjust based on your logic
+
+    referral_bonus = 5 * total_referrals
+
+    profile.balance += referral_bonus
+    profile.save()
+
+    # Send response back (for example, in a JSON response)
+    return JsonResponse({'success': True, 'new_balance': profile.balance})
     

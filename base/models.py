@@ -12,6 +12,11 @@ transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiC
 # Create your models here.
 
 class CreatorProfile(models.Model):
+
+    referral_code = models.CharField(max_length=10, unique=True, default=uuid.uuid4().hex[:10].upper())
+    referred_by = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+
+
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
     name = models.CharField(max_length=200 , null=True , blank=True)
     contact_email = models.EmailField(max_length=200 , null=True , blank=True)
@@ -213,7 +218,15 @@ class Content_Approval_Images(models.Model):
     proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)
     url = models.URLField(null=True)
     verified = models.BooleanField(default=False)
-   
+
+class Referral(models.Model):
+    referrer = models.ForeignKey(CreatorProfile, related_name="referrals", on_delete=models.CASCADE)
+    referred = models.OneToOneField(CreatorProfile, related_name="referred_by", on_delete=models.CASCADE, null=True, blank=True)
+    referred_email = models.EmailField(max_length=200)
+    referral_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.referrer.user.email} referred {self.referred_email}"
 
     
 
