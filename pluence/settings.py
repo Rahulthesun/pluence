@@ -35,7 +35,8 @@ PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
 
-PAYPAL_TEST = os.getenv("PAYPAL_TEST")
+PAYPAL_TEST = os.getenv('PAYPAL_TEST', 'False') == "True"
+
 
 PAYPAL_RECEIVER_EMAIL = "wearaiofficial@gmail.com" #might be buggy , leave it for now
 
@@ -102,7 +103,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
+DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL_PROD'))
 
 
 # Password validation

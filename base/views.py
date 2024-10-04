@@ -176,7 +176,6 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
             account,created = BrandProfile.objects.get_or_create(user = self.request.user , email = self.request.user.email)
         else:
             account,created = CreatorProfile.objects.get_or_create(user = self.request.user, contact_email =self.request.user.email)
-        account.active = True
         account.save()
         return super().form_valid(form)
     
@@ -187,10 +186,53 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
             return reverse_lazy("home")
     
 
-class BrandAccountSubscription(FormView):
+class BrandAccountSubscription(LoginRequiredMixin ,FormView):
     template_name = 'base/brand_subscription.html'
     form_class = BrandSubscriptionForm
+
+    def form_valid(self, form):
+        brand = get_object_or_404(BrandProfile , id = self.kwargs.get('brand_id'))
+        brand.subscription_months = form.cleaned_data['months']
+        brand.save()
+        return super().form_valid(form)
     
+    def get_success_url(self):
+        return reverse("brand_subscription_payment" , kwargs={"brand_id": self.kwargs.get('brand_id')})
+
+@login_required 
+def brand_subscription_payment(request , brand_id):
+    brand = get_object_or_404(BrandProfile , id = brand_id)
+    subscription_amount = 5 * brand.subscription_months
+    
+    paypal_dict = {
+        'business': 'wearaiofficial@gmail.com',
+        'amount': subscription_amount,
+        'currency_code':'USD',
+        'item_name': f"Pluence Brand Subscription {brand.subscription_months} months" ,
+        'return': request.build_absolute_uri(reverse("brand_subscription_activation" , kwargs={"brand_id": brand.id})), 
+        'cancel_return':request.build_absolute_uri(reverse("payment_failed" , kwargs={"brand_id":brand.id}))  
+    }
+
+    form = PayPalPaymentsForm(initial = paypal_dict)
+    
+    context = {
+        'amount': subscription_amount,
+        'form': form
+    }
+
+    return render(request , "base/brand_subscription_payment.html" , context) 
+
+@login_required
+def brand_subscription_activation(request , brand_id):
+    brand = get_object_or_404(BrandProfile , id = brand_id)
+
+    brand.subscription_active = True
+    brand.subscribed_date = timezone.now()
+    brand.subscription_expiry_date = brand.subscribed_date + datetime.timedelta(days=(brand.subscription_months*31))
+    brand.subscription_expiry_duration = brand.subscription_expiry_date - brand.subscribed_date
+    brand.save()
+
+    return render(request , 'base/successfull_payment.html' , context = {})
 
 class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
     model = CreatorProfile

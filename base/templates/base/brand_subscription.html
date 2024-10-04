@@ -13,19 +13,34 @@
                 <p><span id="error">{{error}}</span></p>
             {% endfor %}
             
+           
+            <h2 style="text-align: left; font-size: 50px; line-height: 40px;"><span id="cost">$5</span></h2>
             {% for field in form %}
             <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
     
                 {{ field }} 
             {% endfor %}
 
-            <p>Total cost: <span id="cost">$5</span></p>
             
-            <button type="submit">Subscribe</button>
+            
+            
+            <button type="submit">Pay</button>
         </form>
     </section>
 
     <script>
 
+        var costElement = document.getElementById('cost');
+        var monthsInput = document.querySelector('input[name="months"]');
+
+        function updateCost(){
+            var months = monthsInput.value;
+            var totalCost = months*5;
+            costElement.innerText = "$" + totalCost;
+        }
+
+        monthsInput.addEventListener('input' , updateCost)
+
     </script>
+
 {% endblock  %}
