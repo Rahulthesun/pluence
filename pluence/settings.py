@@ -103,7 +103,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL_PROD'))
+DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
 
 # Password validation
