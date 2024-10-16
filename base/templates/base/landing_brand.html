@@ -12,10 +12,60 @@
       <h1>Get Talented</h1>
       <h1>Creators For</h1>
       <h1>Your Brand</h1>
-      <a href="{% url 'signup' %}" class="signup-now">Sign Up Now</a>
+      <div class="brand-signup" style="justify-content: left; width: 100%;">
+        <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+      </div>
     </div>
     <div class="main-image">
       <img src="{% static 'base/images/creator_tick.png' %}" >
+    </div>
+  </div>
+
+  <div class="main">
+    <h1 id="pluence-heading">Why Pluence?</h1>
+    <div class="landing-flex">
+
+        <div class="landing-flex-item">
+            <div class="flex-text">
+            <h1>Direct<br> Marketing</h1>
+            <p>Market your Product & Brand Directly <br> to your Niche Customers</p>
+            </div>
+            <img src="{% static 'base/images/direct-marketing.png' %}">
+        </div>
+
+        <div class="landing-flex-item-reversed">
+            <div class="flex-text">
+            <h1>Safe & Secure<br>Payments</h1>
+            <p>With Payment Hold, payment is<br> released only upon deal completion</p>
+            </div>
+        <img src="{% static 'base/images/safe payments.png' %}">
+        </div>
+
+
+        <div class="landing-flex-item">
+            <div class="flex-text">
+            <h1>Low Cost<br>Marketing </h1>
+            <p>Market directly to your ideal<br> customers and save up to 30% on<br> Customer Acquisition.</p>
+            </div>
+        <img src="{% static 'base/images/low cost.png' %}">
+        </div>
+
+        <div class="landing-flex-item-reversed">
+            <div class="flex-text">
+            <h1>Authenticated<br>Creators</h1>
+            <p>Creators' data is collected with<br> consent, so no need to worry about<br> cold emails</p>
+            </div>
+        <img src="{% static 'base/images/authenticated.png' %}">
+        </div>
+
+
+    </div>
+
+    <h1 id="pluence-footing">Pluence for Brands</h1>
+
+    <p id="pluence-footing">The Best Way to Reach Your<br> Audience Through Creators</p>
+    <div class="brand-signup">
+      <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
     </div>
   </div>
 
