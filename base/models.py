@@ -83,8 +83,15 @@ class BrandProfile(models.Model):
     
     about = models.TextField(null=True , blank=True)
 
-    active = models.BooleanField(default=False)
+    subscription_months = models.IntegerField(default=1)
 
+    subscription_active = models.BooleanField(default=False)
+    subscribed_date = models.DateTimeField(null=True , blank=True)
+        
+    subscription_expiry_date = models.DateTimeField(null=True , blank=True)
+    subscription_expiry_duration = models.DurationField(null=True , blank=True)
+    
+    
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

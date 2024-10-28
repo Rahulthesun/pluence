@@ -10,10 +10,60 @@
       <h1>Get Brand </h1>
       <h1>Deals For Your</h1>
       <h1>Content</h1>
-      <a href="{% url 'signup' %}" class="signup-now">Sign Up Now</a>
+      <div class="brand-signup" style="justify-content: left; width: 100%;">
+        <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+      </div>
     </div>
     <div class="main-image">
       <img src="{% static 'base/images/brand_deal1.png' %}" >
+    </div>
+  </div>
+
+  <div class="main">
+    <h1 id="pluence-heading">Why Pluence?</h1>
+    <div class="landing-flex">
+
+        <div class="landing-flex-item">
+            <div class="flex-text">
+            <h1>Safe & Secure Payments</h1>
+            <p>Complete the Deal , <br>Get Paid</p>
+            </div>
+            <img src="{% static 'base/images/safe payments.png' %}">
+        </div>
+
+        <div class="landing-flex-item-reversed">
+            <div class="flex-text">
+            <h1>Brand Visibility</h1>
+            <p>Sign up, link your socials, and <br> showcase your content to brands on the platform</p>
+            </div>
+        <img src="{% static 'base/images/brandvisibility.png' %}">
+        </div>
+
+
+        <div class="landing-flex-item">
+            <div class="flex-text">
+            <h1>No Complex Legal Contracts</h1>
+            <p>Brands Send you a brief Proposal. You Either Accept or Reject Them.</p>
+            </div>
+        <img src="{% static 'base/images/low cost.png' %}">
+        </div>
+
+        <div class="landing-flex-item-reversed">
+            <div class="flex-text">
+            <h1>No Cluttered DM's & Emails</h1>
+            <p>We Email You when You Get a Brand Deal your Way.</p>
+            </div>
+        <img src="{% static 'base/images/authenticated.png' %}">
+        </div>
+
+
+    </div>
+
+    <h1 id="pluence-footing">Pluence for Creators</h1>
+
+    <p id="pluence-footing">The Best Way to Discover, Secure, and Manage Brand Deals</p>
+    <div class="brand-signup">
+      <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
     </div>
   </div>
 

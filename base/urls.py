@@ -37,7 +37,9 @@ urlpatterns = [
 
 
     path("account_selection/", AccountType.as_view() , name="account_selection"),
-    path("brand_subscription/", BrandAccountSubscription.as_view() , name="brand_subscription"),
+    path("brand_subscription/<int:brand_id>/", BrandAccountSubscription.as_view() , name="brand_subscription"),
+    path("brand_subscription_payment/<int:brand_id>/", views.brand_subscription_payment , name="brand_subscription_payment"),
+    path("brand_subscription_activation/<int:brand_id>/", views.brand_subscription_activation, name="brand_subscription_activation"),
     path("update_profile/creator/<int:pk>/" , CreatorProfileUpdate.as_view(), name="creator_profile_update" ),
     path("update_profile/brand/<int:pk>/" , BrandProfileUpdate.as_view(), name="brand_profile_update" ),
     path("email_verification/<int:verify_id>/<int:pk>/" , EmailVerification.as_view(), name="email_verification" ),
