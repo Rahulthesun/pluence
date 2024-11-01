@@ -54,6 +54,56 @@
         {% for creator in creators %}
        
             <div class="creator-box">
+
+
+                <div class="creator-box-header">
+
+                    
+
+                    <div class="social-flex">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
+                        <p><b>{{creator.username}}</b></p>
+                   
+                    </div>
+
+                    <div class="tooltip"><p>{% if creator.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{creator.audience_country}}</b> {% endif %}</p>
+                        <span class="tooltiptext">The Country where most of the creator's audience are based out of</span>
+                    </div>
+                    
+
+                    
+
+                
+                </div>
+                
+               
+                
+                <div class="chart-flex">
+                    <div class="chart-container">
+                        <div class="chart-ring">
+                            <div class="donut-chart" style="--percentage: {{creator.engagement_rate}};">
+                                <div class="percentage-text">{{creator.engagement_rate}}%</div>
+                                
+                            </div>
+                            <p>Engagement <br> Rate</p>
+                        </div>
+                               
+                    </div>
+
+                    
+
+                    
+    
+                    <div class="rate-flex">
+                        
+                        <h1 id="rate"> $ {{creator.average_rate | floatformat}} </h1>
+                        <p>Avg Cost</p>
+                    </div>
+                </div>
+                
+                <h1 id="rate">{% if creator.followers > 1000 %} {% widthratio creator.followers 1000 1 %}k <span id="followers">Followers</span> {% else %} {{creator.followers}} <span id="followers">Followers</span> {%endif%} </h1>
+                
+                <!--
                 <div class="social-image">
                     {% if creator.dashboard_img %}
                     <img src = {{creator.dashboard_img}}>
@@ -62,28 +112,22 @@
                     {% endif %} 
                     
                 </div>
-                <div class="social-flex">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
-                    <p>{{creator.username}}</p>
-                </div>
+                
+                -->
+                
 
-                <div class="rate-flex">
-                    <h1 id="rate"> $ {{creator.average_rate | floatformat}} </h1>
-                    <p>Average Rate / Post</p>
-                </div>
+                
 
                 <div class="tags">
-                    <p><b>{% if creator.tags %}{{creator.tags}}{% else %} No Tags {%endif%}</b></p>
+                    <p>{% if creator.tags %}{{creator.tags}}{% else %} No Tags {%endif%}</p>
                 </div>
                 
                 
-                <p> <b>{{creator.followers}} </b>Followers </p>
-                <p> <b>{{creator.reach}}</b>  Accounts Reached </p>
-                <p> <b>{{creator.profile_link_clicks}}</b> Profile Link Clicks </p>
-                <p> <b>{{creator.engagement}}</b> Accounts Engaged </p>
+
+                
                 
 
-                <p>{% if creator.audience_country == "None" %} No Data on Audience Country {% else %} <b>{{creator.audience_country}}</b> {% endif %}</p>
+                
                 <a href="{% url 'create_brand_proposal' creator.creator.id %}"><button>Send Proposal</button></a>
             </div>
 
@@ -102,6 +146,7 @@
                 window.location.href = "{% url 'brand_subscription' account.id %}";
             }, 5000); 
             // 5000 milliseconds = 5 seconds
+
         </script>
 
         <h1>Your Brand Subscription Has Expired !!!</h1>

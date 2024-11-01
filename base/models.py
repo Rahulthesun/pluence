@@ -5,6 +5,8 @@ from django.utils import timezone
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
+from django.core.validators import MinValueValidator
+
 configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key['api-key'] = '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'
 transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
@@ -41,7 +43,7 @@ class VerifyEmail(models.Model):
     verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.email}-{self.verified}"
+        return f"{self.email}-{self.verified}--{self.id}"
 
     def generate_verification_code(self):
         self.verification_code = "".join(random.choices("0123456789", k=4))
@@ -90,7 +92,7 @@ class BrandProfile(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.email.split('@')[0]} -{self.brand_name} Brand "
+        return f"{self.user.email.split('@')[0]} -{self.brand_name} Brand {self.id}"
 
 class InstagramAccountDashBoard(models.Model):
     dashboard_img = models.URLField(null=True , blank=False)
@@ -101,6 +103,8 @@ class InstagramAccountDashBoard(models.Model):
     reach = models.IntegerField(null=True , blank=False)
     profile_link_clicks = models.IntegerField(null=True , blank=True)
     engagement = models.IntegerField(null=True , blank=False)
+
+    engagement_rate = models.DecimalField(max_digits=10,decimal_places=1 ,validators=[MinValueValidator(0.0)]  , default=0.0)
 
     class Countries(models.TextChoices):
         NONE = "None"
