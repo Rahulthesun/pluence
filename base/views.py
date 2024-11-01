@@ -526,10 +526,19 @@ def get_brand_proposals(request, brand_id):
     }
     return render(request, 'base/brand_proposals.html', context)
 
-class CreateBrandProposal(LoginRequiredMixin , FormView):
+class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
     template_name = "base/create_proposal.html"
     success_url = reverse_lazy("home")
+
+    def test_func(self):
+        try:
+            brand = get_object_or_404(BrandProfile , user = self.request.user)
+        except Http404:
+            return False
+        else:
+            return True
+
 
 
     def form_valid(self, form):
