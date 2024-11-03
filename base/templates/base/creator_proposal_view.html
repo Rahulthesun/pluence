@@ -64,9 +64,9 @@
                         <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit For Approval</button></a>
 
                     {% else %}
-                        <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
+                        <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
                         <div class="button-accept-flex">
-                            <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
+                            <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
                         </div>
 
                     {% endif %}

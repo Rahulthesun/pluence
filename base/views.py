@@ -1,8 +1,8 @@
 from django.forms import BaseModelForm
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , redirect , get_object_or_404
 from django.urls import reverse_lazy , reverse
-from django.http import HttpResponse 
+from django.http import HttpResponse , Http404
 
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
@@ -18,6 +18,7 @@ from django.views.generic import CreateView , FormView , UpdateView
 from django.contrib.auth.views import LoginView , LogoutView
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.exceptions import PermissionDenied 
 
 import requests , datetime , decimal , base64
 from django.utils import timezone
@@ -203,15 +204,16 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
         return super().form_valid(form)
     
     def get_success_url(self):
-        if self.brand_account:
-            return reverse()
-        else:
-            return reverse_lazy("home")
+        return reverse_lazy("home")
     
 
-class BrandAccountSubscription(LoginRequiredMixin ,FormView):
+class BrandAccountSubscription(UserPassesTestMixin ,LoginRequiredMixin ,FormView):
     template_name = 'base/brand_subscription.html'
     form_class = BrandSubscriptionForm
+
+    def test_func(self):
+        brand = get_object_or_404(BrandProfile , id=self.kwargs.get("brand_id"))
+        return brand.user==self.request.user
 
     def form_valid(self, form):
         brand = get_object_or_404(BrandProfile , id = self.kwargs.get('brand_id'))
@@ -225,6 +227,9 @@ class BrandAccountSubscription(LoginRequiredMixin ,FormView):
 @login_required 
 def brand_subscription_payment(request , brand_id):
     brand = get_object_or_404(BrandProfile , id = brand_id)
+    if brand.user != request.user:
+        raise PermissionDenied
+    
     subscription_amount = 5 * brand.subscription_months
     
     paypal_dict = {
@@ -257,11 +262,16 @@ def brand_subscription_activation(request , brand_id):
 
     return render(request , 'base/successfull_payment.html' , context = {})
 
-class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
+class CreatorProfileUpdate(UserPassesTestMixin , LoginRequiredMixin , UpdateView):
     model = CreatorProfile
     fields = ['name' , 'bio' ,'contact_email' , 'website' ]
     template_name = "base/update_profile.html"
 
+    
+    def test_func(self):
+        creator = get_object_or_404(CreatorProfile , id=self.kwargs.get("pk"))
+        return creator.user==self.request.user
+    
     #Sends user to verify_email first and then adds email to contact , and updates creator_profile
     def form_valid(self, form):
         creator_profile = form.save(commit=False)
@@ -296,10 +306,14 @@ class CreatorProfileUpdate(LoginRequiredMixin , UpdateView):
             return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
         
 #similiar to CreatorProfileUpdate but with different fields and BrandProfile
-class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
+class BrandProfileUpdate(UserPassesTestMixin , LoginRequiredMixin , UpdateView):
     model = BrandProfile
     fields = ['brand_name' , 'email' , 'about']
     template_name = "base/update_profile.html"
+
+    def test_func(self):
+        brand= get_object_or_404(BrandProfile , id=self.kwargs.get("pk"))
+        return brand.user==self.request.user
 
     def form_valid(self, form):
         brand_profile = form.save(commit=False)
@@ -336,9 +350,18 @@ class BrandProfileUpdate(LoginRequiredMixin , UpdateView):
         else:
             return reverse("email_verification" , kwargs={"pk":self.kwargs.get("pk") , "verify_id": self.verify_id})
 
-class EmailVerification(LoginRequiredMixin , FormView):
+class EmailVerification(UserPassesTestMixin , LoginRequiredMixin , FormView):
     form_class = EmailVerificationForm
     template_name = "base/email_verification.html"
+
+
+
+    def test_func(self):
+        verification = get_object_or_404(VerifyEmail, id=self.kwargs.get("verify_id"))
+        if (verification.email != self.request.user.email):
+            return False  # Return False if creator not found
+        return True
+
 
     def form_valid(self, form):
         email_list_id = []
@@ -405,6 +428,8 @@ class EmailVerification(LoginRequiredMixin , FormView):
 
 def integration_dashboard(request , pk):
     dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
+    if dashboard.creator.user != request.user :
+        raise PermissionDenied
     context = {
         'dashboard': dashboard,
     }
@@ -420,6 +445,7 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
     def form_valid(self, form):
         creator = get_object_or_404(CreatorProfile ,user = self.request.user)
         avg_rate = (form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
+        engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / form.cleaned_data['followers'])*100)
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
             creator = creator,
@@ -432,7 +458,8 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
             audience_country = form.cleaned_data['audience_country'],
             story_rates = form.cleaned_data['story_rates'],
             reel_rates = form.cleaned_data['reel_rates'],
-            average_rate = avg_rate
+            average_rate = avg_rate,
+            engagement_rate = engagement_rate
             )
         self.id = dashboard.id
         return super().form_valid(form)
@@ -440,10 +467,14 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
     def get_success_url(self):
         return reverse("integration_dashboard" , kwargs= {"pk": self.id})
     
-class AccountIntegrationUpdate(LoginRequiredMixin , UpdateView):
+class AccountIntegrationUpdate(UserPassesTestMixin ,LoginRequiredMixin , UpdateView):
     model = InstagramAccountDashBoard
     form_class = AccountIntegrationForm
     template_name = 'base/account_integration.html'
+
+    def test_func(self):
+        dashboard = get_object_or_404(InstagramAccountDashBoard , id = self.kwargs.get("pk"))
+        return dashboard.creator.user == self.request.user
 
     def form_valid(self, form):
         dashboard = form.save(commit=False)
@@ -456,9 +487,13 @@ class AccountIntegrationUpdate(LoginRequiredMixin , UpdateView):
         id = self.kwargs.get('pk')
         return reverse("integration_dashboard" , kwargs= {"pk": id})
     
-class DashboardImageUpdate(LoginRequiredMixin , FormView):
+class DashboardImageUpdate(UserPassesTestMixin,LoginRequiredMixin , FormView):
     form_class = DashboardImageForm
     template_name = 'base/dashboard_img_form.html'
+
+    def test_func(self):
+        dashboard = get_object_or_404(InstagramAccountDashBoard , id=self.kwargs.get("pk"))
+        return dashboard.creator.user == self.request.user
 
     def form_valid(self, form):
         account = get_object_or_404(InstagramAccountDashBoard , id = self.kwargs.get('pk'))
@@ -485,7 +520,9 @@ class DashboardImageUpdate(LoginRequiredMixin , FormView):
     
     
 def creator_proposal_view(request , pk):
-    proposal = get_object_or_404(BrandProposal , id = pk )
+    proposal = get_object_or_404(BrandProposal , id = pk)
+    if proposal.creator.user != request.user :
+        raise PermissionDenied
     context = {
         'proposal' : proposal
     }
@@ -498,6 +535,8 @@ def creator_proposal_view(request , pk):
 
 def get_brand_proposals(request, brand_id):
     brand = get_object_or_404(BrandProfile , id = brand_id)
+    if brand.user != request.user:
+        raise PermissionDenied
     proposals = BrandProposal.objects.filter(brand = brand , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
     accepted_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.ACCEPTED)
     paid_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.PAID)
@@ -510,17 +549,29 @@ def get_brand_proposals(request, brand_id):
     }
     return render(request, 'base/brand_proposals.html', context)
 
-class CreateBrandProposal(LoginRequiredMixin , FormView):
+class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
     template_name = "base/create_proposal.html"
     success_url = reverse_lazy("home")
+
+    def test_func(self):
+        try:
+            brand = get_object_or_404(BrandProfile , user = self.request.user)
+        except Http404:
+            return False
+        else:
+            return True
+
 
 
     def form_valid(self, form):
         brand = get_object_or_404(BrandProfile ,user = self.request.user)
         creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
         ig_account = get_object_or_404(InstagramAccountDashBoard , creator = creator)
-        proposal, created = BrandProposal.objects.get_or_create(
+        try:
+            active_proposal = BrandProposal.objects.get(brand=brand , creator=creator , account = ig_account)
+        except BrandProposal.DoesNotExist :
+            proposal= BrandProposal.objects.create(
             brand = brand,
             creator = creator,
             account = ig_account,
@@ -533,8 +584,16 @@ class CreateBrandProposal(LoginRequiredMixin , FormView):
             proposal_status = BrandProposal.Proposal_Status.REQUESTED
 
             )
+
+            return super().form_valid(form)
+
+        else:
+            messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
+            return redirect(reverse_lazy("home"))
         
-        return super().form_valid(form)
+            
+        
+
 
 def accept_brand_proposal(request , proposal_id):
     proposal = get_object_or_404(BrandProposal , id = proposal_id)
@@ -552,6 +611,8 @@ def reject_brand_proposal(request , proposal_id):
 
 def creator_active_proposals(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
+    if creator.user != request.user:
+        raise PermissionDenied
     active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     context = {
         "account":creator
@@ -570,6 +631,8 @@ def creator_active_proposals(request , creator_id):
 
 def creator_payment_dashboard(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
+    if creator.user != request.user :
+        raise PermissionDenied
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     pending_payment = decimal.Decimal("0.00")
     for proposal in paid_proposals:
@@ -584,6 +647,9 @@ def creator_payment_dashboard(request , creator_id):
 
 def brand_proposal_payment(request , proposal_id):
     proposal = get_object_or_404(BrandProposal , id = proposal_id)
+
+    if proposal.brand.user != request.user :
+        raise PermissionDenied
 
     paypal_dict = {
         'business': 'wearaiofficial@gmail.com',
@@ -605,6 +671,8 @@ def brand_proposal_payment(request , proposal_id):
 
 def successfull_payment(request , proposal_id):
     proposal = get_object_or_404(BrandProposal , id= proposal_id)
+    if proposal.brand.user != request.user :
+        raise PermissionDenied
     
     proposal.proposal_status = BrandProposal.Proposal_Status.PAID
     proposal.date_paid = timezone.now()
@@ -613,6 +681,10 @@ def successfull_payment(request , proposal_id):
     return render(request , 'base/successfull_payment.html')
 
 def payment_failed(request , brand_id):
+    brand = get_object_or_404(BrandProfile , id=brand_id) 
+    if brand.user != request.user :
+        raise PermissionDenied
+
     context = {
         'brand_id':brand_id
     }
@@ -624,6 +696,8 @@ def content_approval_process(request, proposal_id):
     transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
     creator = get_object_or_404(CreatorProfile, user=request.user)
     proposal = get_object_or_404(BrandProposal, id=proposal_id)
+    if proposal.creator != creator:
+        raise PermissionDenied
     
     if request.method == 'POST':
         media = request.FILES.getlist("media")
@@ -689,7 +763,8 @@ def brand_pending_approval_view(request):
 
 def brand_content_review(request , proposal_id):
     approval_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id)
-
+    if approval_content[0].proposal.brand.user != request.user:
+        raise PermissionDenied
     context = {
         "content": approval_content[0],
         "content_list": approval_content

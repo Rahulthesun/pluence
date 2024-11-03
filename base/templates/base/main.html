@@ -229,24 +229,13 @@
     width: 30%;
   }
 
-  .social-flex,
-  .rate-flex {
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: center;
-  }
-
-  .social-flex {
-    margin-bottom: 0px;
-  }
-
   .rate-flex {
     margin: 0px auto;
     flex-direction: column;
     justify-content: left;
-    align-items: flex-start;
+    align-items: center;
     padding: 0px 0px;
+    padding-top: 50px;
   }
 
   h1#rate {
@@ -254,12 +243,52 @@
     font-weight: 600;
     letter-spacing: -3px;
     margin-bottom: 0px;
+    margin-top: 20px;
+
+  }
+  
+  #followers {
+    font-size: 30px;
+    font-weight: 600;
+    margin-left: 0px;
   }
 
+  .creator-box-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: top;
+  }
+
+  .creator-box-header h1#rate {
+    margin-top: 5px;
+  }
+
+  .social-flex, 
+  .rate-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+  }
+
+  .rate-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .social-flex {
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+
+
   .social-flex img {
-    width: 35px;
+    width: 25px;
     height: auto;
-    margin-right: 10px;
+    margin-right: 5px;
   }
 
   .proposal-box p {
@@ -401,9 +430,11 @@
   }
 
   .tags {
+    margin-top: 10px;
     width: 95%;
-    height: 74px;
-    overflow-y: hidden;
+    height: 65px;
+    word-break: break-all;
+    overflow: hidden;
   }
 
   .active-proposal-flex {
@@ -656,7 +687,8 @@
 }
 
 .error-msg {
-  font-size: 30px;
+  font-size: 15px;
+  text-align: center;
   color: rgb(182, 6, 6);
 }
 
@@ -801,18 +833,125 @@
     letter-spacing: -0.06em;
 
   }
+  /**-------------------**/
 
+  .chart-container {
+        display: flex;
+        justify-content: left;
+        align-items: top;
+        flex-direction: row;
+        height: 250px;
+    }
+
+    .chart-flex {
+      flex-direction: row;
+      display: flex;
+      justify-content: space-between;
+      align-items: top;
+    }
+
+    .chart-ring {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    /* Donut chart base */
+    .donut-chart {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: conic-gradient(#027db6 calc(var(--percentage) * 1%), #e0e0e0 0%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* Inner white circle for ring effect */
+    .donut-chart::before {
+        content: "";
+        width: 90px;
+        height: 90px;
+        background: #ffffff;
+        border-radius: 50%;
+        position: absolute;
+    }
+
+    /* Centered percentage text */
+    .percentage-text {
+        position: absolute;
+        font-size: 20px;
+        font-weight: bold;
+        color:#027db6 ;
+    }
+
+    .chart-ring p {
+      font-size: 15px;
+      text-align: left;
+    }
+
+    /* Tooltip container */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 100px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 5px 10px;
+        border-radius: 4px;
+
+        font-size: 10px;
+        
+        /* Positioning */
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; /* Place the tooltip above the text */
+        left: 50%;
+        transform: translateX(-50%);
+        
+        /* Fade in tooltip */
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    /* Tooltip arrow */
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%; /* Position the arrow at the bottom of the tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+    }
+
+    /* Show tooltip text on hover */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
 
 </style>
 
 <body>
-  {% block content %} 
   <!-- MESSAGE DISPLAY -->
-   {% if messages %}
-    {% for message in messages %}
-      <p class="error-msg">{{message}}</p> 
-    {% endfor %}
-   {% endif %} 
+  {% if messages %}
+  {% for message in messages %}
+    <p class="error-msg">{{message}}</p> 
+  {% endfor %}
+ {% endif %} 
+
+  {% block content %} 
+  
   {% endblock content %}
 </body>
 
