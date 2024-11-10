@@ -70,6 +70,11 @@
     padding: 5px 20px;
   }
 
+  button#sendproposal {
+    font-size: 20px;
+    font-weight: 800;
+  }
+
   #required {
     color: red;
   }
@@ -145,8 +150,8 @@
   }
 
   #main {
-    width: 90%;
-    margin: 20px auto;
+    width: 100%;
+    margin: 10px auto;
   }
 
   #main hr {
@@ -253,16 +258,7 @@
     margin-left: 0px;
   }
 
-  .creator-box-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: top;
-  }
 
-  .creator-box-header h1#rate {
-    margin-top: 5px;
-  }
 
   .social-flex, 
   .rate-flex {
@@ -861,7 +857,7 @@
         width: 150px;
         height: 150px;
         border-radius: 50%;
-        background: conic-gradient(#027db6 calc(var(--percentage) * 1%), #e0e0e0 0%);
+        background: conic-gradient(#cc43e4  calc(var(--percentage) * 1%), #E0E0E0 0%);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -883,7 +879,7 @@
         position: absolute;
         font-size: 20px;
         font-weight: bold;
-        color:#027db6 ;
+        color:#cc43e4 ;
     }
 
     .chart-ring p {
@@ -940,19 +936,134 @@
         opacity: 1;
     }
 
+    #body-section {
+      max-width: auto;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    #navbar-body {
+      position: sticky;
+      top: 0;
+      width: 5%;
+      height: 100vh;
+      text-align: left;
+      background-color: #FFFFFF;
+      border-right : 2px solid rgba(129, 129, 129, 0.664);
+      transition: width 0.1s;
+    }
+
+    #navbar-body.maximized {
+      width: 20%;
+    }
+
+    #navbar-body.maximized h1#logo , #navbar-body h1#logo {
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 40px;
+
+    }
+
+    #navbar-body h1#logo {
+      font-size: 40px;
+      font-family: "Pacifico" , sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 900;
+    }
+
+    .navbar-header-flex {
+      margin: 10px 0;
+      margin-left: 10%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: left;
+      text-align: left;
+    }
+
+    .navbar-header-flex #maximize-button {
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .navbar-menu-flex {
+      display: flex;
+      flex-direction: column;
+      justify-content: left;
+      text-align: left;
+      margin-bottom: 20px;
+
+    }
+
+    .navbar-menu-flex span i , .navbar-menu-flex span a {
+      margin-top:20px;
+      font-size: 30px;
+    }
+
+    
+
+    #content-body {
+      width: 90%;
+    }
+
+    .navbar-links{
+        display: none;
+    }
+
+    .navbar-links.maximized {
+      display: flex;
+      flex-direction: column;
+    }
+
+
 </style>
 
 <body>
-  <!-- MESSAGE DISPLAY -->
-  {% if messages %}
-  {% for message in messages %}
-    <p class="error-msg">{{message}}</p> 
-  {% endfor %}
- {% endif %} 
 
-  {% block content %} 
+   <section id="body-section">
+    <section id="navbar-body">
+      <div id="navbar-flex" class="navbar-header-flex" >
+        <h1 id="logo"><span>P</span></h1>
+        <div class="navbar-links">
+          {% for url,link in links.items %}
+              <a href="{{link.url}}">{{link.name}}</a>
+              
+          {% endfor %}
+
+              <a href="{% url 'logout' %}">Logout</a>
+              <a href="mailto:hello@pluence.in">Email Support</a>
+        </div>
+        <div class="navbar-menu-flex">
+          <span id="maximize-button" onclick="minimizeNavbar()"><i class="fa-solid fa-bars"></i></span>
+          <span><a href="{% url 'home' %}"><i class="fa-solid fa-house"></i></a></span>
+          <span><a href=""><i class="fa-regular fa-circle-user"></i></a></span>
+        </div>
+        
+        
+        
+      </div>
+      
+      
+    </section>
   
-  {% endblock content %}
+    <section id="content-body">
+      {% if messages %}
+        {% for message in messages %}
+          <p class="error-msg">{{message}}</p> 
+        {% endfor %}
+      {% endif %} 
+      {% block content %} 
+    
+    
+      {% endblock content %}
+    </section>
+   </section>
+  
+  
+  
 </body>
 
 <!-- Google tag (gtag.js) -->
@@ -963,6 +1074,35 @@
   gtag('js', new Date());
 
   gtag('config', 'G-VMJN5EMEWJ');
+</script>
+
+<script>
+  function minimizeNavbar() {
+    const navbar = document.getElementById("navbar-body");
+    const navbar_btn = document.getElementById("maximize-button");
+    const logo = document.getElementById("logo");
+    const navbar_links = document.querySelector(".navbar-links");
+    const creator_grid = document.querySelector(".creator-grid");
+    const content = document.getElementById("content-body");
+
+    if (navbar.classList.contains("maximized")) {
+        navbar.classList.remove("maximized");
+        navbar_links.classList.remove("maximized");
+        navbar_btn.innerHTML ="<i class='fa-solid fa-bars'></i>"; 
+        logo.innerHTML = "<span>P</span>";
+        content.style.width="90%";
+
+    } else {
+        navbar.classList.add("maximized");
+        navbar_links.classList.add("maximized");
+        navbar_btn.innerHTML = "<i class='fa-solid fa-x'></i>";
+        logo.innerHTML = "<span>Pluence</span>";
+        content.style.width="75%";
+    }
+
+  }
+
+
 </script>
 
 </html>

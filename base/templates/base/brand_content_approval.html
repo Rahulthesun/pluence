@@ -4,6 +4,8 @@
     <section id="main">
         {% if account.brand_name %}
 
+        <!--
+        
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.brand_name}}</h1>
@@ -22,13 +24,15 @@
             <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
 
         </div>
+        -->
+        <h1>Content Approval Requests</h1>
 
         <hr>
 
 
         {% if pending_proposals %}
-            <h2>Content Approval Requests</h2>
-            <div class="active-proposal-box">
+            
+            <div class="active-proposal-box" style="margin-top: 20px;">
             {% for proposal in pending_proposals %}
 
             <div class="active-proposal-flex">
