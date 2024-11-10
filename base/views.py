@@ -116,10 +116,26 @@ def home(request):
                 creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('followers')
             else:
                 creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('-followers')
-            
+        #testing out brand account dynamic navbar 
+        
+
         context['creators'] = creator_accounts
         context['account'] = brand_account[0]
         context['pending_proposals'] = BrandProposal.objects.filter(proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+        links = {}
+        if context['pending_proposals'].exists():
+            num = len(context['pending_proposals'])
+            links["content_approval"]= {
+                'url' : reverse_lazy("pending_content_approval"),
+                'name' : f'Content Approval ({num})'
+            }
+                
+        links["your_proposals"] = {
+            'url': reverse("brand_proposals" ,kwargs={"brand_id":brand_account[0].id}),
+            'name': 'Your Proposals'
+        }
+
+        context["links"] = links
         template = 'base/brand_home.html'
     elif not creator_account.exists() and not brand_account.exists():        
         return redirect(reverse_lazy("account_selection"))
@@ -524,6 +540,8 @@ def get_brand_proposals(request, brand_id):
         'accepted_proposals' : accepted_proposals,
         'paid_proposals' : paid_proposals
     }
+
+
     return render(request, 'base/brand_proposals.html', context)
 
 class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
@@ -735,6 +753,13 @@ def brand_pending_approval_view(request):
         "pending_proposals": proposals,
         "account": brand_profile,
     }
+
+    links = {}
+    links['your_proposals'] = {
+        'url': reverse("brand_proposals" , kwargs={"brand_id":brand_profile.id}),
+        'name': "Your Proposals"
+    }
+    context['links'] = links
 
     return render(request , 'base/brand_content_approval.html' , context)
 

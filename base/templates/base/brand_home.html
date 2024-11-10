@@ -4,32 +4,8 @@
     <section id="main">
         {% if account.brand_name and account.email and account.subscription_active %}
 
-        <div class="header-flex">
-            <div class="account-info">
-                <h1>{{account.brand_name}}</h1>
-                <div class="link-flex">
-                    {% if account.website %}
-                    <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
-                    {% endif %}
-                    {% if account.email %}
-                    <a href="mailto:{{account.email}}"><i class="fa-solid fa-envelope"></i></a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
-                </div>
-                <p id="account-type"> Brand</p>
-            </div>
-            <div class="link-flex-box">
-                {% if pending_proposals %}
-                <a href="{% url 'pending_content_approval'%}"><button id="header">Content Review</button></a>
-                {% endif %}
-                <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
-                
-            </div>
-
-        </div>
-
+        <h1>Creator Search</h1>
         <hr>
-
         <div class="search-flex">
 
                 <form action="" id="search-form">
@@ -58,25 +34,17 @@
 
                 <div class="creator-box-header">
 
-                    
-
-                    <div class="social-flex">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
-                        <p><b>{{creator.username}}</b></p>
-                   
-                    </div>
-
-                    <div class="tooltip"><p>{% if creator.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{creator.audience_country}}</b> {% endif %}</p>
-                        <span class="tooltiptext">The Country where most of the creator's audience are based out of</span>
-                    </div>
-                    
 
                     
-
+                
                 
                 </div>
                 
+                <div class="social-flex">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="instagram logo">
+                    <p><b>{{creator.username}}</b></p>
                
+                </div>
                 
                 <div class="chart-flex">
                     <div class="chart-container">
@@ -85,7 +53,7 @@
                                 <div class="percentage-text">{{creator.engagement_rate}}%</div>
                                 
                             </div>
-                            <p>Engagement <br> Rate</p>
+                            <p><b>Engagement <br> Rate</b></p>
                         </div>
                                
                     </div>
@@ -98,7 +66,11 @@
                         
                         <h1 id="rate"> $ {{creator.average_rate | floatformat}} </h1>
                         <p>Avg Cost</p>
+                        
+                        
                     </div>
+
+                    
                 </div>
                 
                 <h1 id="rate">{% if creator.followers > 1000 %} {% widthratio creator.followers 1000 1 %}k <span id="followers">Followers</span> {% else %} {{creator.followers}} <span id="followers">Followers</span> {%endif%} </h1>
@@ -115,7 +87,10 @@
                 
                 -->
                 
-
+                <div class="tooltip"><p>{% if creator.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{creator.audience_country}}</b> {% endif %}</p>
+                    <span class="tooltiptext">The Country where most of the creator's audience are based out of</span>
+                </div>
+                
                 
 
                 <div class="tags">
@@ -128,7 +103,7 @@
                 
 
                 
-                <a href="{% url 'create_brand_proposal' creator.creator.id %}"><button>Send Proposal</button></a>
+                <a href="{% url 'create_brand_proposal' creator.creator.id %}"><button id="sendproposal">Send Proposal <i class="fa-solid fa-paper-plane"></i> </button></a>
             </div>
 
         {% empty %}
