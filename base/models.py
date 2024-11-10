@@ -15,8 +15,7 @@ transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiC
 
 class CreatorProfile(models.Model):
 
-    referral_code = models.CharField(max_length=10, unique=True, default=uuid.uuid4().hex[:10].upper())
-    referred_by = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+
 
 
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
