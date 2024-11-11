@@ -116,11 +116,8 @@
         {% elif not account.subscription_active %}
 
         <script type="text/javascript">
-            // Redirect after 5 seconds to the profile update page
-            setTimeout(function() {
-                window.location.href = "{% url 'brand_subscription' account.id %}";
-            }, 5000); 
-            // 5000 milliseconds = 5 seconds
+             // Redirect immediately to the subscription page
+             window.location.href = "{% url 'brand_subscription' account.id %}";
 
         </script>
 

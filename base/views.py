@@ -71,8 +71,7 @@ def landing_page_pricing(request):
 
 @login_required
 def home(request):
-    referral = Referral.objects.get(user=request.user)
-    context['referral_code'] = referral.code
+
 
 
     creator_account = CreatorProfile.objects.filter(user = request.user)
@@ -164,6 +163,7 @@ class EmailSignUp(UserPassesTestMixin , FormView):
     def form_valid(self , form):
         user = form.save()
         if user is not None:
+            """"
             referral_code = Referral.generate_code()
             Referral.objects.create(user=user, code=referral_code)
 
@@ -181,7 +181,7 @@ class EmailSignUp(UserPassesTestMixin , FormView):
                     messages.success(self.request,
                                      f"Referral successful! Thank you for joining via {referrer.username}'s referral.")
                 except Referral.DoesNotExist:
-                    messages.error(self.request, "Invalid referral code.")
+                    messages.error(self.request, "Invalid referral code.")"""
 
             login(self.request , user)
         return super(EmailSignUp,self).form_valid(form)    
@@ -228,17 +228,17 @@ class BrandAccountSubscription(UserPassesTestMixin ,LoginRequiredMixin ,FormView
     form_class = BrandSubscriptionForm
 
     def test_func(self):
-        brand = get_object_or_404(BrandProfile , id=self.kwargs.get("brand_id"))
-        return brand.user==self.request.user
+        brand = get_object_or_404(BrandProfile, id=self.kwargs.get("brand_id"))
+        return brand.user == self.request.user
 
     def form_valid(self, form):
-        brand = get_object_or_404(BrandProfile , id = self.kwargs.get('brand_id'))
-        brand.subscription_months = form.cleaned_data['months']
+        brand = get_object_or_404(BrandProfile, id=self.kwargs.get('brand_id'))
+        brand.subscription_months = int(form.cleaned_data['months'])
         brand.save()
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        return reverse("brand_subscription_payment" , kwargs={"brand_id": self.kwargs.get('brand_id')})
+        return reverse("brand_subscription_payment", kwargs={"brand_id": self.kwargs.get('brand_id')})
 
 @login_required 
 def brand_subscription_payment(request , brand_id):

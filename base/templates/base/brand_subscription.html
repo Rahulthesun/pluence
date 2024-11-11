@@ -2,45 +2,104 @@
 
 {% block content %}
 
-    
+<section id="subscription-selection">
+    <!-- Subscription Form -->
+    <form method="post" action="" id="subscription-form">
+        {% csrf_token %}
 
-    <section id="form">
-        <form method="post" action="">
-            <h1>Subscription</h1>
-            {% csrf_token %}
-    
-            {% for error in form.non_field_errors %}
-                <p><span id="error">{{error}}</span></p>
-            {% endfor %}
-            
-           
-            <h2 style="text-align: left; font-size: 50px; line-height: 40px;"><span id="cost">$5</span></h2>
-            {% for field in form %}
-            <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
-    
-                {{ field }} 
-            {% endfor %}
+        {% for error in form.non_field_errors %}
+            <p><span id="error">{{ error }}</span></p>
+        {% endfor %}
 
-            
-            
-            
-            <button type="submit">Pay</button>
-        </form>
-    </section>
+        <div class="pricing-content">
+            <h1>Choose Your Subscription Plan</h1>
 
-    <script>
+            <div class="pricing-types">
+                <!-- 3 Months Plan -->
+                <div class="pricing-box" data-plan="3">
+                    <h2>3 Months</h2>
+                    <div class="pricing-box-price">
+                        <h1>$15</h1>
+                        <p>/ 3 months</p>
+                    </div>
+                    <div class="pricing-signup">
+                        <button type="button" class="select-plan-button" data-months="3">
+                            Select Plan
+                        </button>
+                    </div>
+                </div>
 
-        var costElement = document.getElementById('cost');
-        var monthsInput = document.querySelector('input[name="months"]');
+                <!-- 6 Months Plan -->
+                <div class="pricing-box" data-plan="6">
+                    <h2>6 Months</h2>
+                    <div class="pricing-box-price">
+                        <h1>$30</h1>
+                        <p>/ 6 months</p>
+                    </div>
+                    <div class="pricing-signup">
+                        <button type="button" class="select-plan-button" data-months="6">
+                            Select Plan
+                        </button>
+                    </div>
+                </div>
 
-        function updateCost(){
-            var months = monthsInput.value;
-            var totalCost = months*5;
-            costElement.innerText = "$" + totalCost;
-        }
+                <!-- 12 Months Plan -->
+                <div class="pricing-box" data-plan="12">
+                    <h2>12 Months</h2>
+                    <div class="pricing-box-price">
+                        <h1>$60</h1>
+                        <p>/ 12 months</p>
+                    </div>
+                    <div class="pricing-signup">
+                        <button type="button" class="select-plan-button" data-months="12">
+                            Select Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-        monthsInput.addEventListener('input' , updateCost)
+            <!-- Hidden input to store selected plan duration -->
+            <input type="hidden" name="months" id="selected-months" value="3">
 
-    </script>
+            <!-- Submit Button -->
+            <button type="submit">Subscribe Now</button>
+        </div>
+    </form>
+</section>
+<style>
+    /* Highlight the selected pricing box */
+    .pricing-box.selected {
+        border: 2px solid #808080; /* Green border */
+        background-color: #f0f8ff; /* Light blue background */
+    }
 
-{% endblock  %}
+    /*  hover effect  */
+    .pricing-box:hover {
+        background-color: #f9f9f9;
+    }
+
+
+
+
+    .pricing-signup .select-plan-button:hover {
+        background-color: #808080;
+    }
+</style>
+<script>
+    // Handle click on the pricing tiles and set the value for the selected subscription duration
+    document.querySelectorAll('.select-plan-button').forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Set the hidden input value to the selected plan's duration
+            var months = this.getAttribute('data-months');
+            document.getElementById('selected-months').value = months;
+
+            //  highlight the selected tile
+            document.querySelectorAll('.pricing-box').forEach(function(box) {
+                box.classList.remove('selected');
+            });
+            this.closest('.pricing-box').classList.add('selected');
+        });
+    });
+</script>
+
+{% endblock %}
