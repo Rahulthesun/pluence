@@ -65,7 +65,7 @@
             <p>You don't have any Brand Proposals Right Now</p>
             {% if ig_account %}
                 <h2>Review Your Integrations For More Brand Reach</h2>
-                <a href="{% url 'integration_dashboard' account.id %}">Manage Integrations</a>
+                <a href="{% url 'integration_dashboard' ig_account.id %}">Manage Integrations</a>
                 <h2>We'll Email You When you have Brand Deals Waiting For You</h2>
                 {% else %}
                 <h2>Integrate Your Socials (IG) To Reach Brands</h2>

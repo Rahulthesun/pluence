@@ -33,7 +33,10 @@
             <h1 id="payment">
                 ${% if creator.balance %} {{creator.balance}} {% else %}0.0 {% endif %}
             </h1>
-            <p id="sub">+ ${{pending_payment}}</p>
+            <div class="tooltip"><p id="sub">+ $<span id="tooltip-underline">{{pending_payment}}</span></p>
+                <span class="tooltiptext">5% Platform Fee On Every Deal</span>
+            </div>
+            
         </div>
 
 

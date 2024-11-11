@@ -16,6 +16,12 @@
         <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
 
             {{ field }} 
+
+            {% if field.errors %}
+                {% for error in field.errors %}
+                <p id="error">{{error}}</p>
+                {% endfor %}
+            {% endif %}
         {% endfor %}
         
         <button type="submit">Integrate</button>

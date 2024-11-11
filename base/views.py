@@ -2,7 +2,15 @@ from django.forms import BaseModelForm
 from django.http.response import HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , redirect , get_object_or_404
 from django.urls import reverse_lazy , reverse
-from django.http import HttpResponse , Http404
+from django.http import HttpResponse , Http404 , JsonResponse
+
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.messages.views import SuccessMessageMixin
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
@@ -105,11 +113,13 @@ def home(request):
             context['proposals'] = None
 
         context['account'] = creator_account[0]  
-        links['social_integration'] = {
-            'url': reverse("integration_dashboard" , kwargs={"pk":creator_account[0].id}),
-            'name': "Manage Integrations"
-        }
 
+        dashboard = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
+        if dashboard.exists():
+            links['manage_integrations'] = {
+                    'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                    'name': "Manage Integrations"
+                    }
         links['payment_dashboard'] = {
             'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator_account[0].id}),
             'name': "Payment Dashboard"
@@ -616,10 +626,12 @@ def creator_proposal_view(request , pk):
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
                 'name': "Active Proposals"
         }
-    links['manage_integrations'] = {
-            'url': reverse("integration_dashboard" , kwargs={"pk":proposal.creator.id}),
-            'name': "Manage Integrations"
-            }
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
     links['payment_dashboard'] = {
             'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":proposal.creator.id}),
             'name': "Payment Dashboard"
@@ -731,10 +743,12 @@ def creator_active_proposals(request , creator_id):
         raise PermissionDenied
     active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     links={}
-    links['manage_integrations'] = {
-            'url': reverse("integration_dashboard" , kwargs={"pk":creator.id}),
-            'name': "Manage Integrations"
-            }
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
     links['payment_dashboard'] = {
             'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator.id}),
             'name': "Payment Dashboard"
@@ -760,9 +774,12 @@ def creator_payment_dashboard(request , creator_id):
     if creator.user != request.user :
         raise PermissionDenied
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    completed_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.COMPLETED)
     pending_payment = decimal.Decimal("0.00")
+    for proposal in completed_proposals:
+        creator.balance += round(decimal.Decimal(0.95) * proposal.proposed_amount , 1)
     for proposal in paid_proposals:
-        pending_payment += proposal.proposed_amount
+        pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
     active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     links={}
     if active_proposals.exists():
@@ -770,10 +787,13 @@ def creator_payment_dashboard(request , creator_id):
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator.id}),
                 'name': "Active Proposals"
         }
-    links['manage_integrations'] = {
-            'url': reverse("integration_dashboard" , kwargs={"pk":creator.id}),
-            'name': "Manage Integrations"
-            }
+    #shows manage integrations link in navbar only if dashboard exists
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
     context = {
         'pending_payment' : pending_payment,
         'paid_proposals' : paid_proposals,
@@ -976,15 +996,56 @@ def claim_referral_bonus(request):
 
     # Send response back (for example, in a JSON response)
     return JsonResponse({'success': True, 'new_balance': profile.balance})
-from django.urls import reverse_lazy
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.messages.views import SuccessMessageMixin
+
+
+
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    form_class= PasswordResetForm
     template_name = 'base/password_reset.html'
     email_template_name = 'base/password_reset_email.html'
     subject_template_name = 'base/password_reset_subject.txt'
-    success_message = "We've emailed you instructions for setting your password, " \
-                      "if an account exists with the email you entered. You should receive them shortly." \
-                      " If you don't receive an email, " \
-                      "please make sure you've entered the address you registered with, and check your spam folder."
-    success_url = reverse_lazy('users-home')
+    success_message =  "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly. If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+       response = super().form_valid(form)
+       try:
+        user = EmailUser.objects.get(email=form.cleaned_data['email'])
+       except EmailUser.DoesNotExist:
+        # Optionally handle the case where the email doesn't exist
+        messages.error(self.request, "No account found with this email address.")
+        return response
+       
+       token = default_token_generator.make_token(user)
+       uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+       self.send_mail(
+           to_email=form.cleaned_data['email'],
+           context={'uid': uid, 'token': token},
+       )
+       return response
+
+    #bypassing django's smtp email sending with BREVO API TRANSACTION EMAIL 
+    def send_mail(self , context , to_email):
+        transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        template_id = 13
+        to = [{"email": to_email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+             params={
+                'link': self.request.build_absolute_uri(reverse_lazy("password_reset_confirm", kwargs={"uidb64": context["uid"], "token": context["token"]}))
+            }
+        )
+        
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+            print("Email sent successfully.")
+            return True
+        except ApiException as e:
+            print(f"Error: {e}")
+            return False
+        except Exception as e:
+            print(f"Error: {e}")
+            return False

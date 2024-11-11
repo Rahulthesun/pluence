@@ -20,7 +20,7 @@ class CreatorProfile(models.Model):
     website = models.URLField(max_length=60 , null=True , blank=True)
     bio = models.TextField(null=True , blank=True)
 
-    balance= models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
+    balance= models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False , validators=[MinValueValidator(0)])
 
     active = models.BooleanField(default=False)
 
@@ -80,7 +80,7 @@ class BrandProfile(models.Model):
     
     about = models.TextField(null=True , blank=True)
 
-    subscription_months = models.IntegerField(default=1)
+    subscription_months = models.IntegerField(default=1 , validators=[MinValueValidator(1)])
 
     subscription_active = models.BooleanField(default=False)
     subscribed_date = models.DateTimeField(null=True , blank=True)
@@ -99,10 +99,10 @@ class InstagramAccountDashBoard(models.Model):
     creator = models.OneToOneField(CreatorProfile , on_delete=models.CASCADE)
     username = models.CharField(max_length=200 , null=True , blank = False)
     tags = models.TextField(null=True , blank=False)
-    followers = models.IntegerField(null= True , blank=False)
-    reach = models.IntegerField(null=True , blank=False)
-    profile_link_clicks = models.IntegerField(null=True , blank=True)
-    engagement = models.IntegerField(null=True , blank=False)
+    followers = models.IntegerField(null= True , blank=False ,validators=[MinValueValidator(0)])
+    reach = models.IntegerField(null=True , blank=False , validators=[MinValueValidator(0)])
+    profile_link_clicks = models.IntegerField(null=True , blank=True ,validators=[MinValueValidator(0)])
+    engagement = models.IntegerField(null=True , blank=False , validators=[MinValueValidator(0)])
 
     engagement_rate = models.DecimalField(max_digits=10,decimal_places=1 ,validators=[MinValueValidator(0.0)]  , default=0.0)
 
@@ -167,10 +167,10 @@ class InstagramAccountDashBoard(models.Model):
     #audience_age = models.CharField(max_length=100)
 
     #rates
-    story_rates = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=True)
-    reel_rates = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 ,blank=True)
+    story_rates = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=True,validators=[MinValueValidator(0)])
+    reel_rates = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 ,blank=True,validators=[MinValueValidator(0)])
     
-    average_rate = models.DecimalField(default=0 , decimal_places=2 , max_digits=10)
+    average_rate = models.DecimalField(default=0 , decimal_places=2 , max_digits=10,validators=[MinValueValidator(0)])
 
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -184,8 +184,8 @@ class BrandProposal(models.Model):
     account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
 
     description = models.TextField(null=True , blank=True)
-    timeline = models.IntegerField(default=3 , blank=False)
-    proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False)
+    timeline = models.IntegerField(default=3 , blank=False , validators=[MinValueValidator(0)])
+    proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False , validators=[MinValueValidator(0)])
     item_link = models.URLField(null=True , blank=True)
 
     class Content_Choices(models.TextChoices):
