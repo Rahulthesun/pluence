@@ -7,6 +7,8 @@ account_choices = (
 )
 
 
+
+#account-selection
 class AccountTypeForm(forms.Form):
     account_type = forms.ChoiceField(
         widget=forms.RadioSelect,

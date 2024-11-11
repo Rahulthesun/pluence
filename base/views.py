@@ -2,7 +2,15 @@ from django.forms import BaseModelForm
 from django.http.response import HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , redirect , get_object_or_404
 from django.urls import reverse_lazy , reverse
-from django.http import HttpResponse , Http404
+from django.http import HttpResponse , Http404 , JsonResponse
+
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.messages.views import SuccessMessageMixin
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
@@ -72,8 +80,6 @@ def landing_page_pricing(request):
 @login_required
 def home(request):
 
-
-
     creator_account = CreatorProfile.objects.filter(user = request.user)
     brand_account = BrandProfile.objects.filter(user = request.user)
     context = {}
@@ -81,12 +87,19 @@ def home(request):
         proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
         ig_account = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
         active_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.PAID)
-        
+        #referral = Referral.objects.get(referrer = creator_account)
+        #context['referral_code'] = referral.code
+        links = {}
         if active_proposals.exists():
             context['active_proposals'] = active_proposals
+            links['active_proposals'] = {
+            'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator_account[0].id}),
+            'name': "Active Proposals"
+            }
 
         elif not active_proposals.exists():
             context['active_proposals'] = None
+            
 
         if proposals.exists():
             context['proposals'] = proposals
@@ -99,7 +112,27 @@ def home(request):
 
         else :
             context['proposals'] = None
-        context['account'] = creator_account[0]
+
+        context['account'] = creator_account[0]  
+
+        dashboard = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
+        if dashboard.exists():
+            links['manage_integrations'] = {
+                    'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                    'name': "Manage Integrations"
+                    }
+        links['payment_dashboard'] = {
+            'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator_account[0].id}),
+            'name': "Payment Dashboard"
+        }
+
+        links['update_profile'] = {
+            'url': reverse("creator_profile_update" , kwargs={"pk":creator_account[0].id}),
+            'name': "Update Profile"
+        }
+       
+        context['links'] = links
+        context['username']= creator_account[0].name
         template = 'base/creator_home.html'
     elif brand_account.exists():
         search_query = request.GET.get("search" , "")
@@ -124,20 +157,28 @@ def home(request):
 
         context['creators'] = creator_accounts
         context['account'] = brand_account[0]
-        context['pending_proposals'] = BrandProposal.objects.filter(proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+        account = brand_account[0]
+        if account.brand_name:
+            context['username'] = account.brand_name
+        context['pending_proposals'] = BrandProposal.objects.filter(brand = account ,proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+        your_proposals = BrandProposal.objects.filter(brand=account)
         links = {}
+        
         if context['pending_proposals'].exists():
             num = len(context['pending_proposals'])
             links["content_approval"]= {
                 'url' : reverse_lazy("pending_content_approval"),
                 'name' : f'Content Approval ({num})'
             }
-                
-        links["your_proposals"] = {
-            'url': reverse("brand_proposals" ,kwargs={"brand_id":brand_account[0].id}),
-            'name': 'Your Proposals'
+        if your_proposals.exists():
+            links["your_proposals"] = {
+                'url': reverse("brand_proposals" ,kwargs={"brand_id":brand_account[0].id}),
+                'name': 'Your Proposals'
+            }
+        links['update_profile'] = {
+            'url': reverse("brand_profile_update" , kwargs={"pk":account.id}),
+            'name': "Update Profile"
         }
-
         context["links"] = links
         template = 'base/brand_home.html'
     elif not creator_account.exists() and not brand_account.exists():        
@@ -163,7 +204,11 @@ class EmailSignUp(UserPassesTestMixin , FormView):
     def form_valid(self , form):
         user = form.save()
         if user is not None:
+
             """"
+=======
+            '''
+>>>>>>> d6db619a5c70cdc9af0a12524861e1b5aedbdb1f
             referral_code = Referral.generate_code()
             Referral.objects.create(user=user, code=referral_code)
 
@@ -181,7 +226,11 @@ class EmailSignUp(UserPassesTestMixin , FormView):
                     messages.success(self.request,
                                      f"Referral successful! Thank you for joining via {referrer.username}'s referral.")
                 except Referral.DoesNotExist:
+<<<<<<< HEAD
                     messages.error(self.request, "Invalid referral code.")"""
+
+
+    
 
             login(self.request , user)
         return super(EmailSignUp,self).form_valid(form)    
@@ -443,13 +492,30 @@ class EmailVerification(UserPassesTestMixin , LoginRequiredMixin , FormView):
         return reverse_lazy("home")
 
 def integration_dashboard(request , pk):
-    dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
-    if dashboard.creator.user != request.user :
-        raise PermissionDenied
-    context = {
-        'dashboard': dashboard,
-    }
-    return render(request , 'base/integration_dashboard.html' , context)
+    try:
+        dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
+    except Http404:
+        return redirect(reverse_lazy("instagram_integration"))
+    else:
+        if dashboard.creator.user != request.user :
+            raise PermissionDenied
+        links={}
+        active_proposals = BrandProposal.objects.filter(creator = dashboard.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+        if active_proposals.exists():
+            links['active_proposals'] = {
+                'url': reverse("creator_active_proposals" , kwargs={"creator_id":dashboard.creator.id}),
+                'name': "Active Proposals"
+            }
+        links['payment_dashboard'] = {
+                'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":dashboard.creator.id}),
+                'name': "Payment Dashboard"
+            }
+
+        context = {
+            'dashboard': dashboard,
+            "links": links
+        }
+        return render(request , 'base/integration_dashboard.html' , context)
 
 
 class AccountIntegration(LoginRequiredMixin ,FormView):
@@ -534,13 +600,55 @@ class DashboardImageUpdate(UserPassesTestMixin,LoginRequiredMixin , FormView):
         id = self.kwargs.get('pk')
         return reverse("integration_dashboard" , kwargs= {"pk": id})
     
+def brand_proposal_view(request , pk):
+    proposal = get_object_or_404(BrandProposal , id=pk)
+    if proposal.brand.user != request.user:
+        raise PermissionDenied
+    links = {}
+    pending_proposals = BrandProposal.objects.filter(brand = proposal.brand , proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    if pending_proposals.exists():
+        links["content_approval"]= {
+                'url' : reverse_lazy("pending_content_approval"),
+                'name' : f'Content Approval ({len(pending_proposals)})'
+            }
+    links['your_proposals'] = {
+            "url" : reverse("brand_proposals" , kwargs={"brand_id": proposal.brand.id}),
+            "name": "Your Proposals"
+        } 
     
+    context = {
+        "proposal": proposal,
+        "links": links
+    }
+
+    return render(request , 'base/brand_proposal_view.html' , context)
+
 def creator_proposal_view(request , pk):
     proposal = get_object_or_404(BrandProposal , id = pk)
     if proposal.creator.user != request.user :
         raise PermissionDenied
+    links={}
+    active_proposals = BrandProposal.objects.filter(creator=proposal.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    if active_proposals.exists():
+        links['active_proposals'] = {
+                'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
+                'name': "Active Proposals"
+        }
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
+    links['payment_dashboard'] = {
+            'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":proposal.creator.id}),
+            'name': "Payment Dashboard"
+            }
+
+
     context = {
-        'proposal' : proposal
+        'proposal' : proposal,
+        "links" : links
     }
 
     return render(request , 'base/creator_proposal_view.html' , context)
@@ -556,7 +664,7 @@ def get_brand_proposals(request, brand_id):
     proposals = BrandProposal.objects.filter(brand = brand , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
     accepted_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.ACCEPTED)
     paid_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.PAID)
-
+    pending_proposals = BrandProposal.objects.filter(brand= brand , proposal_status= BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
     context = {
         'account':brand,
         'proposals': proposals,
@@ -564,7 +672,17 @@ def get_brand_proposals(request, brand_id):
         'paid_proposals' : paid_proposals
     }
 
+    links = {}
+    num = len(pending_proposals)
+    #if there are pending proposals , display the link in navbar
+    if pending_proposals.exists():
+        links["content_approval"]= {
+                    'url' : reverse_lazy("pending_content_approval"),
+                'name' : f'Content Approval ({num})'
+            }
 
+
+    context['links'] = links
     return render(request, 'base/brand_proposals.html', context)
 
 class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
@@ -632,8 +750,20 @@ def creator_active_proposals(request , creator_id):
     if creator.user != request.user:
         raise PermissionDenied
     active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    links={}
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
+    links['payment_dashboard'] = {
+            'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator.id}),
+            'name': "Payment Dashboard"
+            }
     context = {
-        "account":creator
+        "account":creator,
+        "links": links
     }
     
     if active_proposals.exists():
@@ -652,13 +782,31 @@ def creator_payment_dashboard(request , creator_id):
     if creator.user != request.user :
         raise PermissionDenied
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    completed_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.COMPLETED)
     pending_payment = decimal.Decimal("0.00")
+    for proposal in completed_proposals:
+        creator.balance += round(decimal.Decimal(0.95) * proposal.proposed_amount , 1)
     for proposal in paid_proposals:
-        pending_payment += proposal.proposed_amount
+        pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
+    active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    links={}
+    if active_proposals.exists():
+        links['active_proposals'] = {
+                'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator.id}),
+                'name': "Active Proposals"
+        }
+    #shows manage integrations link in navbar only if dashboard exists
+    dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
+    if dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'name': "Manage Integrations"
+                }
     context = {
         'pending_payment' : pending_payment,
         'paid_proposals' : paid_proposals,
-        'account':creator
+        'account':creator,
+        "links":links
     }
 
     return render(request , 'base/creator_payment_dashboard.html' , context)
@@ -770,7 +918,7 @@ def content_approval_process(request, proposal_id):
 
 def brand_pending_approval_view(request):
     brand_profile = get_object_or_404(BrandProfile , user = request.user)
-    proposals = BrandProposal.objects.filter(proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    proposals = BrandProposal.objects.filter(brand = brand_profile , proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
 
     context = {
         "pending_proposals": proposals,
@@ -790,10 +938,28 @@ def brand_content_review(request , proposal_id):
     approval_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id)
     if approval_content[0].proposal.brand.user != request.user:
         raise PermissionDenied
+    
+    links = {}
+    proposal = get_object_or_404(BrandProposal , id = proposal_id)
+    pending_proposals = BrandProposal.objects.filter(brand = proposal.brand , proposal_status=BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    your_proposals = BrandProposal.objects.filter(brand=proposal.brand) 
+    if pending_proposals.exists():
+        links['content_approval'] = {
+            "url": reverse_lazy("pending_content_approval"),
+            "name": f"Content Approval ({len(pending_proposals)})"
+        }
+    if your_proposals.exists():
+        links['your_proposals'] ={
+            'url': reverse("brand_proposals" , kwargs={"brand_id": proposal.brand.id}),
+            'name': "Your Proposals"
+        }
+
     context = {
         "content": approval_content[0],
-        "content_list": approval_content
+        "content_list": approval_content,
+        "links": links
     }
+
     return render(request , 'base/brand_content_review.html' , context) 
 
 def approve_content(request , proposal_id):
@@ -838,15 +1004,56 @@ def claim_referral_bonus(request):
 
     # Send response back (for example, in a JSON response)
     return JsonResponse({'success': True, 'new_balance': profile.balance})
-from django.urls import reverse_lazy
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.messages.views import SuccessMessageMixin
+
+
+
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    form_class= PasswordResetForm
     template_name = 'base/password_reset.html'
     email_template_name = 'base/password_reset_email.html'
     subject_template_name = 'base/password_reset_subject.txt'
-    success_message = "We've emailed you instructions for setting your password, " \
-                      "if an account exists with the email you entered. You should receive them shortly." \
-                      " If you don't receive an email, " \
-                      "please make sure you've entered the address you registered with, and check your spam folder."
-    success_url = reverse_lazy('users-home')
+    success_message =  "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly. If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+       response = super().form_valid(form)
+       try:
+        user = EmailUser.objects.get(email=form.cleaned_data['email'])
+       except EmailUser.DoesNotExist:
+        # Optionally handle the case where the email doesn't exist
+        messages.error(self.request, "No account found with this email address.")
+        return response
+       
+       token = default_token_generator.make_token(user)
+       uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+       self.send_mail(
+           to_email=form.cleaned_data['email'],
+           context={'uid': uid, 'token': token},
+       )
+       return response
+
+    #bypassing django's smtp email sending with BREVO API TRANSACTION EMAIL 
+    def send_mail(self , context , to_email):
+        transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        template_id = 13
+        to = [{"email": to_email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+             params={
+                'link': self.request.build_absolute_uri(reverse_lazy("password_reset_confirm", kwargs={"uidb64": context["uid"], "token": context["token"]}))
+            }
+        )
+        
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+            print("Email sent successfully.")
+            return True
+        except ApiException as e:
+            print(f"Error: {e}")
+            return False
+        except Exception as e:
+            print(f"Error: {e}")
+            return False

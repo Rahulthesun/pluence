@@ -22,6 +22,7 @@ urlpatterns = [
     
     path("integration_dashboard/<int:pk>/" , views.integration_dashboard , name="integration_dashboard"),
     path("creator_proposal_view/<int:pk>/" , views.creator_proposal_view , name='creator_proposal_detail' ),
+    path("brand_proposal_view/<int:pk>/" , views.brand_proposal_view , name='brand_proposal_detail' ),
     path("create_brand_proposal/<int:creator_id>/" , CreateBrandProposal.as_view() , name='create_brand_proposal' ),
     path("brand_proposal/accept/<int:proposal_id>/" , views.accept_brand_proposal , name='accept_brand_proposal' ),
     path("brand_proposal/reject/<int:proposal_id>/" , views.reject_brand_proposal , name='reject_brand_proposal' ),

@@ -1,4 +1,4 @@
-{% extends 'base/main.html' %}
+{% extends 'base/form_main.html' %}
 
 {% block content %}
 <section id="form">
@@ -15,9 +15,11 @@
 
         <p>{{form.password.label_tag}}</p>
         {{form.password}}
-        <p>No Account Yet ? <a href="{% url 'signup' %}">SignUp here</a></p>
+        <p>No Account Yet ? <a href="{% url 'signup' %}">SignUp here</a> </p>
+        <p><a href="{% url 'password_reset' %}"><i>Forgot Password?</i></a></p>
+        
         <button type="submit">Login</button>
-        <a href="{% url 'password_reset' %}"><i>Forgot Password?</i></a>
+        
     </form>
 </section>
 

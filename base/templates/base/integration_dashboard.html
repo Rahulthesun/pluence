@@ -3,6 +3,8 @@
 {% block content %}
     <section id="main">
 
+        
+        <!--  
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{dashboard.creator.name}}</h1>
@@ -19,10 +21,12 @@
             <a href="{% url 'home' %}"><button id="header">Home</button></a>
             
         </div>
+        -->
 
+        <h1>My Integrations</h1>
         <hr>
 
-        <h2>My Integrations</h2>
+       
         <div class="creator-grid">
             
             <div class="creator-box">
@@ -38,9 +42,7 @@
                     
                     </div>
 
-                    <div class="tooltip"><p>{% if dashboard.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{dashboard.audience_country}}</b> {% endif %}</p>
-                        <span class="tooltiptext">The Country where most of the creator's audience are based out of</span>
-                    </div>
+                    
                 
                 </div>
 
@@ -83,7 +85,9 @@
                 -->
 
 
-
+                <div class="tooltip"><p>{% if dashboard.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{dashboard.audience_country}}</b> {% endif %}</p>
+                    <span class="tooltiptext">The Country where most of the creator's audience are based out of</span>
+                </div>
 
                 <div class="tags">
                     <p>{% if dashboard.tags %}{{dashboard.tags}}{% else %} No Tags {%endif%}</p>
@@ -91,8 +95,12 @@
 
                 <div class="button-distance-flex">
                     <a href="{% url 'instagram_integration_update' dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>
+                    
+                    <!--
                     <a href="{% url 'dashboard_image_update' dashboard.id %}"><button id="small">
                         {% if dashboard.dashboard_img %}Edit Image{% else %}Upload Image{% endif %}</button></a>
+                    -->
+                    
                 </div>
 
             </div>
