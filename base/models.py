@@ -14,10 +14,6 @@ transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiC
 # Create your models here.
 
 class CreatorProfile(models.Model):
-
-
-
-
     user = models.OneToOneField(EmailUser , on_delete=models.CASCADE)
     name = models.CharField(max_length=200 , null=True , blank=True)
     contact_email = models.EmailField(max_length=200 , null=True , blank=False , unique=True)

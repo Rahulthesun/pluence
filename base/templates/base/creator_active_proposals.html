@@ -3,6 +3,8 @@
 {% block content %}
     <section id="main">
         
+        
+        <!--
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.name}}</h1>
@@ -24,10 +26,11 @@
             
         </div>
 
+        -->
+
+        <h1>Active Proposals</h1>
+
         <hr>
-
-        <h2>Active Proposals</h2>
-
             
         <div class="active-proposal-box">
             {% for proposal in active_proposals %}    
@@ -36,7 +39,7 @@
                 <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
                 <p>{{proposal.brand.brand_name}}</p>
                 <p id="sub">{{proposal.content_type}}</p>
-                <p id="sub">{{proposal.duration_left.days}} Day{%if proposal.duration_left.days > 1%}s{%endif%} Left</p>
+                <p id="sub">{% if proposal.duration_left.days > 0 %}{{proposal.duration_left.days}} Day{%if proposal.duration_left.days > 1%}s{%endif%} Left{%else %}  <span id="error">Deal Expired !!</span> {%endif%}</p>
                 <p><span id="green">{{proposal.proposal_status}}</span></p>
                 <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
             </div>   

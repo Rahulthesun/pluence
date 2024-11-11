@@ -5,6 +5,9 @@
         {% if account.name and account.contact_email %}
         
         
+        
+
+        <!--
         <div class="header-flex">
             <div class="account-info">
                 <h1>{{account.name}}</h1>
@@ -32,11 +35,11 @@
             {% endif %}
             </div>   
         </div>
-        
+        -->
+    
 
+        <h1>Brand Proposals</h1>
         <hr>
-
-        <h2>Brand Proposals</h2>
         <div class="proposal-grid">
             {% for proposal in proposals %}
             <div class="proposal-box">
@@ -58,10 +61,19 @@
                 
             </div>
             {% empty %}
-       
-            <p>You don't have any Brand Proposals Right Now</p>
-            {% endfor %}        
         </div>
+            <p>You don't have any Brand Proposals Right Now</p>
+            {% if ig_account %}
+                <h2>Review Your Integrations For More Brand Reach</h2>
+                <a href="{% url 'integration_dashboard' account.id %}">Manage Integrations</a>
+                <h2>We'll Email You When you have Brand Deals Waiting For You</h2>
+                {% else %}
+                <h2>Integrate Your Socials (IG) To Reach Brands</h2>
+                <a  href="{% url 'instagram_integration' %}" >Create Integration </a>
+            {% endif %}
+
+            {% endfor %}        
+        
 
         {% else %}
 

@@ -1,0 +1,310 @@
+{% include 'base/setup.html' %}
+
+<style>
+    html,
+  body {
+    font-family: "Poppins", sans-serif;
+    color: black;
+    margin: 0;
+    padding: 0;
+  }
+
+    #form , #selection-form {
+    text-align: center;
+    width: 30%;
+    margin: 50px auto;
+  }
+
+  #selection-form {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+  }
+
+  #form p {
+    text-align: left;
+    margin-bottom: 5px;
+  }
+
+  #form input[type="text"],
+  #form input[type="password"],
+  #form input[type="email"],
+  #form input[type="url"],
+  #form input[type="number"],
+  #form select,
+  #form textarea,
+  .search-flex select,
+  .search-flex input[type="search"] {
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    padding: 1px 5px;
+    border: 2px solid black;
+  }
+
+  .search-flex select,
+  .search-flex input[type="search"] {
+    height: 50px;
+  }
+
+  .search-flex,
+  .search-flex form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 20px auto;
+  }
+
+  .search-flex form {
+    justify-content: center;
+    align-items: bottom;
+    margin: 5px 5px;
+  }
+
+  .search-flex form#search-form {
+    width: 50%;
+  }
+
+  button#submit {
+    margin-top: 0px;
+    padding: 5px 20px;
+  }
+
+  button#sendproposal {
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  #required {
+    color: red;
+  }
+
+  #form textarea {
+    height: 80px;
+    resize: vertical;
+  }
+
+  #form h1 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  button {
+    padding: 10px 50px;
+    font-size: 25px;
+    font-weight: 600;
+    color: white;
+    background-color: black;
+    border: none;
+    margin-top: 20px;
+  }
+
+  button:hover {
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+  }
+
+  #error {
+    font-size: 15px;
+    color: rgb(190, 2, 2);
+  }
+
+  a {
+    color: black;
+    margin-top: 10px;
+  }
+
+  #id_account_type {
+    margin: 20px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #form input[type="radio"] {
+    margin-right: 10px;
+  }
+
+  #form label#radio-label {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 40px;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  #form input[type="radio"]:checked + label {
+    border-color: green;
+  }
+
+  #form img {
+    width: 60%;
+  }
+
+  
+.pricing-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+    max-width: 1500px;
+    margin: 0px auto;
+    margin-bottom: 50px;
+  }
+  
+
+  .pricing-heading h1 , .pricing-content h1 {
+    font-weight: 600;
+    font-size: 50px;
+    line-height: 60px;
+    text-align: center;
+    letter-spacing: -0.06em;
+
+
+  }
+
+  .pricing-box a {
+    text-decoration: none;
+  }
+
+
+  .pricing-types {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .pricing-box {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid red;
+    margin: 10px 40px;
+    width: 60%;
+    align-items: center;
+
+    background: #FFFFFF;
+    border: 3px solid #888888;
+    border-radius: 40px;
+
+  }
+
+  .pricing-signup {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    margin-bottom: 20px;
+  }
+
+  .pricing-signup button {
+    margin-top: 0px;
+    border-style: none;
+    outline: none;
+    margin-left: 0px;
+    background-color: #000;
+    color: #fff;
+    padding: 8px 40px;
+    border-radius: 40px;
+
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 54px;
+    letter-spacing: -0.06em;
+
+  }
+
+  .pricing-signup button:hover {
+    background-color: #fff;
+    color: #000;
+    border: 4px solid black;
+  }
+
+  .pricing-box h2 {
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 50px;
+    letter-spacing: -0.06em;
+
+    color: #292929;
+
+
+  }
+
+  .pricing-box-price {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: baseline;
+    width: 80%;
+  }
+
+  .pricing-box-price h1 {
+    font-weight: 500;
+    font-size: 80px;
+    line-height: 10px;
+    letter-spacing: -0.06em;
+
+    color: #000000;
+    margin-right: 10px;
+
+
+  }
+
+  .pricing-box-price p {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 44px;
+    letter-spacing: -0.06em;
+  }
+
+  .pricing-box-features {
+    width: 80%;
+    text-align: left;
+    height: 280px;
+
+  }
+
+  .pricing-box-features h3 {
+    margin-top: 0px;
+    font-weight: 800;
+    font-size: 24px;
+    line-height: 20px;
+    letter-spacing: -0.06em;
+
+
+  }
+
+
+  .pricing-box-features li {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 33px;
+    letter-spacing: -0.06em;
+
+  }
+
+</style>
+
+<body>
+    {% if messages %}
+        {% for message in messages %}
+          <p class="error-msg">{{message}}</p> 
+        {% endfor %}
+      {% endif %} 
+      {% block content %} 
+    
+    
+      {% endblock content %}
+</body>
+
+</html>
