@@ -1078,7 +1078,7 @@ def tiktok_authorize(request):
             'client_key' : TIKTOK_CLIENT_KEY,
             'response_type': "code",
             'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
-            'scope': "user.info.basic",
+            'scope': "user.info.basic,user.info.profile,user.info.stats",
             "state": "some random_state",
             'code_challenge': code_challenge,
             'code_challenge_method': 'S256'
@@ -1111,14 +1111,6 @@ def tiktok_authorize(request):
     return redirect(reverse("tiktok_get_data" , kwargs={"dash_id": tiktok_dash.id}))
     
 
-
-    
-    
-    
-    
-    
-    
-
 def tiktok_user_data(request , dash_id):
     tiktok_dash = get_object_or_404(TiktokDashboard , id=dash_id)
     access_token = tiktok_dash.access_token
@@ -1127,7 +1119,7 @@ def tiktok_user_data(request , dash_id):
         'Authorization': f'Bearer {access_token}'
     }
     params = {
-        'fields': 'avatar_url,open_id,union_id'  # Requesting specific fields
+        'fields': 'avatar_url,open_id,union_id,display_name,bio_description,profile_deep_link,is_verified,username,follower_count,likes_count,video_count'  # Requesting specific fields
     }
     user_data = requests.get(user_data_url , headers=headers , params=params)
     if user_data.status_code != 200:
