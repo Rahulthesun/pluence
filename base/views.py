@@ -1075,7 +1075,7 @@ def tiktok_authorize(request):
     authorization_data = {
         'client_key' : TIKTOK_CLIENT_KEY,
         'response_type': "code",
-        'redirect_uri': reverse_lazy("tiktok_get_token"),
+        'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_get_token")),
         'scope': "user.info.basic",
         "state": "some random_state",
         'code_challenge': code_challenge,
