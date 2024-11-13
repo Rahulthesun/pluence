@@ -1146,7 +1146,14 @@ def tiktok_user_data(request , dash_id):
     user_info_response = {
         'avatar_url': user_info.get('avatar_url'),
         'open_id': user_info.get('open_id'),
-        'union_id': user_info.get('union_id')
+        'union_id': user_info.get('union_id'),
+        'display_name': user_info.get('display_name'),
+        'profile_deep_link': user_info.get('profile_deep_link'),
+        'is_verified': user_info.get('is_verified'),
+        'follower_count': user_info.get('follower_count'),
+        'username': user_info.get('username'),
+        'likes_count': user_info.get('likes_count'),
+        'video_count': user_info.get('video_count'),
     }
     
     print(user_info_response)  # Log user data for debugging
