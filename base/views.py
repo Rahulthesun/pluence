@@ -1106,7 +1106,7 @@ def tiktok_access_token(request):
 
     access_token = response.json().get("access_token")
     if not access_token:
-        return HttpResponse(response.json)
+        return HttpResponse(response.json())
     tiktok_dash = TiktokDashboard.objects.create(
             user = request.user,
             access_token = access_token
