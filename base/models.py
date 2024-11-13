@@ -95,7 +95,7 @@ class BrandProfile(models.Model):
         return f"{self.user.email.split('@')[0]} -{self.brand_name} Brand {self.id}"
 
 class InstagramAccountDashBoard(models.Model):
-    dashboard_img = models.URLField(null=True , blank=False)
+    dashboard_img = models.URLField(null=True , blank=True)
     creator = models.OneToOneField(CreatorProfile , on_delete=models.CASCADE)
     username = models.CharField(max_length=200 , null=True , blank = False)
     tags = models.TextField(null=True , blank=False)
@@ -177,6 +177,13 @@ class InstagramAccountDashBoard(models.Model):
 
     def __str__(self):
         return f"{self.username} - IG Account"
+    
+class TiktokDashboard(models.Model):
+    user = models.ForeignKey(EmailUser , on_delete=models.CASCADE)
+    #creator = models.OneToOneField(CreatorProfile , on_delete=models.SET_NULL , null=True)
+    access_token = models.CharField(null=False)
+
+    created = models.DateTimeField(auto_now_add=True)
 
 class BrandProposal(models.Model):
     brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)

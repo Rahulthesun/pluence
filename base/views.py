@@ -1,3 +1,4 @@
+import urllib.parse , os , hashlib
 from django.forms import BaseModelForm
 from django.http.response import HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , redirect , get_object_or_404
@@ -15,7 +16,7 @@ from django.utils.encoding import force_bytes
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral
+from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral , TiktokDashboard
 
 
 
@@ -28,11 +29,13 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.exceptions import PermissionDenied 
 
-import requests , datetime , decimal , base64
+import requests , datetime , decimal , base64 , urllib
 from django.utils import timezone
 from paypal.standard.forms import PayPalPaymentsForm
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+
+from pluence.settings import TIKTOK_CLIENT_KEY , TIKTOK_CLIENT_SECRET
 
 imgbb_key = '4293ead9e871a798ed6d0580bb00f15c'
 imgbb_url = 'https://api.imgbb.com/1/upload'
@@ -1057,3 +1060,73 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         except Exception as e:
             print(f"Error: {e}")
             return False
+        
+def generate_code_verifier():
+    return base64.urlsafe_b64encode(os.urandom(32)).decode('utf-8').rstrip("=")
+
+# Create a code challenge by hashing the verifier with SHA-256 and encoding in base64
+def generate_code_challenge(code_verifier):
+    code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+    return base64.urlsafe_b64encode(code_challenge).decode('utf-8').rstrip("=")
+        
+def tiktok_authorize(request):
+    code_verifier = generate_code_verifier()
+    code_challenge = generate_code_challenge(code_verifier)
+    authorization_data = {
+        'client_key' : TIKTOK_CLIENT_KEY,
+        'response_type': "code",
+        'redirect_uri': reverse_lazy("tiktok_get_token"),
+        'scope': "user.info.basic",
+        "state": "some random_state",
+        'code_challenge': code_challenge,
+        'code_challenge_method': 'S256'
+    }
+    print(authorization_data['redirect_uri'])
+    #encoding authorization parameters into the url
+    authorization_url = f"https://www.tiktok.com/v2/auth/authorize?{urllib.parse.urlencode(authorization_data)}"
+    print(authorization_url)
+    return redirect(authorization_url)
+
+def tiktok_access_token(request):
+    authorization_code = request.GET.get('code')
+    if not authorization_code:
+        return redirect(reverse_lazy("tiktok_authorize"))
+    access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
+    payload = {
+        'client_key': TIKTOK_CLIENT_KEY,
+        'client_secret': TIKTOK_CLIENT_SECRET,
+        'code': authorization_code,
+        'code_verifier': request.session.get('code_verifier'),
+        'grant_type': 'authorization_code'
+    }
+    response = requests.post(access_token_url , data=payload)
+
+    if response.status_code != 200:
+        return HttpResponse(f"ERROR: {response.status_code}")
+    
+    access_token = response.json().get('data' , {}).get("access_token")
+    tiktok_dash = TiktokDashboard.objects.create(
+            user = request.user,
+            access_token = access_token
+    )
+
+    if not access_token:
+        return HttpResponse(f"Something Went Wrong!! Try again Later")
+    return redirect(reverse("tiktok_user_data" , kwargs={"dash_id": tiktok_dash.id}))
+
+def tiktok_user_data(request , dash_id):
+    tiktok_dash = get_object_or_404(TiktokDashboard , id=dash_id)
+    access_token = tiktok_dash.access_token
+    user_data_url = "https://open-api.tiktok.com/user/info/"
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    user_data = requests.get(user_data_url , headers=headers  )
+    if user_data.status_code != 200:
+        return JsonResponse({"error": "Failed to get user info", "details": user_data.json()}, status=400)
+
+    user_data_json = user_data.json()
+
+    # Return user data or render a template
+    print(user_data_json)
+    return HttpResponse(user_data_json)

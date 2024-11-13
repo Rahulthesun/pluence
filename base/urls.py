@@ -54,6 +54,10 @@ urlpatterns = [
          PasswordResetCompleteView.as_view(template_name='base/password_reset_complete.html'),
          name='password_reset_complete'),
 
+     path("tiktok/authorize" , views.tiktok_authorize, name="tiktok_authorize"),
+     path("tiktok/get-token/" , views.tiktok_access_token , name="tiktok_get_token"),
+     path("tiktok/get-token/<int:dash_id>" , views.tiktok_user_data , name="tiktok_get_data"),
+
 ]
 
 if settings.DEBUG == True:
