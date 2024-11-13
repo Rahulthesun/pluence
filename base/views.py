@@ -1122,16 +1122,40 @@ def tiktok_authorize(request):
 def tiktok_user_data(request , dash_id):
     tiktok_dash = get_object_or_404(TiktokDashboard , id=dash_id)
     access_token = tiktok_dash.access_token
-    user_data_url = "https://open-api.tiktok.com/user/info/"
+    user_data_url = "https://open.tiktokapis.com/v2/user/info/"
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
     user_data = requests.get(user_data_url , headers=headers)
     if user_data.status_code != 200:
-        return JsonResponse({"error": "Failed to get user info", "details": user_data.json()}, status=400)
+        return JsonResponse({"error": "Failed to get user info", "details": user_data.text}, status=400)
 
-    user_data_json = user_data.json()
+    try:
+        user_data_json = user_data.json()
+    except ValueError:
+        return JsonResponse({"error": "Invalid JSON response", "details": user_data.text}, status=400)
 
+    if user_data_json.get('error', {}).get('code') != 'ok':
+        return JsonResponse({
+            "error": "Error in TikTok API response",
+            "details": user_data_json.get('error', {})
+        }, status=400)
+    
+    # Extract user data from the response
+    user_info = user_data_json.get('data', {}).get('user', {})
+    
+    if not user_info:
+        return JsonResponse({"error": "User info not found in response"}, status=400)
+
+    # Example of the user data you might want to return
+    user_info_response = {
+        'avatar_url': user_info.get('avatar_url'),
+        'open_id': user_info.get('open_id'),
+        'union_id': user_info.get('union_id')
+    }
+    
+    print(user_info_response)  # Log user data for debugging
+    
+    # Return the user data in a JsonResponse or render a template as needed
+    return JsonResponse(user_info_response)
     # Return user data or render a template
-    print(user_data_json)
-    return HttpResponse(user_data_json)
