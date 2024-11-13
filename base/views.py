@@ -1126,7 +1126,10 @@ def tiktok_user_data(request , dash_id):
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
-    user_data = requests.get(user_data_url , headers=headers)
+    params = {
+        'fields': 'avatar_url,open_id,union_id'  # Requesting specific fields
+    }
+    user_data = requests.get(user_data_url , headers=headers , params=params)
     if user_data.status_code != 200:
         return JsonResponse({"error": "Failed to get user info", "details": user_data.text}, status=400)
 
