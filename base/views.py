@@ -1104,7 +1104,7 @@ def tiktok_authorize(request):
     access_token = response.json().get("access_token")
     if not access_token:
         return HttpResponse(response)
-    tiktok_dash = TiktokDashboard.objects.get_or_create(
+    tiktok_dash,created = TiktokDashboard.objects.get_or_create(
             user = request.user,
             access_token = access_token
     )    
