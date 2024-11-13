@@ -1104,8 +1104,7 @@ def tiktok_access_token(request):
     if response.status_code != 200:
         return HttpResponse(f"ERROR: {response.status_code}")
 
-    
-    access_token = response.json().get('data' , {}).get("access_token")
+    access_token = response.json().get("access_token")
     if not access_token:
         return HttpResponse(f"Something Went Wrong!! Try again Later")
     tiktok_dash = TiktokDashboard.objects.create(
