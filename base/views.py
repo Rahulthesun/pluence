@@ -1071,9 +1071,9 @@ def generate_code_challenge(code_verifier):
         
 def tiktok_authorize(request):
     authorization_code = request.GET.get('code')
+    code_verifier = generate_code_verifier()
+    code_challenge = generate_code_challenge(code_verifier)
     if not authorization_code:
-        code_verifier = generate_code_verifier()
-        code_challenge = generate_code_challenge(code_verifier)
         authorization_data = {
             'client_key' : TIKTOK_CLIENT_KEY,
             'response_type': "code",
