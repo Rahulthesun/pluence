@@ -1070,48 +1070,54 @@ def generate_code_challenge(code_verifier):
     return base64.urlsafe_b64encode(code_challenge).decode('utf-8').rstrip("=")
         
 def tiktok_authorize(request):
-    code_verifier = generate_code_verifier()
-    code_challenge = generate_code_challenge(code_verifier)
-    authorization_data = {
-        'client_key' : TIKTOK_CLIENT_KEY,
-        'response_type': "code",
-        'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_get_token")),
-        'scope': "user.info.basic",
-        "state": "some random_state",
-        'code_challenge': code_challenge,
-        'code_challenge_method': 'S256'
-    }
-    print(authorization_data['redirect_uri'])
-    #encoding authorization parameters into the url
-    authorization_url = f"https://www.tiktok.com/v2/auth/authorize?{urllib.parse.urlencode(authorization_data)}"
-    print(authorization_url)
-    return redirect(authorization_url)
-
-def tiktok_access_token(request):
     authorization_code = request.GET.get('code')
     if not authorization_code:
-        return redirect(reverse_lazy("tiktok_authorize"))
+        code_verifier = generate_code_verifier()
+        code_challenge = generate_code_challenge(code_verifier)
+        authorization_data = {
+            'client_key' : TIKTOK_CLIENT_KEY,
+            'response_type': "code",
+            'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
+            'scope': "user.info.basic",
+            "state": "some random_state",
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'
+        }
+        print(authorization_data['redirect_uri'])
+        #encoding authorization parameters into the url
+        authorization_url = f"https://www.tiktok.com/v2/auth/authorize?{urllib.parse.urlencode(authorization_data)}"
+        print(authorization_url)
+        return redirect(authorization_url)
     access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
     payload = {
         'client_key': TIKTOK_CLIENT_KEY,
         'client_secret': TIKTOK_CLIENT_SECRET,
         'code': authorization_code,
-        'code_verifier': request.session.get('code_verifier'),
+        'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
+        'code_verifier': code_verifier,
         'grant_type': 'authorization_code'
     }
-    response = requests.post(access_token_url , json=payload)
+    response = requests.post(access_token_url , data=payload)
     print(response.json())
     if response.status_code != 200:
         return HttpResponse(f"ERROR: {response.status_code}")
-
     access_token = response.json().get("access_token")
     if not access_token:
-        return HttpResponse(response.json())
+        return HttpResponse(response)
     tiktok_dash = TiktokDashboard.objects.create(
             user = request.user,
             access_token = access_token
     )    
     return redirect(reverse("tiktok_user_data" , kwargs={"dash_id": tiktok_dash.id}))
+    
+
+
+    
+    
+    
+    
+    
+    
 
 def tiktok_user_data(request , dash_id):
     tiktok_dash = get_object_or_404(TiktokDashboard , id=dash_id)
