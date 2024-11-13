@@ -1104,11 +1104,11 @@ def tiktok_authorize(request):
     access_token = response.json().get("access_token")
     if not access_token:
         return HttpResponse(response)
-    tiktok_dash = TiktokDashboard.objects.create(
+    tiktok_dash = TiktokDashboard.objects.get_or_create(
             user = request.user,
             access_token = access_token
     )    
-    return redirect(reverse("tiktok_user_data" , kwargs={"dash_id": tiktok_dash.id}))
+    return redirect(reverse("tiktok_get_data" , kwargs={"dash_id": tiktok_dash.id}))
     
 
 

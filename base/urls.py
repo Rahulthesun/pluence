@@ -55,7 +55,7 @@ urlpatterns = [
          name='password_reset_complete'),
 
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
-     path("tiktok/get-data/<int:dash_id>" , views.tiktok_user_data , name="tiktok_get_data"),
+     path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
 
 ]
 
