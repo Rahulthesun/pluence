@@ -1099,14 +1099,14 @@ def tiktok_access_token(request):
         'code_verifier': request.session.get('code_verifier'),
         'grant_type': 'authorization_code'
     }
-    response = requests.post(access_token_url , data=payload)
-
+    response = requests.post(access_token_url , json=payload)
+    print(response.json())
     if response.status_code != 200:
         return HttpResponse(f"ERROR: {response.status_code}")
 
     access_token = response.json().get("access_token")
     if not access_token:
-        return HttpResponse(f"Something Went Wrong!! Try again Later")
+        return HttpResponse(response.json)
     tiktok_dash = TiktokDashboard.objects.create(
             user = request.user,
             access_token = access_token
@@ -1120,7 +1120,7 @@ def tiktok_user_data(request , dash_id):
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
-    user_data = requests.get(user_data_url , headers=headers  )
+    user_data = requests.get(user_data_url , headers=headers)
     if user_data.status_code != 200:
         return JsonResponse({"error": "Failed to get user info", "details": user_data.json()}, status=400)
 
