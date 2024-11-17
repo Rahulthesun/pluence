@@ -127,6 +127,11 @@ def landing_page_creator(request):
 def landing_page_pricing(request):
     return render(request , 'base/landing_pricing.html')
 
+def privacy_policy(request):
+    return render(request, 'base/privacypolicy.html')
+
+def terms_and_conditions(request):
+    return render(request, 'base/termsandconditions.html')
 
 @login_required
 def home(request, slug=None):
@@ -1267,12 +1272,6 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         except Exception as e:
             print(f"Error: {e}")
             return False
-        
-def privacy_policy(request):
-    return render(request, 'base/privacypolicy.html')
-
-def terms_and_conditions(request):
-    return render(request, 'base/termsandconditions.html')
         
 
 @login_required  
