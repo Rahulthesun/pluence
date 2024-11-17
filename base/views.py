@@ -1259,13 +1259,11 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         except Exception as e:
             print(f"Error: {e}")
             return False
-<<<<<<< HEAD
 def privacy_policy(request):
     return render(request, 'base/privacypolicy.html')
 
 def terms_and_conditions(request):
     return render(request, 'base/termsandconditions.html')
-=======
         
 
 @login_required  
