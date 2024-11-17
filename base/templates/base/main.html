@@ -61,6 +61,7 @@
   #form textarea,
   .search-flex select,
   .search-flex input[type="search"] {
+    font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     height: 40px;
     font-size: 20px;
@@ -73,22 +74,42 @@
     height: 50px;
   }
 
-  .search-flex,
-  .search-flex form {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 20px auto;
+  .search-flex select {
+    width: 30%;
   }
 
-  .search-flex form {
+  .search-flex,
+  .search-flex #search-form , .search-flex #sort-form{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: 20px 0px;
+  }
+
+  .search-flex {
+    justify-content: space-between;
+  }
+
+  .search-flex #search-form , .search-flex #sort-form {
     justify-content: center;
     align-items: bottom;
     margin: 5px 5px;
   }
 
-  .search-flex form#search-form {
-    width: 50%;
+  .search-flex #search-form {
+    width: 70%;
+  }
+
+  .search-flex #sort-form {
+    width: 20%;
+  }
+
+  form#combined-form {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
   button#submit {
@@ -96,9 +117,14 @@
     padding: 5px 20px;
   }
 
-  button#sendproposal {
+  button#sendproposal , button#sendproposal-tiktok{
     font-size: 20px;
     font-weight: 800;
+  }
+
+  button#sendproposal-tiktok {
+    margin-bottom: 20px;
+    margin-top: 5px;
   }
 
   #required {
@@ -222,6 +248,52 @@
     gap: 2em;
   }
 
+  .proposal-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background:  rgba(255, 255, 255, 0.411);
+    padding: 0px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(128, 128, 128, 0.651) ;
+  }
+
+  .proposal-row , .proposal-row-header , .proposal-row-ig , .proposal-row-header-ig {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    align-items: top;
+    padding: 2.5px 0px;
+    padding-left: 5px;
+    border-bottom : 1.5px solid rgba(128, 128, 128, 0.651);
+    
+  }
+
+  .proposal-row p ,.proposal-row-header p , .proposal-row-header-ig p , .proposal-row-ig p{
+    width: 17%;
+    text-align: left;
+  }
+
+  .proposal-row-header-ig p , .proposal-row-ig p {
+    width: 14%;
+  }
+
+
+  .proposal-row p , .proposal-row-ig p{
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+
+  .proposal-row p#bold , .proposal-row-ig p#bold {
+    font-weight: 600;
+  }
+
+  .proposal-row-header p , .proposal-row-header-ig p {
+    font-weight: 700;  
+  }
+
   .creator-grid {
     width: 100%;
     grid-template-columns: repeat(3, minmax(0, 1.5fr));
@@ -235,9 +307,10 @@
   .proposal-box,
   .social-box,
   .proposal-detail-box,
-  .creator-box {
+  .creator-box,
+  .integrate-box
+  .tiktok-creator-box {
     padding: 20px;
-    border-radius: 20px;
     width: 90%;
     height: 280px;
     border: 2px solid rgba(53, 53, 53, 0.658);
@@ -251,9 +324,50 @@
   }
 
   .social-box,
-  .creator-box {
+  .creator-box , 
+  .integrate-box
+  .tiktok-creator-box{
     width: 85%;
     height: auto;
+  }
+
+  .tiktok-creator-box {
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+    border: 2px solid rgba(53, 53, 53, 0.658);
+  }
+
+  .integrate-box{
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    text-align: center;
+  }
+
+  .integrate-box i {
+    font-size: 100px;
+    line-height: 100px;
+    margin-bottom: 10px;
+    margin-top: 100px;
+  }
+
+  .integrate-box p {
+    font-size: 25px;
+    line-height: 35px;
+    word-wrap:break-word;
+    margin-top: 30px;
+    text-align: left;
+  }
+
+  .integrate-box button {
+    font-size: 20px;
+    font-weight: 800;
+    height: 60px;
+    width: 95%;
+    margin: 10px 0px;
   }
 
   .social-box {
@@ -278,40 +392,80 @@
 
   }
   
-  #followers {
+  #followers, #followers-2 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-left: 10px;
+    text-align: left;
+  }
+
+  #followers-2 {
     font-size: 30px;
-    font-weight: 600;
-    margin-left: 0px;
+    font-weight: 800;
+    margin-left: 5px;
+    letter-spacing: -2px;
   }
 
 
 
   .social-flex, 
-  .rate-flex {
+  .rate-flex
+  .social-flex-tiktok 
+  .tiktok-rate-flex{
     display: flex;
     flex-direction: row;
     justify-content: left;
     align-items: center;
   }
 
-  .rate-flex {
+  .rate-flex,
+  .social-flex-tiktok
+  .tiktok-rate-flex{
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  .social-flex {
+  .tiktok-rate-flex{
+    align-items: left;
+    text-align: left;
+    margin-left: 30px;
+    margin-top: 20px;
+  }
+
+  .tiktok-rate-flex p {
+    font-weight: 800;
+    font-size:20px;
+    line-height: 15px;
+  }
+
+  .social-flex,
+  .social-flex-tiktok {
     margin-bottom: 10px;
     align-items: center;
   }
 
+  .social-flex-tiktok {
+    flex-direction: row;
+    margin-top: 5px;
+  }
 
 
-  .social-flex img {
+
+
+
+  .social-flex img,
+  .social-flex-tiktok img {
     width: 25px;
     height: auto;
     margin-right: 5px;
   }
+
+  .social-flex-tiktok img {
+    margin-top: 2px;
+  }
+
+
 
   .proposal-box p {
     width: 85%;
@@ -583,7 +737,7 @@
     padding: 5px 5px;
   }
 
-  .search-flex form#search-form , .search-flex form#sort-form {
+  .search-flex #search-form , .search-flex #sort-form {
     width: 95%;
   }
 
@@ -592,7 +746,7 @@
     justify-content: center;
   }
 
-  .search-flex form {
+  .search-flex #search-form , .search-flex #sort-form{
     width: 100%;
     margin: 10px 0;
   }
@@ -871,6 +1025,7 @@
       display: flex;
       justify-content: space-between;
       align-items: top;
+      margin-bottom: 0px;
     }
 
     .chart-ring {
@@ -880,7 +1035,7 @@
       align-items: center;
     }
     /* Donut chart base */
-    .donut-chart {
+    .donut-chart , .tiktok-donut-chart{
         width: 150px;
         height: 150px;
         border-radius: 50%;
@@ -892,7 +1047,7 @@
     }
 
     /* Inner white circle for ring effect */
-    .donut-chart::before {
+    .donut-chart::before,.tiktok-donut-chart::before{
         content: "";
         width: 90px;
         height: 90px;
@@ -901,16 +1056,20 @@
         position: absolute;
     }
 
+
     /* Centered percentage text */
-    .percentage-text {
+    .percentage-text , .tiktok-donut-chart .percentage-text {
         position: absolute;
         font-size: 20px;
         font-weight: bold;
         color:#cc43e4 ;
+        margin-bottom: 0px;
     }
 
-    .chart-ring p {
-      font-size: 15px;
+
+    .chart-ring p ,.tiktok-chart-ring p{
+      font-size: 10px;
+      font-weight: 800;
       text-align: left;
     }
 
@@ -1072,6 +1231,86 @@
     }
 
 
+    #social-media-type {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      
+    }
+
+
+
+    #social-media-type i{
+      font-size: 35px;
+    }
+
+    #social-media-type a {
+      background-color: rgb(0, 0, 0);
+      color: rgb(255, 255, 255);
+      border: 2.5px solid rgb(0, 0, 0);
+      padding: 5px 10px;
+      margin-top: 0px;
+    }
+
+    #social-media-type a:hover{
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0);
+    }
+
+    
+    button.submit-button {
+      padding: 5px;
+    }
+
+    .social-media-type-form {
+      width: 100%;
+      height: 30px;
+      margin: auto 0px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #subtext {
+      font-size: 15px;
+      margin-left: 10px;
+      letter-spacing: -1px;
+    }
+
+    .tiktok-profile-flex {
+      width: 95%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .tiktok-profile {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      width: 35%;
+      margin-right: 50px;
+    }
+
+    .tiktok-profile img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      margin-bottom: 5px;
+      margin: 5px auto;
+    }
+
+    .tiktok-price {
+      width: auto;
+    }
+
+    h1#tiktok-rate {
+      font-size: 40px;
+    }
+
 </style>
 
 <body>
@@ -1154,7 +1393,7 @@
         navbar_btn.innerHTML = "<i class='fa-solid fa-x'></i>";
         logo.innerHTML = "<span>Pluence</span>";
         content.style.width="65%";
-        profile.innerHTML = "<a href><i class='fa-regular fa-circle-user'></i> {{username}} </a>";
+        profile.innerHTML = "<a href><i class='fa-regular fa-circle-user'></i> {% if username %}{{username}} {% endif %} </a>";
         creator_grid.style.gridTemplateColumns = "repeat(2, minmax(0, 0.8fr))"; 
       }
 

@@ -4,7 +4,8 @@
 
 <section id="form">
     <form method="post" action="">
-        <h1>Brand Proposal</h1>
+        <h1>Send Proposal</h1>
+        
         {% csrf_token %}
 
         {% for error in form.non_field_errors %}
@@ -12,12 +13,18 @@
         {% endfor %}
         
         {% for field in form %}
-        <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
+        <p><b>{{field.label_tag}}</b> {% if field.field.required %}<span id="required">*</span> {% endif %}<small>{{field.help_text}}</small></p>
+            {% if field.errors %}
+                {% for error in field.errors %}
+                <p id="error" style="margin-top: 2px;">{{error}}</p>
+                {% endfor %}
+            {% endif %}
 
-            {{ field }} 
-        {% endfor %}
+        {{ field }} 
         
-        <button type="submit">Create Proposal</button>
+        {% endfor %}
+        <p style="word-wrap: break-word;"><b>Note:</b> 3 days are added automatically to timeline for content creation</p>
+        <button type="submit">Send <i class="fa-solid fa-paper-plane"></i></button>
     </form>
 </section>
 

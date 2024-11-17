@@ -31,28 +31,85 @@
         <h1>Active Proposals</h1>
 
         <hr>
-            
-        <div class="active-proposal-box">
-            {% for proposal in active_proposals %}    
-
-            <div class="active-proposal-flex">
-                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-                <p>{{proposal.brand.brand_name}}</p>
-                <p id="sub">{{proposal.content_type}}</p>
-                <p id="sub">{% if proposal.duration_left.days > 0 %}{{proposal.duration_left.days}} Day{%if proposal.duration_left.days > 1%}s{%endif%} Left{%else %}  <span id="error">Deal Expired !!</span> {%endif%}</p>
-                <p><span id="green">{{proposal.proposal_status}}</span></p>
-                <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
-            </div>   
-
-            
+        
+        {% if ig_active_proposals %}
+        <h2>Instagram Active Deals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Description</p>
+                <p>Content Type</p>
+                <p>Product Link</p>
+                <p>Payment</p>
+                <p>Accept / Reject</p> 
                 
-            {% empty %}
-        </div> 
-            <p>You don't have any Brand Proposals Right Now</p>
-            
-            {% endfor %}    
-           
+            </div>
+            {% for proposal in ig_active_proposals %}
+            <div class="proposal-row-ig">
 
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                <p style="word-wrap: break-word;font-size: smaller;">{{proposal.description}}</p>
+                <p>{{proposal.content_type}}</p>
+                <p>{%if proposal.product_link%}<a href="{{proposal.product_link}}">Product Link</a>{%endif%} No link</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    
+                <p></p>
+
+
+                <!--
+                <div class="button-flex">
+                    <div class="button-accept-flex">
+                        <a href="#"><button id="accept"><i class="fa-solid fa-check"></i></button></a>
+                        <a href="#"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
+                    </div>
+                    
+                </div>
+                
+                --> 
+            </div> 
+        </div>
+            {% endfor %}
+        {% else %}
+        <p>You don't have any Instagram Brand Proposals Right Now</p>
+        
+        {% endif %}
+        </div>
+        {% if tiktok_active_proposals %}
+        <h2>Tiktok Active Deals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Duration Left</p>
+                <p>Actions Required</p>
+                <p>Amount</p>
+                <p>View</p>
+                
+            </div>
+            {% for proposal in tiktok_active_proposals %}
+            <div class="proposal-row-ig">
+
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                
+                <p>{% if proposal.duration_left.days > 0 %}{{proposal.duration_left.days}} {% else %} Deal Expired{% endif %}</p>
+                
+                <p>{%if proposal.proposal_status == "Brand Deal Active" %} Submit Content For Approval {% endif %}</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                <p></p>
+                     
+            </div> 
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>You don't have any Tiktok Brand Proposals Right Now</p>
+        {% endif %}
+        
+        {% if ig_active_proposals is None and tiktok_active_proposals is None %}
+        <p>Sorry , you don't have any Active Deals right now</p>
+        {% endif %}
     </section>
 
 {% endblock %}

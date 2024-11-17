@@ -1,5 +1,5 @@
 from django import forms
-from .models import InstagramAccountDashBoard , BrandProposal
+from .models import InstagramAccountDashBoard , BrandProposal , TiktokDashboard , TiktokProposal
 
 account_choices = (
     ("creator" , "Creator"),
@@ -33,7 +33,12 @@ class AccountIntegrationForm(forms.ModelForm):
 class BrandProposalForm(forms.ModelForm):
     class Meta:
         model = BrandProposal
-        fields = ('description' , 'timeline', 'content_type' , 'proposed_amount' , 'item_link' )
+        fields = ('description' , 'timeline', 'content_type' , 'proposed_amount' , 'product_link' )
+
+class TiktokBrandProposalForm(forms.ModelForm):
+    class Meta:
+        model = TiktokProposal
+        fields = ('description' , 'timeline', 'proposed_amount' , 'product_link' )
 
 
 class EmailVerificationForm(forms.Form):

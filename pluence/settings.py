@@ -169,8 +169,11 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "76f00b001@smtp-brevo.com"
 EMAIL_HOST_PASSWORD = "K9OFIXB83PzgfNwm"
 
+#pluence-test settings
 TIKTOK_CLIENT_KEY = "sbaw9n6tq3jgavns1g"
 TIKTOK_CLIENT_SECRET = "AdJqOgYeHBunoSWtC6w8Qjlkkpnj7v60"
+
+FERNET_KEY = os.getenv('FERNET_KEY')
 
 
 
