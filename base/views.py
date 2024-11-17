@@ -726,25 +726,28 @@ def brand_proposal_view(request , pk):
     return render(request , 'base/brand_proposal_view.html' , context)
 
 def creator_proposal_view(request , pk , slug=None):
-    proposal = None
     if slug == None:
         proposal = get_object_or_404(BrandProposal , id = pk)
+        social_media = "instagram"
 
     elif slug == "tiktok":
         proposal = get_object_or_404(TiktokProposal , id=pk )
+        social_media = "tiktok"
+
 
     if proposal.creator.user != request.user :
             raise PermissionDenied
     links={}
     ig_active_proposals = BrandProposal.objects.filter(creator=proposal.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     tiktok_active_proposals = TiktokProposal.objects.filter(creator=proposal.creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
-    if ig_active_proposals.exists():
+    if ig_active_proposals.exists() or tiktok_active_proposals.exists():
         links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
                 'name': "Active Proposals"
         }
-    dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
-    if dashboard.exists():
+    ig_dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
+    tiktok_dashboard = TiktokDashboard.objects.filter(creator = proposal.creator)
+    if ig_dashboard.exists() or tiktok_dashboard.exists():
         links['manage_integrations'] = {
                 'url': reverse("integration_dashboard" , kwargs={"pk":proposal.creator.id}),
                 'name': "Manage Integrations"
@@ -754,11 +757,12 @@ def creator_proposal_view(request , pk , slug=None):
             'name': "Payment Dashboard"
             }
 
-
     context = {
+        'social_media': social_media,
         'proposal' : proposal,
         "links" : links
     }
+
 
     return render(request , 'base/creator_proposal_view.html' , context)
 
