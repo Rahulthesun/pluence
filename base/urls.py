@@ -5,7 +5,8 @@ from django.conf.urls.static import static
 from .views import ResetPasswordView
 from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetCompleteView
 
-from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal , DashboardImageUpdate , EmailVerification , BrandAccountSubscription
+from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal ,CreateTiktokBrandProposal, DashboardImageUpdate , EmailVerification , BrandAccountSubscription
+from .views import TiktokDashboardEdit
 
 urlpatterns = [
 
@@ -13,6 +14,7 @@ urlpatterns = [
     path("creator/" , views.landing_page_creator , name="landing_page_creator"),
     path("pricing/" , views.landing_page_pricing , name="landing_page_pricing"),
     path("home/" , views.home , name='home'),
+    path("home/<slug:slug>/" , views.home , name='home_with_slug'),
     path("login/" , EmailLogin.as_view() , name="login"),
     path("logout/" , LogoutView.as_view(next_page = 'login'), name="logout"),
     path("signup/" , EmailSignUp.as_view() , name="signup"),
@@ -22,10 +24,14 @@ urlpatterns = [
     
     path("integration_dashboard/<int:pk>/" , views.integration_dashboard , name="integration_dashboard"),
     path("creator_proposal_view/<int:pk>/" , views.creator_proposal_view , name='creator_proposal_detail' ),
+    path("creator_proposal_view/<int:pk>/<slug:slug>/" , views.creator_proposal_view , name='creator_proposal_detail_with_slug' ),
     path("brand_proposal_view/<int:pk>/" , views.brand_proposal_view , name='brand_proposal_detail' ),
     path("create_brand_proposal/<int:creator_id>/" , CreateBrandProposal.as_view() , name='create_brand_proposal' ),
+    path("create_brand_proposal/tiktok/<int:creator_id>/" , CreateTiktokBrandProposal.as_view() , name='create_tiktok_brand_proposal' ),
     path("brand_proposal/accept/<int:proposal_id>/" , views.accept_brand_proposal , name='accept_brand_proposal' ),
+    path("brand_proposal/accept/<int:proposal_id>/<slug:slug>/" , views.accept_brand_proposal , name='accept_brand_proposal_with_slug' ),
     path("brand_proposal/reject/<int:proposal_id>/" , views.reject_brand_proposal , name='reject_brand_proposal' ),
+    path("brand_proposal/reject/<int:proposal_id>/<slug:slug>/" , views.reject_brand_proposal , name='reject_brand_proposal_with_slug' ),
     path("creator/active_proposals/<int:creator_id>/" , views.creator_active_proposals ,name='creator_active_proposals'),
     path("creator/payment_dashboard/<int:creator_id>/" , views.creator_payment_dashboard ,name='creator_payment_dashboard'),
     path("brand/proposal_payment/<int:proposal_id>/" , views.brand_proposal_payment ,name='brand_proposal_payment'),
@@ -56,6 +62,9 @@ urlpatterns = [
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
     path("terms-and-conditions/", views.terms_and_conditions, name="terms_and_conditions"),
 
+     path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
+     path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
+     path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),
 ]
 
 if settings.DEBUG == True:

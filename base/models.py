@@ -95,7 +95,7 @@ class BrandProfile(models.Model):
         return f"{self.user.email.split('@')[0]} -{self.brand_name} Brand {self.id}"
 
 class InstagramAccountDashBoard(models.Model):
-    dashboard_img = models.URLField(null=True , blank=False)
+    dashboard_img = models.URLField(null=True , blank=True)
     creator = models.OneToOneField(CreatorProfile , on_delete=models.CASCADE)
     username = models.CharField(max_length=200 , null=True , blank = False)
     tags = models.TextField(null=True , blank=False)
@@ -177,6 +177,32 @@ class InstagramAccountDashBoard(models.Model):
 
     def __str__(self):
         return f"{self.username} - IG Account"
+    
+class TiktokDashboard(models.Model):
+    creator = models.OneToOneField(CreatorProfile , on_delete=models.SET_NULL , null=True)
+    access_token = models.CharField(null=False,max_length=1000 , blank=False)   # valid for 24 hours
+    refresh_token = models.CharField(null=True,max_length=1000 , blank=True) # valid for 365 days to refresh access token
+
+    #tiktok creator data
+    avatar_url = models.URLField(max_length=500,null=True,blank=True)
+    open_id = models.CharField(max_length=500 ,null=True,blank=True)
+    display_name = models.CharField(max_length=500 ,null=True,blank=True)
+    profile_deep_link = models.URLField(max_length=500 , null=True,blank=True)
+    is_verified = models.BooleanField(default=False,blank=True)
+    follower_count = models.IntegerField(validators=[MinValueValidator(0)] ,null=True,blank=True)
+    likes_count = models.IntegerField(validators=[MinValueValidator(0)] ,null=True,blank=True)
+    video_count = models.IntegerField(validators=[MinValueValidator(0)] ,null=True,blank=True)
+    engagement_rate = models.DecimalField(validators=[MinValueValidator(0)] , decimal_places=1 , default=0 , max_digits=10,blank=True)
+
+    #monetory & brand deal information
+    deal_count = models.IntegerField(default=0,blank=False)
+    tags = models.TextField(null=True , blank=False)
+    pricing_per_promotion = models.DecimalField(validators=[MinValueValidator(0)] , decimal_places=2 , default=0 , max_digits=10,blank=True) 
+    
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.display_name}-{self.follower_count}-{self.created}"
 
 class BrandProposal(models.Model):
     brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
@@ -184,9 +210,9 @@ class BrandProposal(models.Model):
     account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
 
     description = models.TextField(null=True , blank=True)
-    timeline = models.IntegerField(default=3 , blank=False , validators=[MinValueValidator(0)])
-    proposed_amount = models.DecimalField(default=0 , decimal_places=2 , max_digits=10 , blank=False , validators=[MinValueValidator(0)])
-    item_link = models.URLField(null=True , blank=True)
+    timeline = models.IntegerField(help_text="Brand Deal Timeline in Days",default=3 , blank=False , validators=[MinValueValidator(0)] , )
+    proposed_amount = models.DecimalField(help_text="$ Proposed Deal Amount in USD",default=0 , decimal_places=2 , max_digits=10 , blank=False , validators=[MinValueValidator(1)])
+    product_link = models.URLField(help_text="Link of Your Product (if any)",null=True , blank=True)
 
     class Content_Choices(models.TextChoices):
         REELS = 'Reels'
@@ -218,7 +244,40 @@ class BrandProposal(models.Model):
     def __str__(self):
         brand_user_email = self.brand.user.email.split('@')[0] if self.brand and self.brand.user else "No Brand"
         creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
-        return f"{brand_user_email} - {creator_user_email} - {self.id}"
+        return f"{brand_user_email}({self.brand.brand_name}) - {creator_user_email}({self.creator.name}) - {self.id}"
+
+class TiktokProposal(models.Model):
+    brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
+    creator = models.ForeignKey(CreatorProfile , on_delete= models.CASCADE , null=True)
+    account = models.OneToOneField(TiktokDashboard ,on_delete= models.SET_NULL , null=True)
+
+    #form data that user has to
+    description = models.TextField(null=True , blank=True)
+    timeline = models.IntegerField(help_text="Brand Deal Timeline in Days",default=3 , blank=False , validators=[MinValueValidator(0)] , )
+    proposed_amount = models.DecimalField(help_text="in USD $",default=0 , decimal_places=2 , max_digits=10 , blank=False , validators=[MinValueValidator(1)])
+    product_link = models.URLField(help_text="Link of Your Product (if any)",null=True , blank=True)
+
+    
+    class Proposal_Status(models.TextChoices):
+        PROPOSAL_SENT = 'Sent'
+        PROPOSAL_REJECTED = 'Rejected'
+        DEAL_PAYMENT_DUE = 'Deal Payment Due'
+        DEAL_ACTIVE = 'Brand Deal Active'
+        DEAL_APPROVE_CONTENT = 'Approve Content'
+        DEAL_COMPLETED ='Completed'
+
+    proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
+
+    #datefields
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_paid = models.DateTimeField(null=True , blank=True)
+    duration_left = models.DurationField(null=True , blank=True)
+    date_completed = models.DateTimeField(null=True , blank=True)
+
+    def __str__(self):
+        brand_user_email = self.brand.user.email.split('@')[0] if self.brand and self.brand.user else "No Brand"
+        creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
+        return f"{brand_user_email}({self.brand.brand_name}) - {creator_user_email}({self.creator.name}) - {self.id}"
 
 class Content_Approval_Images(models.Model):
     proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)

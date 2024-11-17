@@ -1,3 +1,4 @@
+import urllib.parse , os , hashlib , json
 from django.forms import BaseModelForm
 from django.http.response import HttpResponseRedirect , HttpResponseForbidden
 from django.shortcuts import render , redirect , get_object_or_404
@@ -13,9 +14,9 @@ from django.utils.encoding import force_bytes
 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm , DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
+from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm ,TiktokBrandProposalForm, DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral
+from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral , TiktokDashboard , TiktokProposal
 
 
 
@@ -28,11 +29,40 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.exceptions import PermissionDenied 
 
-import requests , datetime , decimal , base64
+import requests , datetime , decimal , base64 , urllib
 from django.utils import timezone
 from paypal.standard.forms import PayPalPaymentsForm
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+
+from pluence.settings import TIKTOK_CLIENT_KEY , TIKTOK_CLIENT_SECRET , FERNET_KEY
+
+from cryptography.fernet import Fernet
+
+'''
+EMAIL SENDING CODE W BREVO API
+
+        template_id = 12
+        to = [{"email": self.email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+            params={
+                'code': self.verification_code
+            }
+        )
+
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email) -> This is the email sending part
+            print("API Response:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+            return False
+        except Exception as e:
+            print(f"Error: {e}")
+        else:       
+            Whatever functionality
+'''
 
 imgbb_key = '4293ead9e871a798ed6d0580bb00f15c'
 imgbb_url = 'https://api.imgbb.com/1/upload'
@@ -47,6 +77,8 @@ configuration.api_key['api-key'] = 'xkeysib-764f8ff0677eb2ce15f97a77bb5a31143528
 api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
 transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
+fernet = Fernet(FERNET_KEY) # fernet instance to encrypt/decrypt data 
+
 '''
 INSTAGRAM GRAPH API & FACEBOOK AUTH
 
@@ -59,6 +91,25 @@ scope = 'instagram_basic,instagram_manage_insights'
 response_type = 'code'
 
 '''
+
+#UTILITY FUNCTIONS
+
+#functions for code_verifer & code_challenge for tiktok api
+def generate_code_verifier():
+    return base64.urlsafe_b64encode(os.urandom(32)).decode('utf-8').rstrip("=")
+
+# Create a code challenge by hashing the verifier with SHA-256 and encoding in base64
+def generate_code_challenge(code_verifier):
+    code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+    return base64.urlsafe_b64encode(code_challenge).decode('utf-8').rstrip("=")
+
+
+#function for encryting & decryption of sensitive tokens.
+def hash_token(token:str)->str: #:str says token should be of str , and ->str means the function gives str value
+    return fernet.encrypt(token.encode()).decode()
+
+def unhash_token(hashed_token:str) ->str:
+    return fernet.decrypt(hashed_token.encode()).decode()
 
 
 
@@ -78,47 +129,54 @@ def landing_page_pricing(request):
 
 
 @login_required
-def home(request):
+def home(request, slug=None):
 
     creator_account = CreatorProfile.objects.filter(user = request.user)
     brand_account = BrandProfile.objects.filter(user = request.user)
     context = {}
     if creator_account.exists():
-        proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
+        ig_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
+        tiktok_proposals = TiktokProposal.objects.filter(creator = creator_account[0] , proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_SENT)
         ig_account = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
-        active_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.PAID)
+        tiktok_account = TiktokDashboard.objects.filter(creator = creator_account[0])
+        #change the ig_active_proposals status-es
+        ig_active_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.PAID)
+        tiktok_active_proposals = TiktokProposal.objects.filter(creator = creator_account[0] , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
         #referral = Referral.objects.get(referrer = creator_account)
         #context['referral_code'] = referral.code
         links = {}
-        if active_proposals.exists():
-            context['active_proposals'] = active_proposals
+        if ig_active_proposals.exists() or tiktok_active_proposals.exists():
+            #context['ig_active_proposals'] = ig_active_proposals
             links['active_proposals'] = {
             'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator_account[0].id}),
-            'name': "Active Proposals"
+            'name': "Active Deals"
             }
 
-        elif not active_proposals.exists():
+        elif not ig_active_proposals.exists() and not tiktok_active_proposals.exists():
             context['active_proposals'] = None
             
+        context['account'] = creator_account[0]  
+        context['ig_proposals'] = None
+        context['tiktok_proposals'] = None
+        context['ig_account'] = None
+        context['tiktok_account'] = None
 
-        if proposals.exists():
-            context['proposals'] = proposals
+        if ig_proposals.exists():
+            context['ig_proposals'] = ig_proposals
+
+        if tiktok_proposals.exists():
+            context['tiktok_proposals'] = tiktok_proposals
 
         if ig_account.exists():
             context['ig_account'] = ig_account[0]
-        
-        elif not ig_account.exists():
-            context['ig_account'] = None
 
-        else :
-            context['proposals'] = None
+        if tiktok_account.exists():
+            context['tiktok_account'] = tiktok_account[0]
+           
 
-        context['account'] = creator_account[0]  
-
-        dashboard = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
-        if dashboard.exists():
+        if ig_account.exists() or tiktok_account.exists():
             links['manage_integrations'] = {
-                    'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                    'url': reverse("integration_dashboard" , kwargs={"pk":creator_account[0].id}),
                     'name': "Manage Integrations"
                     }
         links['payment_dashboard'] = {
@@ -135,27 +193,55 @@ def home(request):
         context['username']= creator_account[0].name
         template = 'base/creator_home.html'
     elif brand_account.exists():
-        search_query = request.GET.get("search" , "")
-        sort_query = request.GET.get("sort" , "")
-        if not search_query:
-            if sort_query =="":
-                creator_accounts = InstagramAccountDashBoard.objects.all().order_by("-date_created")
-            elif sort_query == "followers-asc" :
-                creator_accounts = InstagramAccountDashBoard.objects.all().order_by("followers")
-            else:
-                creator_accounts = InstagramAccountDashBoard.objects.all().order_by("-followers")
-        
-        elif search_query:
-            if sort_query == 'all':
-                creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query)
-            if sort_query == 'followers-asc':
-                creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('followers')
-            else:
-                creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('-followers')
-        #testing out brand account dynamic navbar 
-        
+        if slug is None or slug=="instagram":
+            social_media = "instagram"
+            search_query = request.GET.get("search" , "")
+            sort_query = request.GET.get("sort" , "")
+            if not search_query:
+                if sort_query =="":
+                    creator_accounts = InstagramAccountDashBoard.objects.all().order_by("-date_created")
+                elif sort_query == "followers-asc" :
+                    creator_accounts = InstagramAccountDashBoard.objects.all().order_by("followers")
+                else:
+                    creator_accounts = InstagramAccountDashBoard.objects.all().order_by("-followers")
 
-        context['creators'] = creator_accounts
+            elif search_query:
+                if sort_query == "":
+                    creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by("-date_created")
+                if sort_query == 'followers-asc':
+                    creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('followers')
+                else:
+                    creator_accounts = InstagramAccountDashBoard.objects.filter(tags__icontains = search_query).order_by('-followers')
+            #testing out brand account dynamic navbar 
+
+            context['social_media'] = social_media
+            context['creators'] = creator_accounts
+
+        #creator view for tiktok selection that shows only tiktok dashboards
+        elif slug == "tiktok":
+            social_media = "tiktok"
+            search_query = request.GET.get("search" , "")
+            sort_query = request.GET.get("sort" , "")
+            if not search_query:
+                if sort_query =="":
+                    creator_accounts = TiktokDashboard.objects.all().order_by("-created")
+                elif sort_query == "followers-asc" :
+                    creator_accounts = TiktokDashboard.objects.all().order_by("follower_count")
+                else:
+                    creator_accounts = TiktokDashboard.objects.all().order_by("-follower_count")
+
+            elif search_query:
+                if sort_query == "":
+                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by("-created")
+                if sort_query == 'followers-asc':
+                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('followers')
+                else:
+                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('-followers')
+            
+            context['social_media'] = social_media
+            context['creators'] = creator_accounts
+    
+        #The same brand code for both tiktok and ig media because brand proposals and brand account is both same 
         context['account'] = brand_account[0]
         account = brand_account[0]
         if account.brand_name:
@@ -164,23 +250,27 @@ def home(request):
         your_proposals = BrandProposal.objects.filter(brand=account)
         links = {}
         
+        #content approval pending link to be added to dynamic navbar links
         if context['pending_proposals'].exists():
             num = len(context['pending_proposals'])
             links["content_approval"]= {
                 'url' : reverse_lazy("pending_content_approval"),
                 'name' : f'Content Approval ({num})'
             }
+        #your proposal link added to DN(Dynamic navbar) Links
         if your_proposals.exists():
             links["your_proposals"] = {
                 'url': reverse("brand_proposals" ,kwargs={"brand_id":brand_account[0].id}),
                 'name': 'Your Proposals'
             }
+        #constant update_profile link
         links['update_profile'] = {
             'url': reverse("brand_profile_update" , kwargs={"pk":account.id}),
             'name': "Update Profile"
         }
         context["links"] = links
         template = 'base/brand_home.html'
+
     elif not creator_account.exists() and not brand_account.exists():        
         return redirect(reverse_lazy("account_selection"))
     return render(request , template , context)
@@ -492,28 +582,40 @@ class EmailVerification(UserPassesTestMixin , LoginRequiredMixin , FormView):
         return reverse_lazy("home")
 
 def integration_dashboard(request , pk):
-    try:
-        dashboard = get_object_or_404(InstagramAccountDashBoard , id=pk)
-    except Http404:
-        return redirect(reverse_lazy("instagram_integration"))
-    else:
-        if dashboard.creator.user != request.user :
+        creator_profile = get_object_or_404(CreatorProfile , id=pk)
+        if request.user != creator_profile.user :
             raise PermissionDenied
+        ig_dashboards = InstagramAccountDashBoard.objects.filter(creator= creator_profile)
+        tiktok_dashboards = TiktokDashboard.objects.filter(creator=creator_profile)
+
+        context = {}
+
+        if not ig_dashboards.exists() :
+            ig_dashboard = None
+        else:
+            ig_dashboard = ig_dashboards[0]
+        if not tiktok_dashboards.exists():
+            tiktok_dashboard = None
+        else:
+            tiktok_dashboard = tiktok_dashboards[0]
         links={}
-        active_proposals = BrandProposal.objects.filter(creator = dashboard.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-        if active_proposals.exists():
+        ig_active_proposals = BrandProposal.objects.filter(creator = creator_profile , proposal_status = BrandProposal.Proposal_Status.PAID)
+        tiktok_active_proposals = TiktokProposal.objects.filter(creator = creator_profile , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+        if ig_active_proposals.exists() or tiktok_active_proposals.exists():
             links['active_proposals'] = {
-                'url': reverse("creator_active_proposals" , kwargs={"creator_id":dashboard.creator.id}),
+                'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator_profile.id}),
                 'name': "Active Proposals"
             }
         links['payment_dashboard'] = {
-                'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":dashboard.creator.id}),
+                'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator_profile.id}),
                 'name': "Payment Dashboard"
             }
 
         context = {
-            'dashboard': dashboard,
-            "links": links
+            'ig_dashboard': ig_dashboard,
+            'tiktok_dashboard': tiktok_dashboard,
+            "links": links,
+            'username': creator_profile.name
         }
         return render(request , 'base/integration_dashboard.html' , context)
 
@@ -623,13 +725,20 @@ def brand_proposal_view(request , pk):
 
     return render(request , 'base/brand_proposal_view.html' , context)
 
-def creator_proposal_view(request , pk):
-    proposal = get_object_or_404(BrandProposal , id = pk)
+def creator_proposal_view(request , pk , slug=None):
+    proposal = None
+    if slug == None:
+        proposal = get_object_or_404(BrandProposal , id = pk)
+
+    elif slug == "tiktok":
+        proposal = get_object_or_404(TiktokProposal , id=pk )
+
     if proposal.creator.user != request.user :
-        raise PermissionDenied
+            raise PermissionDenied
     links={}
-    active_proposals = BrandProposal.objects.filter(creator=proposal.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-    if active_proposals.exists():
+    ig_active_proposals = BrandProposal.objects.filter(creator=proposal.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    tiktok_active_proposals = TiktokProposal.objects.filter(creator=proposal.creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+    if ig_active_proposals.exists():
         links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
                 'name': "Active Proposals"
@@ -637,7 +746,7 @@ def creator_proposal_view(request , pk):
     dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
     if dashboard.exists():
         links['manage_integrations'] = {
-                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'url': reverse("integration_dashboard" , kwargs={"pk":proposal.creator.id}),
                 'name': "Manage Integrations"
                 }
     links['payment_dashboard'] = {
@@ -713,9 +822,9 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
             account = ig_account,
             
             description = form.cleaned_data['description'],
-            timeline = form.cleaned_data['timeline'],
+            timeline = (form.cleaned_data['timeline']+3),
             proposed_amount = form.cleaned_data['proposed_amount'],
-            item_link = form.cleaned_data['item_link'],
+            product_link = form.cleaned_data['product_link'],
             content_type = form.cleaned_data['content_type'],
             proposal_status = BrandProposal.Proposal_Status.REQUESTED
 
@@ -727,21 +836,112 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
             messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
             return redirect(reverse_lazy("home"))
         
+class CreateTiktokBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
+    form_class = TiktokBrandProposalForm
+    template_name = "base/create_proposal.html"
+    
+    def get_success_url(self):
+        return reverse_lazy("home_with_slug" , kwargs={"slug": "tiktok"})
+
+    def test_func(self):
+        try:
+            brand = get_object_or_404(BrandProfile , user = self.request.user)
+        except Http404:
+            return False
+        else:
+            return True
+
+
+
+    def form_valid(self, form):
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
+        tiktok_account = get_object_or_404(TiktokDashboard , creator = creator)
+        try:
+            active_proposal = TiktokProposal.objects.get(brand=brand , creator=creator , account = tiktok_account)
+        except TiktokProposal.DoesNotExist :
+            proposal= TiktokProposal.objects.create(
+            brand = brand,
+            creator = creator,
+            account = tiktok_account,
             
+            description = form.cleaned_data['description'],
+            timeline = (form.cleaned_data['timeline']+3),
+            proposed_amount = form.cleaned_data['proposed_amount'],
+            product_link = form.cleaned_data['product_link'],
+            proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_SENT
+
+            )
+            #email sending feature (yet to be implemented)
+            '''
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+        )
+
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+            messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
+        else:
+            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
+            proposal.save()           
+        return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
+
+    else:
+        return render(request, 'base/content_approval_form.html')
+
+            '''
+
+
+            return super().form_valid(form)
+
+        else:
+            messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
+            return redirect(reverse_lazy("home"))
+        
+            
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        context['username'] = brand.brand_name
+        return context
         
 
 
-def accept_brand_proposal(request , proposal_id):
-    proposal = get_object_or_404(BrandProposal , id = proposal_id)
-    proposal.proposal_status = BrandProposal.Proposal_Status.ACCEPTED
-    proposal.save()
+def accept_brand_proposal(request , proposal_id , slug=None):
+    if slug is None:
+        proposal = get_object_or_404(BrandProposal , id = proposal_id)
+        if request.user != proposal.creator.user:
+            raise PermissionDenied
+        proposal.proposal_status = BrandProposal.Proposal_Status.ACCEPTED
+        proposal.save()
+        
+    elif slug == "tiktok":
+        proposal = get_object_or_404(TiktokProposal , id=proposal_id)
+        if request.user != proposal.creator.user:
+            raise PermissionDenied
+        proposal.proposal_status = TiktokProposal.Proposal_Status.DEAL_PAYMENT_DUE
+        proposal.save()
 
     return redirect(reverse_lazy("home"))
 
-def reject_brand_proposal(request , proposal_id):
-    proposal = get_object_or_404(BrandProposal , id = proposal_id)
-    proposal.proposal_status = BrandProposal.Proposal_Status.REJECTED
-    proposal.save()
+def reject_brand_proposal(request , proposal_id , slug=None):
+    if slug is None:
+        proposal = get_object_or_404(BrandProposal , id = proposal_id)
+        if request.user != proposal.creator.user:
+            raise PermissionDenied
+        proposal.proposal_status = BrandProposal.Proposal_Status.REJECTED
+        proposal.save()
+
+    elif slug == "tiktok":
+        proposal = get_object_or_404(TiktokProposal , id=proposal_id)
+        if request.user != proposal.creator.user:
+            raise PermissionDenied
+        proposal.proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_REJECTED
+        proposal.save()
 
     return redirect(reverse_lazy("home"))
 
@@ -749,12 +949,14 @@ def creator_active_proposals(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     if creator.user != request.user:
         raise PermissionDenied
-    active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    ig_active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    tiktok_active_proposals = TiktokProposal.objects.filter(creator=creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
     links={}
-    dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
-    if dashboard.exists():
+    ig_dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
+    tiktok_dash = TiktokDashboard.objects.filter(creator=creator)
+    if ig_dashboard.exists() or tiktok_dash.exists():
         links['manage_integrations'] = {
-                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'url': reverse("integration_dashboard" , kwargs={"pk":creator.id}),
                 'name': "Manage Integrations"
                 }
     links['payment_dashboard'] = {
@@ -765,16 +967,16 @@ def creator_active_proposals(request , creator_id):
         "account":creator,
         "links": links
     }
-    
-    if active_proposals.exists():
-        context['active_proposals'] = active_proposals
-        for proposal in active_proposals :
-                proposed_date = proposal.date_paid + datetime.timedelta(days = proposal.timeline)
-                proposal.duration_left = proposed_date - timezone.now()
-                proposal.save()
-    else:
-        context['active_proposals'] = None
+    #sets proposal list to context variable only if it is not empty , else default None value is used
+    context['ig_active_proposals'] = None
+    context['tiktok_active_proposals'] = None
 
+    if ig_active_proposals.exists():
+        context['ig_active_proposals'] = ig_active_proposals
+    if tiktok_active_proposals.exists():
+        context['tiktok_active_proposals'] = tiktok_active_proposals
+    
+    
     return render(request , 'base/creator_active_proposals.html' , context)
 
 def creator_payment_dashboard(request , creator_id):
@@ -784,8 +986,6 @@ def creator_payment_dashboard(request , creator_id):
     paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
     completed_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.COMPLETED)
     pending_payment = decimal.Decimal("0.00")
-    for proposal in completed_proposals:
-        creator.balance += round(decimal.Decimal(0.95) * proposal.proposed_amount , 1)
     for proposal in paid_proposals:
         pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
     active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
@@ -799,7 +999,7 @@ def creator_payment_dashboard(request , creator_id):
     dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
     if dashboard.exists():
         links['manage_integrations'] = {
-                'url': reverse("integration_dashboard" , kwargs={"pk":dashboard[0].id}),
+                'url': reverse("integration_dashboard" , kwargs={"pk":creator.id}),
                 'name': "Manage Integrations"
                 }
     context = {
@@ -839,9 +1039,11 @@ def successfull_payment(request , proposal_id):
     proposal = get_object_or_404(BrandProposal , id= proposal_id)
     if proposal.brand.user != request.user :
         raise PermissionDenied
-    
     proposal.proposal_status = BrandProposal.Proposal_Status.PAID
     proposal.date_paid = timezone.now()
+    proposal.save()
+    proposed_date = proposal.date_paid + datetime.timedelta(days = proposal.timeline)
+    proposal.duration_left = proposed_date - timezone.now()
     proposal.save()
     
     return render(request , 'base/successfull_payment.html')
@@ -1057,8 +1259,175 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         except Exception as e:
             print(f"Error: {e}")
             return False
+<<<<<<< HEAD
 def privacy_policy(request):
     return render(request, 'base/privacypolicy.html')
 
 def terms_and_conditions(request):
     return render(request, 'base/termsandconditions.html')
+=======
+        
+
+@login_required  
+def tiktok_authorize(request):
+    authorization_code = request.GET.get('code')
+    code_verifier = generate_code_verifier()
+    code_challenge = generate_code_challenge(code_verifier)
+    if not authorization_code:
+        authorization_data = {
+            'client_key' : TIKTOK_CLIENT_KEY,
+            'response_type': "code",
+            'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
+            'scope': "user.info.basic,user.info.profile,user.info.stats",
+            "state": "some random_state",
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'
+        }
+        print(authorization_data['redirect_uri'])
+        #encoding authorization parameters into the url
+        authorization_url = f"https://www.tiktok.com/v2/auth/authorize?{urllib.parse.urlencode(authorization_data)}"
+        print(authorization_url)
+        return redirect(authorization_url)
+    access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
+    payload = {
+        'client_key': TIKTOK_CLIENT_KEY,
+        'client_secret': TIKTOK_CLIENT_SECRET,
+        'code': authorization_code,
+        'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
+        'code_verifier': code_verifier,
+        'grant_type': 'authorization_code'
+    }
+    response = requests.post(access_token_url , data=payload)
+    print(response.json())
+    if response.status_code != 200:
+        return HttpResponse(f"ERROR: {response.status_code}")
+    access_token = response.json().get("access_token")
+    refresh_token = response.json().get("refresh_token")
+    error = response.json().get("error")
+    if not access_token or not refresh_token:
+        if error:
+            return HttpResponse(f"{error} , Please try again")
+    creator_profile = get_object_or_404(user = request.user)
+    tiktok_dash,created = TiktokDashboard.objects.get_or_create(
+            creator = creator_profile,
+            access_token = hash_token(access_token),
+            refresh_token = hash_token(refresh_token)
+    )    
+    return redirect(reverse("tiktok_get_data" , kwargs={"dash_id": tiktok_dash.id}))
+    
+
+@login_required
+def tiktok_user_data(request , dash_id):
+    tiktok_dash = get_object_or_404(TiktokDashboard , id=dash_id)
+    if tiktok_dash.creator.user != request.user:
+        raise PermissionDenied
+    access_token = unhash_token(tiktok_dash.access_token)
+    refresh_token = unhash_token(tiktok_dash.refresh_token)
+    user_data_url = "https://open.tiktokapis.com/v2/user/info/"
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    params = {
+        'fields': 'avatar_url,open_id,union_id,display_name,bio_description,profile_deep_link,is_verified,username,follower_count,likes_count,video_count'  # Requesting specific fields
+    }
+    user_data = requests.get(user_data_url , headers=headers , params=params)
+    if user_data.status_code != 200:
+        return JsonResponse({"error": "Failed to get user info", "details": user_data.text}, status=400)
+
+    try:
+        user_data_json = user_data.json()
+    except ValueError:
+        return JsonResponse({"error": "Invalid JSON response", "details": user_data.text}, status=400)
+
+    if user_data_json.get('error', {}).get('code') != 'ok':
+        return JsonResponse({
+            "error": "Error in TikTok API response",
+            "details": user_data_json.get('error', {})
+        }, status=400)
+    
+    # Finding if error exists in tiktok api response
+    user_info = user_data_json.get('data', {}).get('user', {})
+
+    user_info_error = user_data_json.get('error')
+    if user_info_error == "Failed to get user info":
+        
+        if "details" in user_data_json:
+            try:
+                details = json.loads(user_data_json["details"])  # Parse the nested JSON string
+                if details.get("error", {}).get("code") == "access_token_invalid":
+                    if refresh_token:
+                        payload = {
+                        'client_key': TIKTOK_CLIENT_KEY,
+                        'client_secret': TIKTOK_CLIENT_SECRET,
+                        'refresh_token': refresh_token,
+                        'grant_type': 'authorization_code'
+                        }
+                        access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
+                        response = requests.get(access_token_url , data=payload)
+                        if response.status_code == 200:
+                            refreshed_access_token = response.json().get("access_token")
+                            refreshed_refresh_token = response.json().get("refresh_token")
+                            if refreshed_access_token is None or refreshed_refresh_token is None:
+                                return HttpResponse("API Critical Error : Access Token Not Found !!")
+                            else:
+                                tiktok_dash.access_token ==  refreshed_access_token
+                                tiktok_dash.refresh_token ==  refreshed_refresh_token
+                                tiktok_dash.save()
+                        else:
+                            return JsonResponse({"error": "Not able to Refresh Access token "} , status=response.status_code)
+            
+            except json.JSONDecodeError:
+                return HttpResponse("JSONDECODE ERROR : Failed to parse 'details' field. ")
+        
+    
+    if not user_info:
+        return JsonResponse({"error": "User info not found in response"}, status=400)
+
+    # Example of the user data you might want to return
+    user_info_response = {
+        'avatar_url': user_info.get('avatar_url'),
+        'open_id': user_info.get('open_id'),
+        'union_id': user_info.get('union_id'),#not used rn
+        'display_name': user_info.get('display_name'),
+        'profile_deep_link': user_info.get('profile_deep_link'),
+        'is_verified': user_info.get('is_verified'),
+        'follower_count': user_info.get('follower_count'),
+        'username': user_info.get('username'),
+        'likes_count': user_info.get('likes_count'),
+        'video_count': user_info.get('video_count'),
+    }
+
+    tiktok_dash.avatar_url = user_info_response['avatar_url']
+    tiktok_dash.open_id = user_info_response['open_id']
+    tiktok_dash.display_name = user_info_response["display_name"]
+    tiktok_dash.profile_deep_link = user_info_response['profile_deep_link']
+    tiktok_dash.is_verified = user_info_response['is_verified']
+    tiktok_dash.follower_count = user_info_response['follower_count']
+    tiktok_dash.likes_count = user_info_response['likes_count']
+    tiktok_dash.video_count = user_info_response['video_count']
+    tiktok_dash.save()
+    tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/tiktok_dash.follower_count)*100)
+    tiktok_dash.save()
+    
+    # Return the user data in a JsonResponse or render a template as needed
+    return redirect(reverse("edit_tiktok_dashboard" , kwargs={"pk": tiktok_dash.id}))
+    # Return user data or render a template
+
+class TiktokDashboardEdit(UpdateView , LoginRequiredMixin , UserPassesTestMixin):
+    model = TiktokDashboard
+    fields = ['pricing_per_promotion' , 'tags']
+    template_name = 'base/tiktok_dashboard_edit.html'
+
+    
+    def test_func(self):
+        tiktok_dash = get_object_or_404(TiktokDashboard , id=self.kwargs.get('pk') )
+        if tiktok_dash.creator.user == self.request.user :
+            return True
+        return False
+    
+    def get_success_url(self):
+        creator = get_object_or_404(CreatorProfile , user = self.request.user)
+        return reverse("integration_dashboard" , kwargs={"pk":creator.id})
+
+    
+

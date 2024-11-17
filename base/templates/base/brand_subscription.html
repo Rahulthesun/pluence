@@ -1,4 +1,4 @@
-{% extends 'base/main.html' %}
+{% extends 'base/form_main.html' %}
 
 {% block content %}
 
@@ -62,27 +62,42 @@
             <input type="hidden" name="months" id="selected-months" value="3">
 
             <!-- Submit Button -->
+
             <button type="submit">Subscribe Now</button>
+
+            <a href="{% url 'landing_page_pricing' %}">Check for full details on pricing & features list</a>
         </div>
     </form>
 </section>
 <style>
     /* Highlight the selected pricing box */
     .pricing-box.selected {
-        border: 2px solid #808080; /* Green border */
-        background-color: #f0f8ff; /* Light blue background */
+        border: 2px solid #000000; /* Green border */
+        background-color: #000000; /* Light blue background */
+        color: white;
     }
 
-    /*  hover effect  */
-    .pricing-box:hover {
-        background-color: #f9f9f9;
+    .pricing-box.selected h1 , .pricing-box.selected h2 {
+        color: white;
     }
 
+    .pricing-box.pricing-box.selected button {
+        border: 3px solid white;
+    }
+
+    .pricing-types {
+        width: 100%;
+    }
+
+    .pricing-box {
+        width: 80%;
+    }
 
 
 
     .pricing-signup .select-plan-button:hover {
-        background-color: #808080;
+        background-color: #ffffff;
+        color: black;
     }
 </style>
 <script>
