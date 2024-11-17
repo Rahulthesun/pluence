@@ -1311,7 +1311,7 @@ def tiktok_authorize(request):
     if not access_token or not refresh_token:
         if error:
             return HttpResponse(f"{error} , Please try again")
-    creator_profile = get_object_or_404(user = request.user)
+    creator_profile = get_object_or_404(CreatorProfile , user = request.user)
     tiktok_dash,created = TiktokDashboard.objects.get_or_create(
             creator = creator_profile,
             access_token = hash_token(access_token),
