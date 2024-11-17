@@ -38,11 +38,10 @@
             <div class="proposal-row-header-ig">
                 <p>Brand</p>
                 <p>Timeline</p>
-                <p>Description</p>
-                <p>Content Type</p>
-                <p>Product Link</p>
-                <p>Payment</p>
-                <p>Accept / Reject</p> 
+                <p>Duration Left</p>
+                <p>Actions Required</p>
+                <p>Amount</p>
+                <p>View</p>
                 
             </div>
             {% for proposal in ig_active_proposals %}
@@ -50,12 +49,11 @@
 
                 <p>{{proposal.brand.brand_name}}</p>
                 <p>{{proposal.timeline}} Days</p>
-                <p style="word-wrap: break-word;font-size: smaller;">{{proposal.description}}</p>
-                <p>{{proposal.content_type}}</p>
-                <p>{%if proposal.product_link%}<a href="{{proposal.product_link}}">Product Link</a>{%endif%} No link</p>
+                <p>{% if proposal.duration_left.days > 0 %}{{proposal.duration_left.days}} {% else %} Deal Expired{% endif %}</p>
+                <p>{%if proposal.proposal_status == "Content Approval Pending" %} Submit Content For Approval {% else %} {{proposal.proposal_status}} {% endif %}</p>
                 <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                <p><a href="{% url 'creator_proposal_detail' proposal.id %}">View Proposal</a></p>
                     
-                <p></p>
 
 
                 <!--
@@ -98,7 +96,7 @@
                 
                 <p>{%if proposal.proposal_status == "Brand Deal Active" %} Submit Content For Approval {% endif %}</p>
                 <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
-                <p></p>
+                <p><a href="{% url 'creator_proposal_detail_with_slug' proposal.id 'tiktok' %}">View Proposal</a></p>
                      
             </div> 
             {% endfor %}

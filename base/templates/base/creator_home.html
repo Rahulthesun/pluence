@@ -48,7 +48,6 @@
                 <p>Timeline</p>
                 <p>Description</p>
                 <p>Content Type</p>
-                <p>Product Link</p>
                 <p>Payment</p>
                 <p>Accept / Reject</p> 
                 
@@ -58,9 +57,8 @@
 
                 <p>{{proposal.brand.brand_name}}</p>
                 <p>{{proposal.timeline}} Days</p>
-                <p style="word-wrap: break-word;font-size: smaller;">{{proposal.description}}</p>
+                <p style="word-wrap: break-word;">{%if proposal.description|length > 10 %}<a href="{% url 'creator_proposal_detail' proposal.id %}">{{proposal.description|slice:":10"}}...</a>{% else %} {{proposal.description}} {%endif%}</p>
                 <p>{{proposal.content_type}}</p>
-                <p>{%if proposal.product_link%}<a href="{{proposal.product_link}}">Product Link</a>{%endif%} No link</p>
                 <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
                     
                 <p><a href="{% url 'accept_brand_proposal' proposal.id %}">Accept <i class="fa-solid fa-check"></i></a> <a href="{% url 'reject_brand_proposal' proposal.id %}">Reject<i class="fa-solid fa-xmark"></i></a></p>
@@ -100,7 +98,7 @@
 
                 <p>{{proposal.brand.brand_name}}</p>
                 <p>{{proposal.timeline}} Days</p>
-                <p style="word-wrap: break-word;font-size: smaller;">{{proposal.description}}</p>
+                <p style="word-wrap: break-word;">{%if proposal.description|length > 10 %}<a href="{% url 'creator_proposal_detail_with_slug' proposal.id 'tiktok' %}">{{proposal.description|slice:":10"}}...</a>{% else %} {{proposal.description}} {%endif%}</p>
                 <p>{%if proposal.product_link%}<a href="{{proposal.product_link}}">Product Link</a>{%endif%} No link</p>
                 <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
                     

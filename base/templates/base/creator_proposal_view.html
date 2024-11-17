@@ -32,12 +32,17 @@
                 <p id="description">{{proposal.description}}</p>
                 {% endif %}
 
+                <div class="proposal-detail-flex">
+                    <h2>Platform</h2>
+                    <p id="sub">{% if social_media == "tiktok" %}<i class="fa-brands fa-tiktok"></i> Tiktok {%else%} <i class="fa-brands fa-instagram"> </i> Instagram{% endif %}</p>
+                </div>
+
                 {% if proposal.duration_left %}
-                    {% if proposal.duration_left.days < 0 %}
-                    <h2 id="error">Deal Expired !</h2>
-                    {% else %}
-                    <h2>{{proposal.duration_left.days}} Days Left</h2>
-                    {% endif %}
+                    <div class="proposal-detail-flex">
+                        <h2>Days Left</h2>
+                        <p id="sub">{% if proposal.duration_left.days < 0 %} <span style="color: rgb(211, 14, 14);"> Deal Expired !!</span> {% else %} {{proposal.duration_left.days}} Day{% if proposal.duration_left.days > 1%}s{%endif%} {% endif %}</p>
+                     </div>
+
                 {% else %}
 
                 <div class="proposal-detail-flex">
@@ -45,34 +50,55 @@
                     <p id="sub">{{proposal.timeline}} Days</p>
                 </div>
 
+                
+
                 {% endif %}
 
                 
-
+                {% if social_media == "instagram" %} 
+                    <div class="proposal-detail-flex">
+                        <h2>Content</h2>
+                        <p id="sub">{{proposal.content_type}}</p>
+                    </div>
+                {% endif %}
+                
                 <div class="proposal-detail-flex">
-                    <h2>Content</h2>
-                    <p id="sub">{{proposal.content_type}}</p>
+                    <h2>Deal Status</h2>
+                    <p id="sub">{{proposal.proposal_status}}</p>
                 </div>
 
-
-                    {% if proposal.item_link %}
-                    <a href="{{proposal.item_link}}"><button id="header">Item Link</button></a>
+            
+                    {% if proposal.product_link %}
+                    <a href="{{proposal.product_link}}"><button id="header">Item Link</button></a>
                     {% endif %}
 
                 
                     
-                
                 <div class="button-flex">
-                    {% if proposal.proposal_status == "Paid" or proposal.proposal_status == "Accepted" %}
-                        <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit Content For Approval</button></a>
+                    {% if social_media == "instagram" %}
+                        {% if proposal.proposal_status == "Paid"%}
+                            <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit Content For Approval</button></a>
+
+                        {% else %}
+                            <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
+                            <div class="button-accept-flex">
+                                <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
+                            </div>
+                        {% endif %}
 
                     {% else %}
-                        <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
-                        <div class="button-accept-flex">
-                            <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
-                        </div>
+                        {% if proposal.proposal_status == "Sent" %}
+                            <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
+                            <div class="button-accept-flex">
+                                <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
+                            </div>
+                        {% elif proposal.proposal_status == "Brand Deal Active" %}
+                            <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit Content For Approval</button></a>
+                        {% endif %}
 
-                    {% endif %}
+                    {% endif  %}
+
+                    
                         
                 </div>
 

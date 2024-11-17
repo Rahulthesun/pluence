@@ -13,6 +13,9 @@ urlpatterns = [
     path("" , views.landing_page , name="landing_page"),
     path("creator/" , views.landing_page_creator , name="landing_page_creator"),
     path("pricing/" , views.landing_page_pricing , name="landing_page_pricing"),
+    path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    path("terms-and-conditions/", views.terms_and_conditions, name="terms_and_conditions"),
+    
     path("home/" , views.home , name='home'),
     path("home/<slug:slug>/" , views.home , name='home_with_slug'),
     path("login/" , EmailLogin.as_view() , name="login"),
@@ -59,9 +62,7 @@ urlpatterns = [
     path('password-reset-complete/',
          PasswordResetCompleteView.as_view(template_name='base/password_reset_complete.html'),
          name='password_reset_complete'),
-    path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
-    path("terms-and-conditions/", views.terms_and_conditions, name="terms_and_conditions"),
-
+    
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
      path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),

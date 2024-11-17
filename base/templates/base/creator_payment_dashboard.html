@@ -39,8 +39,59 @@
             
         </div>
 
+        {% if ig_paid_proposals %}
+        <h2>Instagram Proposals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Date Paid</p>
+                <p>Payment</p>
+                
+                
+            </div>
+            {% for proposal in ig_paid_proposals %}
+            <div class="proposal-row-ig">
 
-        <div class="active-proposal-box">
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                <p>{{proposal.date_paid.day}} - {{proposal.date_paid.month}} - {{proposal.date_paid.year}}</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    
+
+            </div> 
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if tiktok_active_proposals %}
+        <h2>Tiktok Proposals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Date Paid</p>
+                <p>Payment</p>
+                
+            </div>
+            {% for proposal in tiktok_active_proposals %}
+            <div class="proposal-row-ig">
+
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                <p>{{proposal.date_paid.day}} - {{proposal.date_paid.month}} - {{proposal.date_paid.year}}</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+               
+            </div> 
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        
+
+        <!--
+        
+         <div class="active-proposal-box">
 
         {% for proposal in paid_proposals %}    
 
@@ -60,6 +111,10 @@
         <p>You don't have any Pending Payment Right Now</p>
         {% endfor %}
         
+        
+        -->
+
+       
 
     </section>
 

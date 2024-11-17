@@ -987,28 +987,32 @@ def creator_payment_dashboard(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     if creator.user != request.user :
         raise PermissionDenied
-    paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-    completed_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.COMPLETED)
-    pending_payment = decimal.Decimal("0.00")
-    for proposal in paid_proposals:
+    ig_paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    tiktok_active_proposals = TiktokProposal.objects.filter(creator=creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+    pending_payment = decimal.Decimal(0)
+    for proposal in ig_paid_proposals:
         pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
-    active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
+    for proposal in tiktok_active_proposals:
+        pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
+
     links={}
-    if active_proposals.exists():
+    if ig_paid_proposals.exists() or tiktok_active_proposals.exists():
         links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator.id}),
                 'name': "Active Proposals"
         }
     #shows manage integrations link in navbar only if dashboard exists
     dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
-    if dashboard.exists():
+    tiktok_dashboard = TiktokDashboard.objects.filter(creator=creator)
+    if dashboard.exists() or tiktok_dashboard.exists():
         links['manage_integrations'] = {
                 'url': reverse("integration_dashboard" , kwargs={"pk":creator.id}),
                 'name': "Manage Integrations"
                 }
     context = {
         'pending_payment' : pending_payment,
-        'paid_proposals' : paid_proposals,
+        'ig_paid_proposals' : ig_paid_proposals,
+        'tiktok_active_proposals' : tiktok_active_proposals,
         'account':creator,
         "links":links
     }
@@ -1263,13 +1267,12 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         except Exception as e:
             print(f"Error: {e}")
             return False
-<<<<<<< HEAD
+        
 def privacy_policy(request):
     return render(request, 'base/privacypolicy.html')
 
 def terms_and_conditions(request):
     return render(request, 'base/termsandconditions.html')
-=======
         
 
 @login_required  
