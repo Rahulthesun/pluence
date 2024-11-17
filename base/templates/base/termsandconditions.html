@@ -1,0 +1,112 @@
+{% extends 'base/landing_main.html' %}
+
+{% block content %}
+{% load static %}
+<body>
+  {% include 'base/landing_header.html' %}
+
+  <div class="main">
+    <h1 id="pluence-heading">Terms and Conditions</h1>
+
+    <div class="terms-section">
+      <p>
+        Welcome to Pluence! These Terms and Conditions ("Terms") govern your access to and use of the Pluence platform, which connects influencers and brands for collaboration. By accessing or using our services, you agree to be bound by these Terms. If you do not agree, you may not use the platform.
+      </p>
+
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        By creating an account, browsing, or engaging in any activities on the Pluence platform, you confirm that you accept and agree to these Terms, our Privacy Policy, and any additional policies or guidelines we may provide.
+      </p>
+
+      <h2>2. Eligibility</h2>
+      <p>
+        To use Pluence, you must:
+      </p>
+      <ul>
+        <li>Be at least 18 years old or have parental/guardian consent to use the platform.</li>
+        <li>Provide accurate, complete, and up-to-date information during registration.</li>
+        <li>Not be prohibited by law from using the platform.</li>
+      </ul>
+
+      <h2>3. User Responsibilities</h2>
+      <p>
+        As a user of Pluence, you agree to:
+      </p>
+      <ul>
+        <li>Maintain the confidentiality of your account credentials.</li>
+        <li>Provide truthful and accurate information in your profile.</li>
+        <li>Refrain from engaging in fraudulent, illegal, or harmful activities.</li>
+        <li>Comply with all applicable laws and regulations while using the platform.</li>
+      </ul>
+
+      <h2>4. Platform Usage</h2>
+      <p>
+        Pluence is designed to connect influencers and brands for collaboration. The platform provides tools for communication, proposal sharing, and payment management. However:
+      </p>
+      <ul>
+        <li>Pluence is not responsible for the content, accuracy, or legality of user-generated proposals or profiles.</li>
+        <li>All agreements between users (influencers and brands) are private and governed by their respective terms.</li>
+      </ul>
+
+      <h2>5. Payments and Transactions</h2>
+      <p>
+        Payments made through Pluence are processed securely via third-party payment providers. By using the payment features, you agree to:
+      </p>
+      <ul>
+        <li>Pay applicable fees for services as outlined in the pricing or campaign terms.</li>
+        <li>Provide accurate and valid payment information.</li>
+        <li>Acknowledge that Pluence is not responsible for delays or issues caused by third-party payment providers.</li>
+      </ul>
+
+      <h2>6. Prohibited Activities</h2>
+      <p>
+        While using Pluence, you agree not to:
+      </p>
+      <ul>
+        <li>Engage in spamming, hacking, or unauthorized access to the platform.</li>
+        <li>Post or share content that is offensive, defamatory, or infringes on intellectual property rights.</li>
+        <li>Use the platform to promote illegal activities or harm others.</li>
+      </ul>
+
+      <h2>7. Termination</h2>
+      <p>
+        We reserve the right to suspend or terminate your access to Pluence if you violate these Terms or engage in activities that harm the platform, its users, or its reputation. Termination does not waive our right to seek legal remedies for breaches of these Terms.
+      </p>
+
+      <h2>8. Limitation of Liability</h2>
+      <p>
+        Pluence is provided "as is" without warranties of any kind. We do not guarantee uninterrupted access, error-free functionality, or specific results from using the platform. To the fullest extent permitted by law, Pluence is not liable for:
+      </p>
+      <ul>
+        <li>Indirect, incidental, or consequential damages arising from platform use.</li>
+        <li>Losses resulting from user agreements, payments, or content shared on the platform.</li>
+      </ul>
+
+      <h2>9. Changes to Terms</h2>
+      <p>
+        We may modify these Terms periodically to reflect changes in our services, laws, or policies. We will notify you of significant changes via email or through the platform. Continued use of Pluence after modifications indicates your acceptance of the updated Terms.
+      </p>
+
+      <h2>10. Governing Law</h2>
+      <p>
+        These Terms are governed by the laws of [Insert Jurisdiction]. Any disputes arising under or in connection with these Terms shall be resolved in the courts of [Insert Jurisdiction].
+      </p>
+
+      <h2>11. Contact Us</h2>
+      <p>
+        If you have any questions about these Terms, please contact us:
+      </p>
+      <ul>
+        <li>Email: [Insert Contact Email]</li>
+        <li>Address: [Insert Company Address]</li>
+      </ul>
+
+      <div class="brand-signup">
+        <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+      </div>
+    </div>
+  </div>
+
+  {% include 'base/landing_footer.html' %}
+</body>
+{% endblock %}

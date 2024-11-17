@@ -59,6 +59,8 @@ urlpatterns = [
     path('password-reset-complete/',
          PasswordResetCompleteView.as_view(template_name='base/password_reset_complete.html'),
          name='password_reset_complete'),
+    path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    path("terms-and-conditions/", views.terms_and_conditions, name="terms_and_conditions"),
 
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
