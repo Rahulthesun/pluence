@@ -1410,7 +1410,10 @@ def tiktok_user_data(request , dash_id):
     tiktok_dash.likes_count = user_info_response['likes_count']
     tiktok_dash.video_count = user_info_response['video_count']
     tiktok_dash.save()
-    tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/tiktok_dash.follower_count)*100)
+    if tiktok_dash.follower_count > 0 :
+        tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/tiktok_dash.follower_count)*100)
+    else:
+        tiktok_dash.engagement_rate = decimal.Decimal(0)    
     tiktok_dash.save()
     
     # Return the user data in a JsonResponse or render a template as needed
