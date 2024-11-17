@@ -1298,7 +1298,6 @@ def tiktok_authorize(request):
         'client_secret': TIKTOK_CLIENT_SECRET,
         'code': authorization_code,
         'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
-        'code_verifier': code_verifier,
         'grant_type': 'authorization_code'
     }
     response = requests.post(access_token_url , data=payload)
