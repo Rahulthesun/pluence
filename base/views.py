@@ -1287,7 +1287,8 @@ def tiktok_authorize(request):
             'scope': "user.info.basic,user.info.profile,user.info.stats",
             "state": "some random_state",
             'code_challenge': code_challenge,
-            'code_challenge_method': 'S256'
+            'code_challenge_method': 'S256',
+            'grant_type': 'authorization_code'
         }
         print(authorization_data['redirect_uri'])
         #encoding authorization parameters into the url
