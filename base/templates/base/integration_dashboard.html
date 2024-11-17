@@ -72,17 +72,7 @@
 
                     <h1 id="rate">{% if ig_dashboard.followers > 1000 %} {% widthratio ig_dashboard.followers 1000 1 %}k <span id="followers-2">Followers</span> {% else %} {ig_dashboard.followers}} <span id="followers">Followers</span> {%endif%} </h1>
 
-                    <!--
-                    <div class="social-image">
-                        {% if creator.dashboard_img %}
-                        <img src = {{creator.dashboard_img}}>
-                        {% else %}
-                        <img src="https://edgy.app/wp-content/uploads/2017/07/instagram-account.jpg">
-                        {% endif %} 
-
-                    </div>
-
-                    -->
+            
 
 
                     <div class="tooltip"><p>{% if ig_dashboard.audience_country == "None" %} No Data on Audience Country {% else %} <b><i class="fa-solid fa-location-dot"></i> {{ig_dashboard.audience_country}}</b> {% endif %}</p>
@@ -95,12 +85,6 @@
 
                     <div class="button-distance-flex">
                         <a href="{% url 'instagram_integration_update' ig_dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>
-
-                        <!--
-                        <a href="{% url 'dashboard_image_update' ig_dashboard.id %}"><button id="small">
-                            {% if dashboard.dashboard_img %}Edit Image{% else %}Upload Image{% endif %}</button></a>
-                        -->
-                        
                     </div>
 
                 </div>
@@ -148,13 +132,7 @@
                     </div>
                    
                     <div class="button-distance-flex">
-                        <a href="{% url 'tiktok_get_data' tiktok_dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>
-
-                        <!--
-                        <a href="{% url 'dashboard_image_update' ig_dashboard.id %}"><button id="small">
-                            {% if dashboard.dashboard_img %}Edit Image{% else %}Upload Image{% endif %}</button></a>
-                        -->
-                        
+                        <a href="{% url 'tiktok_get_data' tiktok_dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>                        
                     </div>
                     
                   
