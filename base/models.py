@@ -197,7 +197,7 @@ class TiktokDashboard(models.Model):
     #monetory & brand deal information
     deal_count = models.IntegerField(default=0,blank=False)
     tags = models.TextField(null=True , blank=False)
-    pricing_per_promotion = models.DecimalField(validators=[MinValueValidator(0)] , decimal_places=2 , default=0 , max_digits=10,blank=True) 
+    pricing_per_promotion = models.DecimalField(validators=[MinValueValidator(1)] , decimal_places=2 , max_digits=10,null=True ,blank=True) 
     
     created = models.DateTimeField(auto_now_add=True)
 
