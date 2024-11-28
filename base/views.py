@@ -1286,6 +1286,8 @@ def tiktok_authorize(request):
             'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
             'scope': "user.info.basic,user.info.profile,user.info.stats",
             "state": "some random_state",
+            'code_challenge': code_challenge,
+            'code_challenge_method': "S256"
         }
         print(authorization_data['redirect_uri'])
         #encoding authorization parameters into the url
@@ -1298,7 +1300,8 @@ def tiktok_authorize(request):
         'client_secret': TIKTOK_CLIENT_SECRET,
         'code': authorization_code,
         'redirect_uri': request.build_absolute_uri(reverse_lazy("tiktok_authorize")),
-        'grant_type': 'authorization_code'
+        'grant_type': 'authorization_code',
+        
     }
     response = requests.post(access_token_url , data=payload)
     print(response.json())
@@ -1334,55 +1337,42 @@ def tiktok_user_data(request , dash_id):
         'fields': 'avatar_url,open_id,union_id,display_name,bio_description,profile_deep_link,is_verified,username,follower_count,likes_count,video_count'  # Requesting specific fields
     }
     user_data = requests.get(user_data_url , headers=headers , params=params)
-    if user_data.status_code != 200:
-        return JsonResponse({"error": "Failed to get user info", "details": user_data.text}, status=400)
-
     try:
         user_data_json = user_data.json()
     except ValueError:
         return JsonResponse({"error": "Invalid JSON response", "details": user_data.text}, status=400)
-
-    if user_data_json.get('error', {}).get('code') != 'ok':
-        return JsonResponse({
-            "error": "Error in TikTok API response",
-            "details": user_data_json.get('error', {})
-        }, status=400)
-    
-    # Finding if error exists in tiktok api response
-    user_info = user_data_json.get('data', {}).get('user', {})
-
-    user_info_error = user_data_json.get('error')
-    if user_info_error == "Failed to get user info":
-        
-        if "details" in user_data_json:
-            try:
-                details = json.loads(user_data_json["details"])  # Parse the nested JSON string
-                if details.get("error", {}).get("code") == "access_token_invalid":
-                    if refresh_token:
-                        payload = {
-                        'client_key': TIKTOK_CLIENT_KEY,
-                        'client_secret': TIKTOK_CLIENT_SECRET,
-                        'refresh_token': refresh_token,
-                        'grant_type': 'authorization_code'
-                        }
-                        access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
-                        response = requests.get(access_token_url , data=payload)
+    if user_data.status_code != 200:
+        user_info_error = user_data_json.get('error').get('code')
+        if user_info_error == "access_token_invalid":
+                if refresh_token:
+                    payload = {
+                    'client_key': TIKTOK_CLIENT_KEY,
+                    'client_secret': TIKTOK_CLIENT_SECRET,
+                    'refresh_token': refresh_token,
+                    'grant_type': 'refresh_token'
+                    }
+                    access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
+                    try:
+                        response = requests.post(access_token_url , data=payload)
                         if response.status_code == 200:
+                            print("Access Token Fetch Successfull")
                             refreshed_access_token = response.json().get("access_token")
                             refreshed_refresh_token = response.json().get("refresh_token")
                             if refreshed_access_token is None or refreshed_refresh_token is None:
                                 return HttpResponse("API Critical Error : Access Token Not Found !!")
                             else:
-                                tiktok_dash.access_token ==  refreshed_access_token
-                                tiktok_dash.refresh_token ==  refreshed_refresh_token
+                                tiktok_dash.access_token = hash_token(refreshed_access_token)
+                                tiktok_dash.refresh_token =  hash_token(refreshed_refresh_token)
                                 tiktok_dash.save()
-                        else:
-                            return JsonResponse({"error": "Not able to Refresh Access token "} , status=response.status_code)
+                                return redirect(reverse("tiktok_get_data" , kwargs={"dash_id": tiktok_dash.id}))
+                    except ValueError:
+                        return JsonResponse(response.json() , status= response.status_code)
             
-            except json.JSONDecodeError:
-                return HttpResponse("JSONDECODE ERROR : Failed to parse 'details' field. ")
-        
-    
+        else:
+            print(user_data_json)
+            return JsonResponse({"error": user_data_json, "details": user_data.text}, status=400)
+
+    user_info = user_data_json.get('data', {}).get('user', {})
     if not user_info:
         return JsonResponse({"error": "User info not found in response"}, status=400)
 
