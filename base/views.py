@@ -829,6 +829,30 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
             proposal_status = BrandProposal.Proposal_Status.REQUESTED
 
             )
+            # Send email to the creator about the new proposal
+            template_id = 12
+            to = [{"email": creator.contact_email}]
+            send_smtp_email = SendSmtpEmail(
+                to=to,
+                template_id=template_id,
+                params={
+                    'brand_name': brand.brand_name,  # Add any parameters you want to include in the email
+                    'proposal_description': proposal.description,
+                    'timeline': proposal.timeline,
+                    'proposed_amount': proposal.proposed_amount,
+                }
+            )
+
+            transac_api_instance = TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            try:
+                api_response = transac_api_instance.send_transac_email(send_smtp_email)
+                print("API Response:", api_response)
+            except ApiException as e:
+                print(f"Error: {e}")
+                messages.add_message(self.request, messages.ERROR, "Failed to send email notification.")
+            except Exception as e:
+                print(f"Error: {e}")
+                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email.")
 
             return super().form_valid(form)
 
@@ -918,7 +942,32 @@ def accept_brand_proposal(request , proposal_id , slug=None):
             raise PermissionDenied
         proposal.proposal_status = BrandProposal.Proposal_Status.ACCEPTED
         proposal.save()
-        
+        # Send email to the brand with a link to the payment page
+        brand_email = proposal.brand.email
+        payment_link = request.build_absolute_uri(
+            reverse("brand_proposal_payment", kwargs={"proposal_id": proposal.id}))
+
+        # Prepare the email details
+        template_id = 14
+        to = [{"email": brand_email}]
+        send_smtp_email = SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+            params={
+                'brand_name': proposal.brand.brand_name,
+                'payment_link': payment_link,
+            }
+        )
+
+
+        transac_api_instance =TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("Email sent successfully:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+            messages.add_message(request, messages.ERROR, "Failed to send email notification.")
+
     elif slug == "tiktok":
         proposal = get_object_or_404(TiktokProposal , id=proposal_id)
         if request.user != proposal.creator.user:
@@ -1045,7 +1094,34 @@ def successfull_payment(request , proposal_id):
     proposed_date = proposal.date_paid + datetime.timedelta(days = proposal.timeline)
     proposal.duration_left = proposed_date - timezone.now()
     proposal.save()
-    
+    # Send email to the creator
+    creator_email = proposal.creator.contact_email
+    payment_link = request.build_absolute_uri(
+        reverse("creator_payment_dashboard", kwargs={"creator_id": proposal.creator.id}))
+
+    # Prepare the email details
+    template_id = 15
+    send_email = SendSmtpEmail(
+        to=[{"email": creator_email}],
+        template_id=template_id,
+        params={
+            "creator_name": proposal.creator.name,
+            "amount": proposal.proposed_amount,
+            "payment_date": proposal.date_paid.strftime("%Y-%m-%d"),
+            "payment_link": payment_link
+        }
+    )
+
+    # Initialize the API client
+    api_instance = TransactionalEmailsApi(ApiClient(configuration))
+
+    # Send the email
+    try:
+        api_response = api_instance.send_transac_email(send_email)
+        print("Email sent successfully to the creator:", api_response)
+    except Exception as e:
+        print("Error sending email to the creator:", e)
+
     return render(request , 'base/successfull_payment.html')
 
 def payment_failed(request , brand_id):
@@ -1075,10 +1151,12 @@ def content_approval_process(request, proposal_id):
         # Ensure this is uncommented if needed
         approve_url = request.build_absolute_uri(reverse("approve_content", kwargs={"proposal_id": proposal.id}))
 
+        brand_email = proposal.brand.email  # Get the brand's email
+
     
         to = [{"email": proposal.brand.email}]
-        
-        files = len(media)
+
+        '''files = len(media)
         for i in range(files):
             img = media[i].read()
             payload['image'] = base64.b64encode(img).decode('utf-8')
@@ -1096,25 +1174,30 @@ def content_approval_process(request, proposal_id):
             else:
                 print("Error uploading image to imgbb:", json_response)
                 messages.add_message(request, messages.ERROR, "Error uploading image to Server")
-                return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
-
+                return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))'''
 
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=to,
+            to=[{"email": brand_email}],
             template_id=template_id,
+            params={
+                "creator_name": creator.name,  # Assuming you have a name field in CreatorProfile
+                "proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
+                "approve_link": approve_url,
+                "submission_date": timezone.now().strftime("%Y-%m-%d"),
+            }
         )
 
+        # Send the email
         try:
             api_response = transac_api_instance.send_transac_email(send_smtp_email)
             print("API Response:", api_response)
+            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
+            proposal.save()
         except ApiException as e:
             print(f"Error: {e}")
             messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
-        else:
-            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
-            proposal.save()           
-        return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
 
+        return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
     else:
         return render(request, 'base/content_approval_form.html')
 
@@ -1178,12 +1261,16 @@ def approve_content(request , proposal_id):
 
     to = [{"email": proposal.creator.contact_email}]
 
-    
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=to,
-            template_id=template_id,
-        )
-    
+        to=to,
+        template_id=template_id,
+        params={
+            "creator_name": proposal.creator.name,
+            "proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
+            "approved_date": timezone.now().strftime("%Y-%m-%d"),
+        }
+    )
+
     try:
         api_response = transac_api_instance.send_transac_email(send_smtp_email)
         print("API Response:", api_response)
@@ -1191,7 +1278,7 @@ def approve_content(request , proposal_id):
         print(f"Error: {e}")
         messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
     else:
-        return render(request , 'base/approved.html')
+        return render(request, 'base/approved.html')
 
 
 def claim_referral_bonus(request):
