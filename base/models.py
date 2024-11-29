@@ -176,7 +176,7 @@ class InstagramAccountDashBoard(models.Model):
 
 
     def __str__(self):
-        return f"{self.username} - IG Account"
+        return f"{self.username} -{self.creator.user.email.split('@')[0]} - IG Account"
     
 class TiktokDashboard(models.Model):
     creator = models.OneToOneField(CreatorProfile , on_delete=models.SET_NULL , null=True)

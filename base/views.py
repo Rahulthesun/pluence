@@ -806,7 +806,10 @@ def get_brand_proposals(request, brand_id):
 class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
     form_class = BrandProposalForm
     template_name = "base/create_proposal.html"
-    success_url = reverse_lazy("home")
+
+    def get_success_url(self):
+        brand = get_object_or_404(BrandProfile , user=self.request.user)
+        return reverse("brand_proposals" , kwargs={"brand_id": brand.id})
 
     def test_func(self):
         try:
@@ -838,31 +841,36 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
             proposal_status = BrandProposal.Proposal_Status.REQUESTED
 
             )
-            # Send email to the creator about the new proposal
+            # Send email to the creator about the new proposal (Template tag to be set)
             template_id = 12
             to = [{"email": creator.contact_email}]
-            send_smtp_email = SendSmtpEmail(
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
                 to=to,
                 template_id=template_id,
                 params={
                     'brand_name': brand.brand_name,  # Add any parameters you want to include in the email
                     'proposal_description': proposal.description,
                     'timeline': proposal.timeline,
-                    'proposed_amount': proposal.proposed_amount,
+                    'proposed_amount': str(proposal.proposed_amount),
                 }
             )
 
-            transac_api_instance = TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
             try:
                 api_response = transac_api_instance.send_transac_email(send_smtp_email)
                 print("API Response:", api_response)
+            #if email is not sent , then redirects to home with a message saying send proposal again
             except ApiException as e:
                 print(f"Error: {e}")
-                messages.add_message(self.request, messages.ERROR, "Failed to send email notification.")
+                proposal.delete()
+                messages.add_message(self.request, messages.ERROR, "Failed to send email notification. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
             except Exception as e:
                 print(f"Error: {e}")
-                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email.")
-
+                proposal.delete()
+                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
+            
             return super().form_valid(form)
 
         else:
@@ -905,28 +913,35 @@ class CreateTiktokBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormVi
             proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_SENT
 
             )
-            #email sending feature (yet to be implemented)
-            '''
+            #sends email to the creator , template id to be set
+            template_id = 12
+            to = [{"email": creator.contact_email}]
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=to,
-            template_id=template_id,
-        )
+                to=to,
+                template_id=template_id,
+                params={
+                    'brand_name': brand.brand_name,  # Add any parameters you want to include in the email
+                    'proposal_description': proposal.description,
+                    'timeline': proposal.timeline,
+                    'proposed_amount': str(proposal.proposed_amount),
+                }
+            )
 
-        try:
-            api_response = transac_api_instance.send_transac_email(send_smtp_email)
-            print("API Response:", api_response)
-        except ApiException as e:
-            print(f"Error: {e}")
-            messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
-        else:
-            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
-            proposal.save()           
-        return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
-
-    else:
-        return render(request, 'base/content_approval_form.html')
-
-            '''
+            transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            try:
+                api_response = transac_api_instance.send_transac_email(send_smtp_email)
+                print("API Response:", api_response)
+            #if email is not sent , then redirects to home with a message saying send proposal again and also deletes the proposal created
+            except ApiException as e:
+                proposal.delete()
+                print(f"Error: {e}")
+                messages.add_message(self.request, messages.ERROR, "Failed to send email notification. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
+            except Exception as e:
+                proposal.delete()
+                print(f"Error: {e}")
+                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
 
 
             return super().form_valid(form)
@@ -959,7 +974,7 @@ def accept_brand_proposal(request , proposal_id , slug=None):
         # Prepare the email details
         template_id = 14
         to = [{"email": brand_email}]
-        send_smtp_email = SendSmtpEmail(
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=to,
             template_id=template_id,
             params={
@@ -969,13 +984,15 @@ def accept_brand_proposal(request , proposal_id , slug=None):
         )
 
 
-        transac_api_instance =TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        transac_api_instance =sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         try:
             api_response = transac_api_instance.send_transac_email(send_smtp_email)
             print("Email sent successfully:", api_response)
         except ApiException as e:
+            proposal.proposal_status=BrandProposal.Proposal_Status.REQUESTED
+            proposal.save()
             print(f"Error: {e}")
-            messages.add_message(request, messages.ERROR, "Failed to send email notification.")
+            messages.add_message(request, messages.ERROR, "Failed to send email notification. Try Again or Contact Support")
 
     elif slug == "tiktok":
         proposal = get_object_or_404(TiktokProposal , id=proposal_id)
@@ -983,9 +1000,31 @@ def accept_brand_proposal(request , proposal_id , slug=None):
             raise PermissionDenied
         proposal.proposal_status = TiktokProposal.Proposal_Status.DEAL_PAYMENT_DUE
         proposal.save()
+        template_id = 14
+        to = [{"email": brand_email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+            params={
+                'brand_name': proposal.brand.brand_name,
+                'payment_link': payment_link,
+            }
+        )
+
+
+        transac_api_instance =sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("Email sent successfully:", api_response)
+        except ApiException as e:
+            proposal.proposal_status=TiktokProposal.Proposal_Status.PROPOSAL_SENT
+            proposal.save()
+            print(f"Error: {e}")
+            messages.add_message(request, messages.ERROR, "Failed to send email notification.Try Again or Contact Support ")
+
 
     return redirect(reverse_lazy("home"))
-
+#Implement brand emailing feature when creator rejects proposal
 def reject_brand_proposal(request , proposal_id , slug=None):
     if slug is None:
         proposal = get_object_or_404(BrandProposal , id = proposal_id)
@@ -1109,34 +1148,36 @@ def successfull_payment(request , proposal_id):
     proposal.save()
     # Send email to the creator
     creator_email = proposal.creator.contact_email
-    payment_link = request.build_absolute_uri(
-        reverse("creator_payment_dashboard", kwargs={"creator_id": proposal.creator.id}))
+    view_link = request.build_absolute_uri(
+        reverse("creator_active_proposals", kwargs={"creator_id": proposal.creator.id}))
 
-    # Prepare the email details
+    # Prepare the email details "Create new Email template"
     template_id = 15
-    send_email = SendSmtpEmail(
+    send_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": creator_email}],
         template_id=template_id,
         params={
             "creator_name": proposal.creator.name,
-            "amount": proposal.proposed_amount,
+            "amount": str(proposal.proposed_amount),
             "payment_date": proposal.date_paid.strftime("%Y-%m-%d"),
-            "payment_link": payment_link
+            "view_link": view_link
         }
     )
 
     # Initialize the API client
-    api_instance = TransactionalEmailsApi(ApiClient(configuration))
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
     # Send the email
     try:
         api_response = api_instance.send_transac_email(send_email)
         print("Email sent successfully to the creator:", api_response)
+    #correct error handling to be done
     except Exception as e:
         print("Error sending email to the creator:", e)
 
     return render(request , 'base/successfull_payment.html')
 
+#implement Failed Payment Email Functionality
 def payment_failed(request , brand_id):
     brand = get_object_or_404(BrandProfile , id=brand_id) 
     if brand.user != request.user :
@@ -1279,7 +1320,7 @@ def approve_content(request , proposal_id):
         template_id=template_id,
         params={
             "creator_name": proposal.creator.name,
-            "proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
+            #"proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
             "approved_date": timezone.now().strftime("%Y-%m-%d"),
         }
     )

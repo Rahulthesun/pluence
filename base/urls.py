@@ -29,8 +29,8 @@ urlpatterns = [
     path("creator_proposal_view/<int:pk>/" , views.creator_proposal_view , name='creator_proposal_detail' ),
     path("creator_proposal_view/<int:pk>/<slug:slug>/" , views.creator_proposal_view , name='creator_proposal_detail_with_slug' ),
     path("brand_proposal_view/<int:pk>/" , views.brand_proposal_view , name='brand_proposal_detail' ),
-    path("create_brand_proposal/<int:creator_id>/" , CreateBrandProposal.as_view() , name='create_brand_proposal' ),
-    path("create_brand_proposal/tiktok/<int:creator_id>/" , CreateTiktokBrandProposal.as_view() , name='create_tiktok_brand_proposal' ),
+    path("brand/create_brand_proposal/<int:creator_id>/" , CreateBrandProposal.as_view() , name='create_brand_proposal' ),
+    path("brand/create_brand_proposal/tiktok/<int:creator_id>/" , CreateTiktokBrandProposal.as_view() , name='create_tiktok_brand_proposal' ),
     path("creator/brand_proposal/accept/<int:proposal_id>/" , views.accept_brand_proposal , name='accept_brand_proposal' ),
     path("creator/brand_proposal/accept/<int:proposal_id>/<slug:slug>/" , views.accept_brand_proposal , name='accept_brand_proposal_with_slug' ),
     path("creator/brand_proposal/reject/<int:proposal_id>/" , views.reject_brand_proposal , name='reject_brand_proposal' ),
@@ -62,7 +62,8 @@ urlpatterns = [
     path('password-reset-complete/',
          PasswordResetCompleteView.as_view(template_name='base/password_reset_complete.html'),
          name='password_reset_complete'),
-    
+     
+     #Can't edit the root urls for just these URLS , because they are configured to tiktok api 
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
      path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),
