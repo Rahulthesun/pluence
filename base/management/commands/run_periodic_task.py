@@ -15,7 +15,6 @@ class Command(BaseCommand):
         dashboards = TiktokDashboard.objects.filter()
         if dashboards.exists():
             for dashboard in dashboards:
-                
                 access_token = unhash_token(dashboard.access_token)
                 refresh_token = unhash_token(dashboard.refresh_token)
                 access_token_url = "https://open.tiktokapis.com/v2/oauth/token/"
@@ -53,6 +52,7 @@ class Command(BaseCommand):
                                 user_data.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
                             except requests.exceptions.RequestException as e:
                                 # Catch all requests-related exceptions
+                                print(user_data)
                                 print(f"An error occurred: {e}")
                             else:
                                 # Access the response JSON only if no exception occurred
