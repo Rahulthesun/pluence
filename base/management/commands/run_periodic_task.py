@@ -40,7 +40,7 @@ class Command(BaseCommand):
 
                             user_data_url = "https://open.tiktokapis.com/v2/user/info/"
                             headers = {
-                                'Authorization': f'Bearer {dashboard.access_token}'
+                                'Authorization': f'Bearer {unhash_token(dashboard.access_token)}'
                             }
                             params = {
                                 'fields': 'avatar_url,open_id,union_id,display_name,bio_description,profile_deep_link,is_verified,username,follower_count,likes_count,video_count'  # Requesting specific fields
