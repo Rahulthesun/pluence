@@ -239,9 +239,9 @@ def home(request, slug=None):
                 if sort_query == "":
                     creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by("-created")
                 if sort_query == 'followers-asc':
-                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('followers')
+                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('follower_count')
                 else:
-                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('-followers')
+                    creator_accounts = TiktokDashboard.objects.filter(tags__icontains = search_query).order_by('-follower_count')
             
             context['social_media'] = social_media
             context['creators'] = creator_accounts
@@ -1355,7 +1355,6 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'base/password_reset.html'
     email_template_name = 'base/password_reset_email.html'
     subject_template_name = 'base/password_reset_subject.txt'
-    success_message =  "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly. If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder."
     success_url = reverse_lazy('home')
 
     def form_valid(self, form):
@@ -1364,7 +1363,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
         user = EmailUser.objects.get(email=form.cleaned_data['email'])
        except EmailUser.DoesNotExist:
         # Optionally handle the case where the email doesn't exist
-        messages.error(self.request, "No account found with this email address.")
+        messages.add_message(self.request, messages.INFO ,"No account found with this email address.")
         return response
        
        token = default_token_generator.make_token(user)
@@ -1374,6 +1373,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
            to_email=form.cleaned_data['email'],
            context={'uid': uid, 'token': token},
        )
+       messages.add_message(self.request, messages.INFO, "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly. If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder.")
        return response
 
     #bypassing django's smtp email sending with BREVO API TRANSACTION EMAIL 
@@ -1527,8 +1527,8 @@ def tiktok_user_data(request , dash_id):
     tiktok_dash.likes_count = user_info_response['likes_count']
     tiktok_dash.video_count = user_info_response['video_count']
     tiktok_dash.save()
-    if tiktok_dash.follower_count > 0 :
-        tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/tiktok_dash.follower_count)*100)
+    if tiktok_dash.follower_count > 0  and tiktok_dash.video_count > 0:
+        tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/(tiktok_dash.video_count * tiktok_dash.follower_count))*100)
     else:
         tiktok_dash.engagement_rate = decimal.Decimal(0)    
     tiktok_dash.save()

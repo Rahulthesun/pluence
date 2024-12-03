@@ -102,14 +102,15 @@
                     <div class="tiktok-profile-flex">
                         <div class="tiktok-profile">
                             <img id="avatar" src="{{tiktok_dashboard.avatar_url}}">
-                            <div class="social-flex-tiktok">
-                                <p><b>@<a href="{{tiktok_dashboard.profile_deep_link}}" target="_blank">{{tiktok_dashboard.display_name}}</a> {% if tiktok_dashboard.is_verified %} <i class="fa-solid fa-circle-check" style="color: #24a0ff;"></i> {% endif %}</b></p> 
-                            </div>
                         </div>
                         <div class="tiktok-price">
                             <h1 id="tiktok-rate">$ {{tiktok_dashboard.pricing_per_promotion | floatformat }}</h1>
                             <span id="subtext">/promotion</span>
                         </div>
+                    </div>
+                    
+                    <div class="social-flex-tiktok">
+                        <p><b>@<a href="{{tiktok_dashboard.profile_deep_link}}" target="_blank">{{tiktok_dashboard.display_name}}</a> {% if tiktok_dashboard.is_verified %} <i class="fa-solid fa-circle-check" style="color: #24a0ff;"></i> {% endif %}</b></p> 
                     </div>
                     
 
@@ -125,16 +126,17 @@
 
                         </div>
                         <div class="tiktok-rate-flex">
-                            <p>{{tiktok_dashboard.likes_count}} <span id="followers">Likes</span></p>
+                            <p>{% if tiktok_dashboard.likes_count > 1000000 %} {% widthratio tiktok_dashboard.likes_count 1000000 1 %}M <span id="followers">Likes</span> {% elif tiktok_dashboard.likes_count > 1000 %} {% widthratio tiktok_dashboard.likes_count 1000 1 %}k  <span id="followers">Likes</span> {% else %} {{tiktok_dashboard.likes_count}} <span id="followers">Likes</span> {%endif%}</p>
                             <p>{{tiktok_dashboard.video_count}} <span id="followers">Video{% if tiktok_dashboard.video_count > 1%}s{% endif %}</span></p>
-                            <p>{% if tiktok_dashboard.follower_count > 1000 %} {% widthratio tiktok_dashboard.follower_count 1000 1 %}k <span id="followers">Followers</span> {% else %} {{tiktok_dashboard.follower_count}} <span id="followers">Followers</span> {%endif%} </p>
+                            <p>{% if tiktok_dashboard.follower_count > 1000000 %} {% widthratio tiktok_dashboard.follower_count 1000000 1 %}M <span id="followers">Followers</span>  {% elif tiktok_dashboard.follower_count > 1000 %} {% widthratio tiktok_dashboard.follower_count 1000 1 %}k <span id="followers">Followers</span> {% else %} {{tiktok_dashboard.follower_count}} <span id="followers">Followers</span> {%endif%} </p>
                         </div>
                     </div>
-                   
-                    <div class="button-distance-flex">
-                        <a href="{% url 'tiktok_get_data' tiktok_dashboard.id %}"><button id="small"><i class="fa-solid fa-pen-to-square"></i></button></a>                        
+
+                    <div class="tags" style="width: 80%; height: 92px;margin: 0px;padding: 0px;">
+                        <p>{% if tiktok_dashboard.tags %}{{tiktok_dashboard.tags}}{% else %} No Tags {%endif%} </p>
                     </div>
-                    
+                   
+                        <a href="{% url 'tiktok_get_data' tiktok_dashboard.id %}"><button id="sendproposal-tiktok">Edit <i class="fa-solid fa-pen-to-square"></i></button></a>                        
                   
                 </div>
 
