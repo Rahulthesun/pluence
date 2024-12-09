@@ -1,29 +1,27 @@
-{% extends 'base/main.html' %}
+{% extends 'base/form_main.html' %}
 
 {% block content %}
 
-<section id="form">
-    <form method="post" action="">
-        <h1>Verify Email Address</h1>
-        {% csrf_token %}
 
-        {% for error in form.non_field_errors %}
-            <p><span id="error">{{error}}</span></p>
-        {% endfor %}
-
-        
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="email" value="{{ email }}">
+    <label for="verification_code">Enter the verification code sent to your email:</label>
+    <input type="text" name="verification_code" required>
+    <button type="submit">Verify</button>
+</form>
+{% if form.errors %}
+    <div class="error">
         {% for field in form %}
-        <p>{{field.label_tag}} {% if field.field.required %}<span id="required">*</span>{% endif %}</p>
-
-            {{ field }}
             {% for error in field.errors %}
-                <p><span id="error">{{error}}</span></p>
+                <p>{{ error }}</p>
             {% endfor %}
         {% endfor %}
-        
-        <button type="submit">Verify Email</button>
-    </form>
-</section>
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
 
 
 {% endblock %}

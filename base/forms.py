@@ -41,15 +41,10 @@ class TiktokBrandProposalForm(forms.ModelForm):
         fields = ('description' , 'timeline', 'proposed_amount' , 'product_link' )
 
 
+from django import forms
+
 class EmailVerificationForm(forms.Form):
-    email_code = forms.CharField(max_length=200 ,
-                                 min_length=4, 
-                                 required=True , 
-                                 widget=forms.TextInput(attrs={'placeholder':"Enter 4 Digit Verification Code"}), 
-                                 help_text="Enter 4 digit Code Sent to Your Email"
-                                 )
-
-
+    verification_code = forms.CharField(max_length=6, required=True, label='Verification Code')
 class BrandSubscriptionForm(forms.Form):
     # ChoiceField to restrict user to 3, 6, or 12 months
     MONTH_CHOICES = [

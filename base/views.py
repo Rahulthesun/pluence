@@ -304,15 +304,40 @@ class EmailLogin(LoginView):
 class EmailSignUp(UserPassesTestMixin , FormView):
     form_class = EmailUserCreationForm
     template_name = "base/signup.html"
-
     def get_success_url(self):
-        return reverse_lazy("account_selection")
+        return reverse("EmailVerificationView", kwargs={"pk": self.request.user.id, "verify_id": self.verification.id})
     
     def form_valid(self , form):
-        user = form.save()
-        if user is not None:
+        user = form.save(commit=False)
+        user.is_verified = False
+        from django.utils.crypto import get_random_string
+        verification_code = get_random_string(length=6)
+        verification=VerifyEmail.objects.create(email=user.email, verification_code=verification_code)
+        self.verification = verification
+        self.send_verification_email(user.email, verification_code)
+        return HttpResponseRedirect(
+        reverse("EmailVerificationView", kwargs={"pk": user.email, "verify_id": verification.id}))
 
-            """"
+        #login(self.request, user)
+        return super().form_valid(form)
+
+    def send_verification_email(self, email, verification_code):
+        template_id = 18
+        to = [{"email": email}]
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            template_id=template_id,
+            params={
+                'code': verification_code
+            }
+        )
+        try:
+            api_response = transac_api_instance.send_transac_email(send_smtp_email)
+            print("API Response:", api_response)
+        except ApiException as e:
+            print(f"Error: {e}")
+
+        """"
 =======
             '''
 >>>>>>> d6db619a5c70cdc9af0a12524861e1b5aedbdb1f
@@ -339,9 +364,7 @@ class EmailSignUp(UserPassesTestMixin , FormView):
 
     
 
-            login(self.request , user)
-        return super(EmailSignUp,self).form_valid(form)    
-    
+
     def test_func(self):
         return self.request.user.is_anonymous
     
@@ -354,6 +377,9 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
     template_name = "base/account_selection.html"
     
     def test_func(self):
+        # trying to prevent non logged in users from reaching this page
+        if not self.request.user.is_authenticated:
+            return False
         creator_account = CreatorProfile.objects.filter(user = self.request.user)
         brand_account = BrandProfile.objects.filter(user = self.request.user)
         if brand_account.exists() or creator_account.exists() :
@@ -384,6 +410,7 @@ class BrandAccountSubscription(UserPassesTestMixin ,LoginRequiredMixin ,FormView
     form_class = BrandSubscriptionForm
 
     def test_func(self):
+
         brand = get_object_or_404(BrandProfile, id=self.kwargs.get("brand_id"))
         return brand.user == self.request.user
 
@@ -1482,7 +1509,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
             return False
         
 
-@login_required  
+@login_required
 def tiktok_authorize(request):
     authorization_code = request.GET.get('code')
     code_verifier = generate_code_verifier()
@@ -1633,5 +1660,35 @@ class TiktokDashboardEdit(UpdateView , LoginRequiredMixin , UserPassesTestMixin)
         creator = get_object_or_404(CreatorProfile , user = self.request.user)
         return reverse("integration_dashboard" , kwargs={"pk":creator.id})
 
-    
 
+
+
+class EmailVerificationView(FormView):
+    template_name = "base/email_verification.html"
+    form_class = EmailVerificationForm
+
+    def form_valid(self, form):
+        email = self.request.POST.get('email')
+        verification_code = form.cleaned_data['verification_code']
+        verify_id = self.kwargs.get('verify_id')
+
+
+        verification =VerifyEmail.objects.filter(email=email, id=verify_id).first()
+        if verification and  verification.verification_code == verification_code:
+            if verification.verified:
+                messages.error(self.request, "This email has already been verified.")
+                return self.form_invalid(form)
+            user = EmailUser .objects.get(email=email)
+            user.is_verified = True
+            user.save()
+            login(self.request, user)
+            verification.delete()
+            return redirect('account_selection')
+        else:
+            form.add_error('verification_code', 'Invalid verification code.')
+            return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['email'] = self.request.GET.get('email')  # Pass the email to the template
+        return context
