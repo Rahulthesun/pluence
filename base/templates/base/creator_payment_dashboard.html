@@ -39,80 +39,35 @@
             
         </div>
 
-        {% if ig_paid_proposals %}
-        <h2>Instagram Proposals</h2>
+
+        <h2>Pending Payment</h2>
         <div class="proposal-container">
             <div class="proposal-row-header-ig">
+                <p>Platform</p>
                 <p>Brand</p>
-                <p>Timeline</p>
                 <p>Date Paid</p>
                 <p>Payment</p>
+                <p>Deal Status</p>
                 
                 
             </div>
-            {% for proposal in ig_paid_proposals %}
-            <div class="proposal-row-ig">
-
-                <p>{{proposal.brand.brand_name}}</p>
-                <p>{{proposal.timeline}} Days</p>
-                <p>{{proposal.date_paid.day}} - {{proposal.date_paid.month}} - {{proposal.date_paid.year}}</p>
-                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
-                    
-
-            </div> 
+            {% for proposal in paid_proposals %}
+            <a href="{% url 'creator_proposal_detail' proposal.id %}" style="text-decoration: none;">
+                <div class="proposal-row-ig">
+                    <p>{% if proposal.platform == "tiktok" %} <i class="fa-brands fa-tiktok"></i> {% else %} <i class="fa-brands fa-instagram"></i> {% endif %}</p>
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.date_paid.day}} - {{proposal.date_paid.month}} - {{proposal.date_paid.year}}</p>
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p>{{proposal.proposal_status}}</p>
+                        
+                </div> 
+            </a>
+            
+            {% empty %}
+                <p>No Paid Brand Deals</p>
             {% endfor %}
         </div>
-        {% endif %}
 
-        {% if tiktok_active_proposals %}
-        <h2>Tiktok Proposals</h2>
-        <div class="proposal-container">
-            <div class="proposal-row-header-ig">
-                <p>Brand</p>
-                <p>Timeline</p>
-                <p>Date Paid</p>
-                <p>Payment</p>
-                
-            </div>
-            {% for proposal in tiktok_active_proposals %}
-            <div class="proposal-row-ig">
-
-                <p>{{proposal.brand.brand_name}}</p>
-                <p>{{proposal.timeline}} Days</p>
-                <p>{{proposal.date_paid.day}} - {{proposal.date_paid.month}} - {{proposal.date_paid.year}}</p>
-                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
-               
-            </div> 
-            {% endfor %}
-        </div>
-        {% endif %}
-        
-        
-
-        <!--
-        
-         <div class="active-proposal-box">
-
-        {% for proposal in paid_proposals %}    
-
-        <div class="active-proposal-flex">
-            <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-            <p>{{proposal.brand.brand_name}}</p>
-            <p id="sub">{{proposal.content_type}}</p>
-            
-            <p id="sub">{% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} Days Left{% else %}<span id="error">Deal Expired !! </span> {% endif %}</p>
-            <a href="{% url 'creator_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
-        </div>   
-
-        
-            
-        {% empty %}
-        </div> 
-        <p>You don't have any Pending Payment Right Now</p>
-        {% endfor %}
-        
-        
-        -->
 
        
 

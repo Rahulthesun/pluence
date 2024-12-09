@@ -3,27 +3,7 @@
 {% block content %}
 
     <section id="main">
-        
-
-        <!--
-        <div class="header-flex">
-            <div class="account-info">
-                <h1>{{proposal.creator.name}}</h1>
-                <div class="link-flex">
-                    {% if proposal.creator.contact_email %}
-                    <a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a>
-                    {% endif %}
-                    {% if proposal.creator.website %}
-                    <a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a>
-                    {% endif %}
-                </div>    
-            </div>
            
-            <a href="{% url 'home' %}"><button id="header">Home</button></a>
-
-        </div>
-        -->
-        
 
             <div class="proposal-detail-box">
                 <h2 id="amount">${{proposal.proposed_amount|floatformat}}</h2>
@@ -34,7 +14,7 @@
 
                 <div class="proposal-detail-flex">
                     <h2>Platform</h2>
-                    <p id="sub">{% if social_media == "tiktok" %}<i class="fa-brands fa-tiktok"></i> Tiktok {%else%} <i class="fa-brands fa-instagram"> </i> Instagram{% endif %}</p>
+                    <p id="sub">{% if proposal.platform == "tiktok" %}<i class="fa-brands fa-tiktok"></i> Tiktok {%else%} <i class="fa-brands fa-instagram"> </i> Instagram{% endif %}</p>
                 </div>
 
                 {% if proposal.duration_left %}
@@ -55,7 +35,7 @@
                 {% endif %}
 
                 
-                {% if social_media == "instagram" %} 
+                {% if proposal.platform == "instagram" %} 
                     <div class="proposal-detail-flex">
                         <h2>Content</h2>
                         <p id="sub">{{proposal.content_type}}</p>
@@ -68,47 +48,11 @@
                 </div>
 
             
-                    {% if proposal.product_link %}
-                    <a href="{{proposal.product_link}}"><button id="header">Item Link</button></a>
-                    {% endif %}
+                {% if proposal.product_link %}
+                <a href="{{proposal.product_link}}" target="_blank"><button id="header">Item Link</button></a>
+                {% endif %}
 
-                
-                    
-                <div class="button-flex">
-                    {% if social_media == "instagram" %}
-                        {% if proposal.proposal_status == "Paid"%}
-                            <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit Content For Approval</button></a>
-
-                        {% else %}
-                            <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
-                            <div class="button-accept-flex">
-                                <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
-                            </div>
-                        {% endif %}
-
-                    {% else %}
-                        {% if proposal.proposal_status == "Sent" %}
-                            <a href="{% url 'accept_brand_proposal' proposal.id %}"><button id="view">Accept Brand Proposal</button></a>
-                            <div class="button-accept-flex">
-                                <a href="{% url 'reject_brand_proposal' proposal.id %}"><button id="reject"><i class="fa-solid fa-xmark"></i></button></a>
-                            </div>
-                        {% elif proposal.proposal_status == "Brand Deal Active" %}
-                            <a href="{% url 'content_approval' proposal.id %}"><button id="view">Submit Content For Approval</button></a>
-                        {% endif %}
-
-                    {% endif  %}
-
-                    
-                        
-                </div>
-
-
-                
-
-                
-
-
-                
+                             
             </div>
 
     </section>

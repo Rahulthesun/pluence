@@ -11,13 +11,14 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.db.models import Q
 
 
 from users.forms import EmailUserCreationForm
 from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm ,TiktokBrandProposalForm, DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
-from .models import CreatorProfile ,BrandProfile , BrandProposal , InstagramAccountDashBoard , Content_Approval_Images , VerifyEmail,Referral , TiktokDashboard , TiktokProposal
-
+from .models import CreatorProfile ,BrandProfile , BrandDeal , InstagramAccountDashBoard , Content_Approval_Media , VerifyEmail,Referral , TiktokDashboard 
+from .models import UnsentEmails
 
 
 from django.contrib.auth.mixins import UserPassesTestMixin , LoginRequiredMixin
@@ -140,13 +141,22 @@ def home(request, slug=None):
     brand_account = BrandProfile.objects.filter(user = request.user)
     context = {}
     if creator_account.exists():
-        ig_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
-        tiktok_proposals = TiktokProposal.objects.filter(creator = creator_account[0] , proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_SENT)
+        ig_proposals = BrandDeal.objects.filter(creator = creator_account[0] , proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT , platform = BrandDeal.Platforms.INSTAGRAM)
+        tiktok_proposals = BrandDeal.objects.filter(creator = creator_account[0] , proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT , platform = BrandDeal.Platforms.TIKTOK)
+
         ig_account = InstagramAccountDashBoard.objects.filter(creator = creator_account[0])
         tiktok_account = TiktokDashboard.objects.filter(creator = creator_account[0])
         #change the ig_active_proposals status-es
-        ig_active_proposals = BrandProposal.objects.filter(creator = creator_account[0] , proposal_status = BrandProposal.Proposal_Status.PAID)
-        tiktok_active_proposals = TiktokProposal.objects.filter(creator = creator_account[0] , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+        
+        ig_active_proposals = BrandDeal.objects.filter(
+            Q(creator = creator_account[0]) & Q(platform=BrandDeal.Platforms.INSTAGRAM) & (Q(proposal_status = BrandDeal.Proposal_Status.PROPOSAL_ACCEPTED) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_PAID) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT))
+        )
+
+        tiktok_active_proposals = BrandDeal.objects.filter(
+            Q(creator = creator_account[0]) & Q(platform=BrandDeal.Platforms.INSTAGRAM) & (Q(proposal_status = BrandDeal.Proposal_Status.PROPOSAL_ACCEPTED) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_PAID) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING) | Q(proposal_status = BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT))
+        )
+
+
         #referral = Referral.objects.get(referrer = creator_account)
         #context['referral_code'] = referral.code
         links = {}
@@ -251,19 +261,21 @@ def home(request, slug=None):
         account = brand_account[0]
         if account.brand_name:
             context['username'] = account.brand_name
-        context['pending_proposals'] = BrandProposal.objects.filter(brand = account ,proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
-        your_proposals = BrandProposal.objects.filter(brand=account)
+        context['pending_proposals'] = BrandDeal.objects.filter(brand = account ,proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+        
+        your_proposals = BrandDeal.objects.filter(brand = account)
+        
         links = {}
         
         #content approval pending link to be added to dynamic navbar links
-        if context['pending_proposals'].exists():
-            num = len(context['pending_proposals'])
+        if context['pending_proposals'].exists() :
+            num = len(context['pending_proposals']) 
             links["content_approval"]= {
                 'url' : reverse_lazy("pending_content_approval"),
                 'name' : f'Content Approval ({num})'
             }
         #your proposal link added to DN(Dynamic navbar) Links
-        if your_proposals.exists():
+        if your_proposals.exists() :
             links["your_proposals"] = {
                 'url': reverse("brand_proposals" ,kwargs={"brand_id":brand_account[0].id}),
                 'name': 'Your Proposals'
@@ -604,9 +616,8 @@ def integration_dashboard(request , pk):
         else:
             tiktok_dashboard = tiktok_dashboards[0]
         links={}
-        ig_active_proposals = BrandProposal.objects.filter(creator = creator_profile , proposal_status = BrandProposal.Proposal_Status.PAID)
-        tiktok_active_proposals = TiktokProposal.objects.filter(creator = creator_profile , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
-        if ig_active_proposals.exists() or tiktok_active_proposals.exists():
+        active_proposals = BrandDeal.objects.filter(creator=creator_profile , proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE)
+        if active_proposals.exists():
             links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator_profile.id}),
                 'name': "Active Proposals"
@@ -708,11 +719,11 @@ class DashboardImageUpdate(UserPassesTestMixin,LoginRequiredMixin , FormView):
         return reverse("integration_dashboard" , kwargs= {"pk": id})
     
 def brand_proposal_view(request , pk):
-    proposal = get_object_or_404(BrandProposal , id=pk)
+    proposal = get_object_or_404(BrandDeal , id=pk)
     if proposal.brand.user != request.user:
         raise PermissionDenied
     links = {}
-    pending_proposals = BrandProposal.objects.filter(brand = proposal.brand , proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    pending_proposals = BrandDeal.objects.filter(brand = proposal.brand , proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
     if pending_proposals.exists():
         links["content_approval"]= {
                 'url' : reverse_lazy("pending_content_approval"),
@@ -730,22 +741,14 @@ def brand_proposal_view(request , pk):
 
     return render(request , 'base/brand_proposal_view.html' , context)
 
-def creator_proposal_view(request , pk , slug=None):
-    if slug == None:
-        proposal = get_object_or_404(BrandProposal , id = pk)
-        social_media = "instagram"
-
-    elif slug == "tiktok":
-        proposal = get_object_or_404(TiktokProposal , id=pk )
-        social_media = "tiktok"
-
-
+def creator_proposal_view(request , pk):
+    proposal = get_object_or_404(BrandDeal , id = pk)
+    #restrict other users from using link
     if proposal.creator.user != request.user :
             raise PermissionDenied
     links={}
-    ig_active_proposals = BrandProposal.objects.filter(creator=proposal.creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-    tiktok_active_proposals = TiktokProposal.objects.filter(creator=proposal.creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
-    if ig_active_proposals.exists() or tiktok_active_proposals.exists():
+    active_proposals = BrandDeal.objects.filter(creator=proposal.creator , proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    if active_proposals.exists() :
         links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
                 'name': "Active Proposals"
@@ -763,7 +766,6 @@ def creator_proposal_view(request , pk , slug=None):
             }
 
     context = {
-        'social_media': social_media,
         'proposal' : proposal,
         "links" : links
     }
@@ -779,21 +781,49 @@ def get_brand_proposals(request, brand_id):
     brand = get_object_or_404(BrandProfile , id = brand_id)
     if brand.user != request.user:
         raise PermissionDenied
-    proposals = BrandProposal.objects.filter(brand = brand , proposal_status = BrandProposal.Proposal_Status.REQUESTED)
-    accepted_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.ACCEPTED)
-    paid_proposals = BrandProposal.objects.filter(brand =  brand , proposal_status = BrandProposal.Proposal_Status.PAID)
-    pending_proposals = BrandProposal.objects.filter(brand= brand , proposal_status= BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    
+    ig_proposals = BrandDeal.objects.filter(brand = brand , platform = BrandDeal.Platforms.INSTAGRAM , proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT)
+    #payment-due is used as accepted proposals i.e. ACCEPTED is a proposals status that is temp while sending emails . DEAL_PAYMENT_DUE IS THE proposals status used to query the proposals - ACCEPTED BUT NOT PAID YET
+    ig_accepted_proposals = BrandDeal.objects.filter(brand =  brand , platform = BrandDeal.Platforms.INSTAGRAM , proposal_status = BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE)
+    ig_active_proposals = BrandDeal.objects.filter(brand =  brand ,platform = BrandDeal.Platforms.INSTAGRAM , proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    ig_pending_proposals = BrandDeal.objects.filter(brand= brand , platform = BrandDeal.Platforms.INSTAGRAM , proposal_status= BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+    ig_posting_proposals = BrandDeal.objects.filter(brand= brand , platform = BrandDeal.Platforms.INSTAGRAM , proposal_status= BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT)
+
+  
+    
+    tiktok_proposals = BrandDeal.objects.filter(brand = brand , platform = BrandDeal.Platforms.TIKTOK , proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT)
+    tiktok_accepted_proposals = BrandDeal.objects.filter(brand =  brand , platform = BrandDeal.Platforms.TIKTOK , proposal_status = BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE)
+    tiktok_active_proposals = BrandDeal.objects.filter(brand =  brand ,platform = BrandDeal.Platforms.TIKTOK , proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    tiktok_pending_proposals = BrandDeal.objects.filter(brand= brand , platform = BrandDeal.Platforms.TIKTOK , proposal_status= BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+    tiktok_posting_proposals = BrandDeal.objects.filter(brand= brand , platform = BrandDeal.Platforms.TIKTOK , proposal_status= BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT)
+
+
+    ig_num = len(ig_proposals) + len(ig_accepted_proposals) + len(ig_active_proposals) +  len(ig_pending_proposals) + len(ig_posting_proposals)
+    tiktok_num = len(tiktok_proposals) + len(tiktok_accepted_proposals) +  len(tiktok_active_proposals) + len(tiktok_pending_proposals) + len(tiktok_posting_proposals)
+
+    
     context = {
         'account':brand,
-        'proposals': proposals,
-        'accepted_proposals' : accepted_proposals,
-        'paid_proposals' : paid_proposals
+        'ig_sent_proposals': ig_proposals,
+        'ig_payment_due_proposals' : ig_accepted_proposals,
+        'ig_active_proposals' : ig_active_proposals,
+        'ig_content_approval_proposals' : ig_pending_proposals,
+        'ig_posting_proposals' : ig_posting_proposals,
+
+        'ig_num': ig_num , 
+        'tiktok_num': tiktok_num,
+
+        'tiktok_sent_proposals': tiktok_proposals,
+        'tiktok_payment_due_proposals' : tiktok_accepted_proposals,
+        'tiktok_active_proposals' : tiktok_active_proposals,
+        'tiktok_content_approval_proposals' : tiktok_pending_proposals,
+        'tiktok_posting_proposals' : tiktok_posting_proposals
     }
 
     links = {}
-    num = len(pending_proposals)
+    num = len(ig_pending_proposals) + len(tiktok_pending_proposals)
     #if there are pending proposals , display the link in navbar
-    if pending_proposals.exists():
+    if ig_pending_proposals.exists() or tiktok_pending_proposals.exists():
         links["content_approval"]= {
                     'url' : reverse_lazy("pending_content_approval"),
                 'name' : f'Content Approval ({num})'
@@ -819,6 +849,12 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
         else:
             return True
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        context['username'] = brand.brand_name
+        return context
+        
 
 
     def form_valid(self, form):
@@ -826,32 +862,110 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
         creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
         ig_account = get_object_or_404(InstagramAccountDashBoard , creator = creator)
         try:
-            active_proposal = BrandProposal.objects.get(brand=brand , creator=creator , account = ig_account)
-        except BrandProposal.DoesNotExist :
-            proposal= BrandProposal.objects.create(
-            brand = brand,
-            creator = creator,
-            account = ig_account,
-            
-            description = form.cleaned_data['description'],
-            timeline = (form.cleaned_data['timeline']+3),
-            proposed_amount = form.cleaned_data['proposed_amount'],
-            product_link = form.cleaned_data['product_link'],
-            content_type = form.cleaned_data['content_type'],
-            proposal_status = BrandProposal.Proposal_Status.REQUESTED
+            active_proposal = BrandDeal.objects.get(brand=brand , platform = BrandDeal.Platforms.INSTAGRAM , creator=creator , ig_account = ig_account)
+        except BrandDeal.DoesNotExist :
+            proposal= BrandDeal.objects.create(
+                brand = brand,
+                creator = creator,
+                ig_account = ig_account,
 
+                platform = BrandDeal.Platforms.INSTAGRAM ,
+
+                description = form.cleaned_data['description'],
+                timeline = (form.cleaned_data['timeline']+3),
+                proposed_amount = form.cleaned_data['proposed_amount'],
+                product_link = form.cleaned_data['product_link'],
+                content_type = form.cleaned_data['content_type'],
+                proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT
             )
-            # Send email to the creator about the new proposal (Template tag to be set)
-            template_id = 12
+            # Send email to the creator about the new proposal (Template tag set to new simpler)
+            template_id = 19
             to = [{"email": creator.contact_email}]
             send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
                 to=to,
                 template_id=template_id,
                 params={
-                    'brand_name': brand.brand_name,  # Add any parameters you want to include in the email
-                    'proposal_description': proposal.description,
-                    'timeline': proposal.timeline,
-                    'proposed_amount': str(proposal.proposed_amount),
+                    'creator_name': proposal.creator.name,  # Add any parameters you want to include in the email
+                    'link': self.request.build_absolute_uri(reverse("accept_or_reject" , kwargs={"proposal_id" : proposal.id }))
+                }
+            )
+
+            transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+            try:
+                api_response = transac_api_instance.send_transac_email(send_smtp_email)
+                print("API Response:", api_response)
+            #if email is not sent , then redirects to home with a message saying send proposal again
+            except ApiException as e:
+                print(f"Error: {e}")
+                proposal.delete()
+                messages.add_message(self.request, messages.ERROR, "Failed to send email notification. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
+            except Exception as e:
+                print(f"Error: {e}")
+                proposal.delete()
+                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email. Please Send the Proposal Again")
+                return redirect(reverse_lazy("home"))
+            
+            return super().form_valid(form)
+
+        else:
+            messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
+            return redirect(reverse_lazy("home"))
+
+# EVERYTHING SAME WITH CREATEBRANDPROPOSAL EXCEPT IT AUTOMATICALLY SETS CONTENT TYPE AS TIKTOK HAS ONLY TIKTOK SHORT CONTENT TYPE.
+class CreateTiktokBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
+    form_class = TiktokBrandProposalForm
+    template_name = "base/create_proposal.html"
+    
+    def get_success_url(self):
+        brand = get_object_or_404(BrandProfile , user=self.request.user)
+        return reverse("brand_proposals" , kwargs={"brand_id": brand.id})
+
+    def test_func(self):
+        try:
+            brand = get_object_or_404(BrandProfile , user = self.request.user)
+        except Http404:
+            return False
+        else:
+            return True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        context['username'] = brand.brand_name
+        return context
+
+
+    def form_valid(self, form):
+        brand = get_object_or_404(BrandProfile ,user = self.request.user)
+        creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
+        tiktok_account = get_object_or_404(TiktokDashboard , creator = creator)
+        try:
+            active_proposal = BrandDeal.objects.get(brand=brand , platform = BrandDeal.Platforms.TIKTOK , creator=creator , tiktok_account = tiktok_account)
+        except BrandDeal.DoesNotExist :
+            proposal= BrandDeal.objects.create(
+                brand = brand,
+                creator = creator,
+                tiktok_account = tiktok_account,
+
+                platform = BrandDeal.Platforms.TIKTOK,
+
+                description = form.cleaned_data['description'],
+                timeline = (form.cleaned_data['timeline']+3),
+                proposed_amount = form.cleaned_data['proposed_amount'],
+                product_link = form.cleaned_data['product_link'],
+                content_type = BrandDeal.Content_Choices.TIKTOK_SHORT,
+                proposal_status = BrandDeal.Proposal_Status.PROPOSAL_SENT
+            )
+            # Send email to the creator about the new proposal (Template tag set to new simpler)
+            template_id = 19
+            to = [{"email": creator.contact_email}]
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                to=to,
+                template_id=template_id,
+                params={
+                    'creator_name': proposal.creator.name,  # Add any parameters you want to include in the email
+                    'link': self.request.build_absolute_uri(reverse("accept_or_reject" , kwargs={"proposal_id" : proposal.id }))
                 }
             )
 
@@ -877,168 +991,90 @@ class CreateBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
             messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
             return redirect(reverse_lazy("home"))
         
-class CreateTiktokBrandProposal(UserPassesTestMixin ,LoginRequiredMixin , FormView):
-    form_class = TiktokBrandProposalForm
-    template_name = "base/create_proposal.html"
-    
-    def get_success_url(self):
-        return reverse_lazy("home_with_slug" , kwargs={"slug": "tiktok"})
-
-    def test_func(self):
-        try:
-            brand = get_object_or_404(BrandProfile , user = self.request.user)
-        except Http404:
-            return False
-        else:
-            return True
-
-
-
-    def form_valid(self, form):
-        brand = get_object_or_404(BrandProfile ,user = self.request.user)
-        creator = get_object_or_404(CreatorProfile , id = self.kwargs.get('creator_id'))
-        tiktok_account = get_object_or_404(TiktokDashboard , creator = creator)
-        try:
-            active_proposal = TiktokProposal.objects.get(brand=brand , creator=creator , account = tiktok_account)
-        except TiktokProposal.DoesNotExist :
-            proposal= TiktokProposal.objects.create(
-            brand = brand,
-            creator = creator,
-            account = tiktok_account,
             
-            description = form.cleaned_data['description'],
-            timeline = (form.cleaned_data['timeline']+3),
-            proposed_amount = form.cleaned_data['proposed_amount'],
-            product_link = form.cleaned_data['product_link'],
-            proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_SENT
-
-            )
-            #sends email to the creator , template id to be set
-            template_id = 12
-            to = [{"email": creator.contact_email}]
-            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-                to=to,
-                template_id=template_id,
-                params={
-                    'brand_name': brand.brand_name,  # Add any parameters you want to include in the email
-                    'proposal_description': proposal.description,
-                    'timeline': proposal.timeline,
-                    'proposed_amount': str(proposal.proposed_amount),
+@login_required 
+def accept_or_reject(request , proposal_id):
+    proposal = get_object_or_404(BrandDeal , id = proposal_id)
+    #restrict other users from using link
+    if proposal.creator.user != request.user :
+            raise PermissionDenied
+    links={}
+    active_proposals = BrandDeal.objects.filter(creator=proposal.creator , proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    if active_proposals.exists() :
+        links['active_proposals'] = {
+                'url': reverse("creator_active_proposals" , kwargs={"creator_id":proposal.creator.id}),
+                'name': "Active Proposals"
+        }
+    ig_dashboard = InstagramAccountDashBoard.objects.filter(creator = proposal.creator)
+    tiktok_dashboard = TiktokDashboard.objects.filter(creator = proposal.creator)
+    if ig_dashboard.exists() or tiktok_dashboard.exists():
+        links['manage_integrations'] = {
+                'url': reverse("integration_dashboard" , kwargs={"pk":proposal.creator.id}),
+                'name': "Manage Integrations"
                 }
-            )
+    links['payment_dashboard'] = {
+            'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":proposal.creator.id}),
+            'name': "Payment Dashboard"
+            }
 
-            transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-            try:
-                api_response = transac_api_instance.send_transac_email(send_smtp_email)
-                print("API Response:", api_response)
-            #if email is not sent , then redirects to home with a message saying send proposal again and also deletes the proposal created
-            except ApiException as e:
-                proposal.delete()
-                print(f"Error: {e}")
-                messages.add_message(self.request, messages.ERROR, "Failed to send email notification. Please Send the Proposal Again")
-                return redirect(reverse_lazy("home"))
-            except Exception as e:
-                proposal.delete()
-                print(f"Error: {e}")
-                messages.add_message(self.request, messages.ERROR, "An unexpected error occurred while sending email. Please Send the Proposal Again")
-                return redirect(reverse_lazy("home"))
+    context = {
+        'proposal' : proposal,
+        "links" : links
+    }
 
 
-            return super().form_valid(form)
+    return render(request , 'base/creator_accept_or_reject.html' , context)
 
-        else:
-            messages.add_message(self.request,messages.ERROR , "You already have a Active Brand Deal with the Creator")
-            return redirect(reverse_lazy("home"))
-        
-            
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        brand = get_object_or_404(BrandProfile ,user = self.request.user)
-        context['username'] = brand.brand_name
-        return context
         
 
-
+@login_required
 def accept_brand_proposal(request , proposal_id , slug=None):
-    if slug is None:
-        proposal = get_object_or_404(BrandProposal , id = proposal_id)
-        if request.user != proposal.creator.user:
-            raise PermissionDenied
-        proposal.proposal_status = BrandProposal.Proposal_Status.ACCEPTED
+    proposal = get_object_or_404(BrandDeal , id = proposal_id)
+    if request.user != proposal.creator.user:
+        raise PermissionDenied
+    proposal.proposal_status = BrandDeal.Proposal_Status.PROPOSAL_ACCEPTED
+    proposal.save()
+    # Send email to the brand with a link to the payment page
+    brand_email = proposal.brand.email
+    payment_link = request.build_absolute_uri(
+        reverse("brand_proposal_payment", kwargs={"proposal_id": proposal.id}))
+    # Prepare the email details
+    template_id = 20 #new template id set
+    to = [{"email": brand_email}]
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=to,
+        template_id=template_id,
+        params={
+            'brand_name': proposal.brand.brand_name,
+            'link': payment_link,
+        }
+    )
+    transac_api_instance =sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    try:
+        api_response = transac_api_instance.send_transac_email(send_smtp_email)
+        print("Email sent successfully:", api_response)
+        proposal.proposal_status = BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE
         proposal.save()
-        # Send email to the brand with a link to the payment page
-        brand_email = proposal.brand.email
-        payment_link = request.build_absolute_uri(
-            reverse("brand_proposal_payment", kwargs={"proposal_id": proposal.id}))
-
-        # Prepare the email details
-        template_id = 14
-        to = [{"email": brand_email}]
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=to,
-            template_id=template_id,
-            params={
-                'brand_name': proposal.brand.brand_name,
-                'payment_link': payment_link,
-            }
+    except ApiException as e:
+        print(f"Error: {e}")
+        messages.add_message(request, messages.ERROR, "Failed to send email notification. Try Again or Contact Support")
+        unsent_email = UnsentEmails.objects.create(
+            purpose = "Informing Brand that Creator has Accepted their Brand Proposal",
+            send_to_email = brand_email,
+            send_to = proposal.brand,
+            send_from = proposal.creator,
+            param_link = payment_link
         )
-
-
-        transac_api_instance =sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        try:
-            api_response = transac_api_instance.send_transac_email(send_smtp_email)
-            print("Email sent successfully:", api_response)
-        except ApiException as e:
-            proposal.proposal_status=BrandProposal.Proposal_Status.REQUESTED
-            proposal.save()
-            print(f"Error: {e}")
-            messages.add_message(request, messages.ERROR, "Failed to send email notification. Try Again or Contact Support")
-
-    elif slug == "tiktok":
-        proposal = get_object_or_404(TiktokProposal , id=proposal_id)
-        if request.user != proposal.creator.user:
-            raise PermissionDenied
-        proposal.proposal_status = TiktokProposal.Proposal_Status.DEAL_PAYMENT_DUE
-        proposal.save()
-        template_id = 14
-        to = [{"email": brand_email}]
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=to,
-            template_id=template_id,
-            params={
-                'brand_name': proposal.brand.brand_name,
-                'payment_link': payment_link,
-            }
-        )
-
-
-        transac_api_instance =sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        try:
-            api_response = transac_api_instance.send_transac_email(send_smtp_email)
-            print("Email sent successfully:", api_response)
-        except ApiException as e:
-            proposal.proposal_status=TiktokProposal.Proposal_Status.PROPOSAL_SENT
-            proposal.save()
-            print(f"Error: {e}")
-            messages.add_message(request, messages.ERROR, "Failed to send email notification.Try Again or Contact Support ")
-
 
     return redirect(reverse_lazy("home"))
 #Implement brand emailing feature when creator rejects proposal
 def reject_brand_proposal(request , proposal_id , slug=None):
-    if slug is None:
-        proposal = get_object_or_404(BrandProposal , id = proposal_id)
-        if request.user != proposal.creator.user:
-            raise PermissionDenied
-        proposal.proposal_status = BrandProposal.Proposal_Status.REJECTED
-        proposal.save()
+    proposal = get_object_or_404(BrandDeal , id = proposal_id)
+    if request.user != proposal.creator.user:
+        raise PermissionDenied
+    proposal.proposal_status = BrandDeal.Proposal_Status.PROPOSAL_REJECTED
+    proposal.save()
 
-    elif slug == "tiktok":
-        proposal = get_object_or_404(TiktokProposal , id=proposal_id)
-        if request.user != proposal.creator.user:
-            raise PermissionDenied
-        proposal.proposal_status = TiktokProposal.Proposal_Status.PROPOSAL_REJECTED
-        proposal.save()
 
     return redirect(reverse_lazy("home"))
 
@@ -1046,8 +1082,23 @@ def creator_active_proposals(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     if creator.user != request.user:
         raise PermissionDenied
-    ig_active_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-    tiktok_active_proposals = TiktokProposal.objects.filter(creator=creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+    #active proposals is actually proposals that have been accepted and have been sent for payment , hence here DEAL_PAYMENT_DUE STATUS IS USED for Accepted Proposals
+    ig_accepted_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.INSTAGRAM , proposal_status =BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE)
+    ig_active_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.INSTAGRAM , proposal_status =BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    ig_approval_due_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.INSTAGRAM , proposal_status =BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+    ig_posting_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.INSTAGRAM , proposal_status =BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT)
+    ig_completed_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.INSTAGRAM , proposal_status =BrandDeal.Proposal_Status.DEAL_COMPLETED)
+    
+
+    tiktok_accepted_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.TIKTOK , proposal_status =BrandDeal.Proposal_Status.DEAL_PAYMENT_DUE)
+    tiktok_active_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.TIKTOK , proposal_status =BrandDeal.Proposal_Status.DEAL_ACTIVE)
+    tiktok_approval_due_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.TIKTOK , proposal_status =BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+    tiktok_posting_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.TIKTOK , proposal_status =BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT)
+    tiktok_completed_proposals = BrandDeal.objects.filter( creator = creator , platform= BrandDeal.Platforms.TIKTOK , proposal_status =BrandDeal.Proposal_Status.DEAL_COMPLETED)
+
+    ig_num = len(ig_accepted_proposals) + len(ig_active_proposals) + len(ig_approval_due_proposals) + len(ig_posting_proposals) + len(ig_completed_proposals)
+    tiktok_num = len(tiktok_accepted_proposals) + len(tiktok_active_proposals) + len(tiktok_approval_due_proposals) + len(tiktok_posting_proposals) + len(tiktok_completed_proposals)
+
     links={}
     ig_dashboard = InstagramAccountDashBoard.objects.filter(creator = creator)
     tiktok_dash = TiktokDashboard.objects.filter(creator=creator)
@@ -1062,34 +1113,44 @@ def creator_active_proposals(request , creator_id):
             }
     context = {
         "account":creator,
-        "links": links
-    }
-    #sets proposal list to context variable only if it is not empty , else default None value is used
-    context['ig_active_proposals'] = None
-    context['tiktok_active_proposals'] = None
+        "links": links,
 
-    if ig_active_proposals.exists():
-        context['ig_active_proposals'] = ig_active_proposals
-    if tiktok_active_proposals.exists():
-        context['tiktok_active_proposals'] = tiktok_active_proposals
+        'ig_accepted_proposals': ig_accepted_proposals,
+        'ig_active_proposals': ig_active_proposals,
+        'ig_approval_due_proposals': ig_approval_due_proposals,
+        'ig_posting_proposals': ig_posting_proposals,
+        'ig_completed_proposals': ig_completed_proposals,
+
+        "ig_num": ig_num,
+        "tiktok_num": tiktok_num,
+
+        'tiktok_accepted_proposals': tiktok_accepted_proposals,
+        'tiktok_active_proposals': tiktok_active_proposals,
+        'tiktok_approval_due_proposals': tiktok_approval_due_proposals,
+        'tiktok_posting_proposals': tiktok_posting_proposals,
+        'tiktok_completed_proposals': tiktok_completed_proposals
+
+        
+
+    }
     
-    
+
     return render(request , 'base/creator_active_proposals.html' , context)
 
+@login_required
 def creator_payment_dashboard(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     if creator.user != request.user :
         raise PermissionDenied
-    ig_paid_proposals = BrandProposal.objects.filter(creator=creator , proposal_status = BrandProposal.Proposal_Status.PAID)
-    tiktok_active_proposals = TiktokProposal.objects.filter(creator=creator , proposal_status = TiktokProposal.Proposal_Status.DEAL_ACTIVE)
+    paid_proposals = BrandDeal.objects.filter(
+        Q(creator=creator) & (Q(proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE) | (Q(proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING) | (Q(proposal_status = BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT))))
+    )
     pending_payment = decimal.Decimal(0)
-    for proposal in ig_paid_proposals:
-        pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
-    for proposal in tiktok_active_proposals:
+    for proposal in paid_proposals:
         pending_payment += round(decimal.Decimal(0.95) * proposal.proposed_amount, 1)
 
     links={}
-    if ig_paid_proposals.exists() or tiktok_active_proposals.exists():
+    if paid_proposals.exists():
         links['active_proposals'] = {
                 'url': reverse("creator_active_proposals" , kwargs={"creator_id":creator.id}),
                 'name': "Active Proposals"
@@ -1104,25 +1165,25 @@ def creator_payment_dashboard(request , creator_id):
                 }
     context = {
         'pending_payment' : pending_payment,
-        'ig_paid_proposals' : ig_paid_proposals,
-        'tiktok_active_proposals' : tiktok_active_proposals,
+        'paid_proposals' : paid_proposals,
         'account':creator,
         "links":links
     }
 
     return render(request , 'base/creator_payment_dashboard.html' , context)
 
+@login_required
 def brand_proposal_payment(request , proposal_id):
-    proposal = get_object_or_404(BrandProposal , id = proposal_id)
+    proposal = get_object_or_404(BrandDeal , id = proposal_id)
 
     if proposal.brand.user != request.user :
         raise PermissionDenied
 
     paypal_dict = {
         'business': 'wearaiofficial@gmail.com',
-        'amount': proposal.proposed_amount,
+        'amount': f"{proposal.proposed_amount:.2f}",
         'currency_code':'USD',
-        'item_name': "Branded Content Promotion" ,
+        'item_name': "Brand Promotion Deal" ,
         'return': request.build_absolute_uri(reverse("successfull_payment" , kwargs={"proposal_id": proposal.id})), #change this
         'cancel_return':request.build_absolute_uri(reverse("payment_failed" , kwargs={"brand_id":proposal.brand.id})) #change this 
     }
@@ -1135,12 +1196,12 @@ def brand_proposal_payment(request , proposal_id):
 
     return render(request , "base/brand_proposal_payment.html" ,context)
 
-
+@login_required
 def successfull_payment(request , proposal_id):
-    proposal = get_object_or_404(BrandProposal , id= proposal_id)
+    proposal = get_object_or_404(BrandDeal , id= proposal_id)
     if proposal.brand.user != request.user :
         raise PermissionDenied
-    proposal.proposal_status = BrandProposal.Proposal_Status.PAID
+    proposal.proposal_status = BrandDeal.Proposal_Status.DEAL_PAID
     proposal.date_paid = timezone.now()
     proposal.save()
     proposed_date = proposal.date_paid + datetime.timedelta(days = proposal.timeline)
@@ -1151,16 +1212,16 @@ def successfull_payment(request , proposal_id):
     view_link = request.build_absolute_uri(
         reverse("creator_active_proposals", kwargs={"creator_id": proposal.creator.id}))
 
-    # Prepare the email details "Create new Email template"
-    template_id = 15
+    # Received Payment (to Creator) - Set new template id ✅
+    template_id = 21
     send_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": creator_email}],
         template_id=template_id,
         params={
             "creator_name": proposal.creator.name,
-            "amount": str(proposal.proposed_amount),
-            "payment_date": proposal.date_paid.strftime("%Y-%m-%d"),
-            "view_link": view_link
+            #"amount": str(proposal.proposed_amount),
+            #"payment_date": proposal.date_paid.strftime("%Y-%m-%d"),
+            #"view_link": view_link
         }
     )
 
@@ -1172,12 +1233,25 @@ def successfull_payment(request , proposal_id):
         api_response = api_instance.send_transac_email(send_email)
         print("Email sent successfully to the creator:", api_response)
     #correct error handling to be done
-    except Exception as e:
+    except ApiException as e:
         print("Error sending email to the creator:", e)
+        messages.add_message(request, messages.ERROR, f"Email Not Sent : {e}")
+        #logs the email as unsent
+        unsent_email = UnsentEmails.objects.create(
+            purpose = "Brand Deal Payment Completed",
+            send_to_email = "creator_email",
+            send_to = proposal.creator,
+            send_from = proposal.brand,
+            param_link = view_link,
+        )
+        return redirect(reverse_lazy('home'))
+    else:
+        proposal.proposal_status = BrandDeal.Proposal_Status.DEAL_ACTIVE
+        proposal.save()
+        return render(request , 'base/successfull_payment.html')
 
-    return render(request , 'base/successfull_payment.html')
 
-#implement Failed Payment Email Functionality
+@login_required
 def payment_failed(request , brand_id):
     brand = get_object_or_404(BrandProfile , id=brand_id) 
     if brand.user != request.user :
@@ -1189,78 +1263,67 @@ def payment_failed(request , brand_id):
     
     return render(request , 'base/payment_failed.html', context)
     
-
-def content_approval_process(request, proposal_id):
+@login_required
+def content_approval_process(request, proposal_id ):
     transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
     creator = get_object_or_404(CreatorProfile, user=request.user)
-    proposal = get_object_or_404(BrandProposal, id=proposal_id)
+    proposal = get_object_or_404(BrandDeal, id=proposal_id)
+    
+    content_approval , created  = Content_Approval_Media.objects.get_or_create(proposal = proposal)
+    
     if proposal.creator != creator:
         raise PermissionDenied
-    
     if request.method == 'POST':
-        media = request.FILES.getlist("media")
+        image= request.FILES.get("image")
+        video= request.FILES.get('video') 
+        if image is not None:
+            content_approval.image = image
+        if video is not None:
+            content_approval.video = video
+        content_approval.save()
+
         # Sending using Brevo Email API
-        
-        template_id = 7
+        template_id = 22
         # Ensure this is uncommented if needed
-        approve_url = request.build_absolute_uri(reverse("approve_content", kwargs={"proposal_id": proposal.id}))
-
+        approve_url = request.build_absolute_uri(reverse("brand_content_review", kwargs={"proposal_id": proposal.id}))
         brand_email = proposal.brand.email  # Get the brand's email
-
-    
-        to = [{"email": proposal.brand.email}]
-
-        '''files = len(media)
-        for i in range(files):
-            img = media[i].read()
-            payload['image'] = base64.b64encode(img).decode('utf-8')
-            response = requests.post(imgbb_url, data=payload)
-            
-            print(f"Response status code: {response.status_code}")
-            json_response = response.json()
-
-            if response.status_code == 200:
-                img_url = json_response['data']['url']
-                Content_Approval_Images.objects.create(
-                    proposal = proposal,
-                    url = img_url
-                )
-            else:
-                print("Error uploading image to imgbb:", json_response)
-                messages.add_message(request, messages.ERROR, "Error uploading image to Server")
-                return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))'''
-
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=[{"email": brand_email}],
             template_id=template_id,
             params={
-                "creator_name": creator.name,  # Assuming you have a name field in CreatorProfile
-                "proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
-                "approve_link": approve_url,
-                "submission_date": timezone.now().strftime("%Y-%m-%d"),
+                "brand_name": proposal.brand.brand_name,
+                "link": approve_url,
             }
         )
-
         # Send the email
         try:
             api_response = transac_api_instance.send_transac_email(send_smtp_email)
             print("API Response:", api_response)
-            proposal.proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING
+            proposal.proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING
             proposal.save()
         except ApiException as e:
             print(f"Error: {e}")
             messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
-
+            #loggging the unsent email
+            unsent_email = UnsentEmails.objects.create(
+                purpose = "Informing Brand that Content has been submitted for Approval by Creator",
+                send_to_email = brand_email,
+                send_from = proposal.creator ,
+                send_to = proposal.brand ,
+                param_link = approve_url
+            )
         return redirect(reverse("creator_active_proposals", kwargs={"creator_id": creator.id}))
     else:
         return render(request, 'base/content_approval_form.html')
 
 def brand_pending_approval_view(request):
     brand_profile = get_object_or_404(BrandProfile , user = request.user)
-    proposals = BrandProposal.objects.filter(brand = brand_profile , proposal_status = BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
+    ig_proposals = BrandDeal.objects.filter(brand = brand_profile , platform = BrandDeal.Platforms.INSTAGRAM ,proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+    tiktok_proposals = BrandDeal.objects.filter(brand = brand_profile , platform = BrandDeal.Platforms.TIKTOK ,proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
 
     context = {
-        "pending_proposals": proposals,
+        "ig_pending_proposals": ig_proposals,
+        "tiktok_pending_proposals": tiktok_proposals,
         "account": brand_profile,
     }
 
@@ -1274,44 +1337,56 @@ def brand_pending_approval_view(request):
     return render(request , 'base/brand_content_approval.html' , context)
 
 def brand_content_review(request , proposal_id):
-    approval_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id)
-    if approval_content[0].proposal.brand.user != request.user:
-        raise PermissionDenied
-    
-    links = {}
-    proposal = get_object_or_404(BrandProposal , id = proposal_id)
-    pending_proposals = BrandProposal.objects.filter(brand = proposal.brand , proposal_status=BrandProposal.Proposal_Status.CONTENT_APPROVAL_PENDING)
-    your_proposals = BrandProposal.objects.filter(brand=proposal.brand) 
-    if pending_proposals.exists():
-        links['content_approval'] = {
-            "url": reverse_lazy("pending_content_approval"),
-            "name": f"Content Approval ({len(pending_proposals)})"
-        }
-    if your_proposals.exists():
-        links['your_proposals'] ={
-            'url': reverse("brand_proposals" , kwargs={"brand_id": proposal.brand.id}),
-            'name': "Your Proposals"
+    approval_content = get_object_or_404(Content_Approval_Media , proposal__id = proposal_id)
+    proposal = get_object_or_404(BrandDeal , id = proposal_id)
+    if proposal.brand.user != request.user :
+        raise PermissionDenied 
+
+    if request.method == "POST":
+        remarks = request.POST.get('remarks')
+        auto_complete = request.POST.get('auto-complete') #returns none if checkbox is unchecked
+        if remarks :
+            approval_content.remarks = remarks
+        if auto_complete is None :
+            approval_content.autocomplete = False
+        approval_content.save()
+        return redirect(reverse('approve_content' , kwargs={"proposal_id": proposal.id}))
+
+    else:
+        links = {}
+        pending_proposals = BrandDeal.objects.filter(brand = proposal.brand , proposal_status=BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
+        your_proposals = BrandDeal.objects.filter(brand=proposal.brand) 
+        if pending_proposals.exists():
+            links['content_approval'] = {
+                "url": reverse_lazy("pending_content_approval"),
+                "name": f"Content Approval ({len(pending_proposals)})"
+            }
+        if your_proposals.exists():
+            links['your_proposals'] ={
+                'url': reverse("brand_proposals" , kwargs={"brand_id": proposal.brand.id}),
+                'name': "Your Proposals"
+            }
+
+        context = {
+            "content": approval_content,
+            "content_list": approval_content,
+            "links": links
         }
 
-    context = {
-        "content": approval_content[0],
-        "content_list": approval_content,
-        "links": links
-    }
-
-    return render(request , 'base/brand_content_review.html' , context) 
+        return render(request , 'base/brand_content_review.html' , context) 
 
 def approve_content(request , proposal_id):
-    unapproved_content = Content_Approval_Images.objects.filter(proposal__id = proposal_id , verified = False)
-    for i in unapproved_content:
-        i.verified = True 
-        i.save()
-    proposal = get_object_or_404(BrandProposal , id=proposal_id)
-    proposal.proposal_status = BrandProposal.Proposal_Status.POSTING_CONTENT
-    proposal.save()
+    approved_content = get_object_or_404(Content_Approval_Media , proposal__id = proposal_id)
 
+    proposal = get_object_or_404(BrandDeal , id=proposal_id)
+    
     transac_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-    template_id = 8
+    template_id = 23 #new template id is set
+
+    if approved_content.remarks :
+        remarks = approved_content.remarks
+    else:
+        remarks = "No Remarks"
 
     to = [{"email": proposal.creator.contact_email}]
 
@@ -1320,7 +1395,7 @@ def approve_content(request , proposal_id):
         template_id=template_id,
         params={
             "creator_name": proposal.creator.name,
-            #"proposal_title": proposal.title,  # Assuming you have a title field in BrandProposal
+            "remarks" : remarks,
             "approved_date": timezone.now().strftime("%Y-%m-%d"),
         }
     )
@@ -1331,7 +1406,12 @@ def approve_content(request , proposal_id):
     except ApiException as e:
         print(f"Error: {e}")
         messages.add_message(request, messages.ERROR, f"Content Approval Email Error: {e}")
+        return redirect(reverse("brand_content_review" , kwargs={"proposal_id": proposal.id}))
     else:
+        proposal.proposal_status = BrandDeal.Proposal_Status.DEAL_POSTING_CONTENT
+        proposal.auto_complete = approved_content.autocomplete
+        proposal.save()
+
         return render(request, 'base/approved.html')
 
 

@@ -22,70 +22,388 @@
     
         </div>
         -->
-       <h1>Your Proposals</h1>
-        
-        <hr>
 
-            {% if accepted_proposals %}
-            <h2>Payment Pending</h2>
-            <div class="active-proposal-box">
-            {% for proposal in accepted_proposals %}
+        <div class="brand-proposal-main">
+            <h2>Tiktok Proposals ({{tiktok_num}})</h1>
 
-            <div class="active-proposal-flex">
-                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
-                <p id="sub">{{proposal.proposal_status}}</p>
-                <p id="sub">{{proposal.content_type}}</p>
-                <p id="sub">{{proposal.timeline}} Days</p>
-                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-                <a href="{% url 'brand_proposal_payment' proposal.id %}"><button id="proposal-view">Pay</button></a>
-            
-            </div>
-            
-            {% endfor %}
+            <div class="type-bar">
+                <button class="nav-button" data-target="Sent">Sent {% if tiktok_sent_proposals|length > 0 %}<sup>{{tiktok_sent_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button" data-target="Payment">Payment Due {% if tiktok_payment_due_proposals|length > 0 %}<sup>{{tiktok_payment_due_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button" data-target="Active">Active {% if tiktok_active_proposals|length > 0 %}<sup>{{tiktok_active_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button" data-target="ContentApproval">Content Approval {% if tiktok_content_approval_proposals|length > 0 %}<sup>{{tiktok_content_approval_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button" data-target="Posting">Posting{% if tiktok_posting_proposals|length > 0 %}<sup>{{tiktok_posting_proposals|length}}</sup>{% endif %}</button>
+            </div>     
+        </div>
 
-            {% endif %}
+        <div class="content" id="Sent">
 
-            {% if paid_proposals %}
-            <h2>Active Campaigns</h2>
-            <div class="active-proposal-box">
-            {% for proposal in paid_proposals %}
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in tiktok_sent_proposals %}
+                <div class="proposal-row-ig">
 
-            <div class="active-proposal-flex">
-                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
-                <p id="sub">{{proposal.proposal_status}}</p>
-                <p id="sub">{{proposal.content_type}}</p>
-                <p id="sub">{{proposal.timeline}} Days</p>
-                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-                <a href="{% url 'brand_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
-            
-            </div>
-            
-            {% endfor %}
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}">View <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Sent Proposals</p>
+                {% endfor %}
 
-            {% endif %}
-
-            {% if proposals %}
-            <h2>Brand Proposals</h2>
-            <div class="active-proposal-box">
-            {% for proposal in proposals %}
-
-            <div class="active-proposal-flex">
-                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
-                <p>{{proposal.proposal_status}}</p>
-                <p id="sub">{{proposal.content_type}} Content</p>
-                <p id="sub">{{proposal.timeline}} Days</p>
-                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-                <a href="{% url 'brand_proposal_detail' proposal.id %}"><button id="proposal-view">View</button></a>
-            </div>
                 
-            {% endfor %}
-
-            {% else %}
-                <p>You have no Pending Brand Proposals</p>
-            {% endif %}
-            
+            </div>
 
         </div>
+
+        <div class="content hidden" id="Payment">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in tiktok_payment_due_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_payment' proposal.id %}">Pay <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Proposals Due For Payment</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content hidden" id="Active">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in tiktok_active_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}">View <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Active Deals</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content hidden" id="ContentApproval">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in tiktok_content_approval_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_content_review' proposal.id  %}">Approve <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Deals Requiring Content Approval</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content hidden" id="Posting">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in tiktok_posting_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}">View <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Deals in the Posting Content Phase</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+       
+        <!-- Instagram Proposals  -->
+        <div class="brand-proposal-main">
+            <h2>Instagram Proposals ({{ig_num}})</h1>
+
+            <div class="type-bar">
+                <button class="nav-button-2" data-target="Sent-ig">Sent {% if ig_sent_proposals|length > 0 %}<sup>{{ig_sent_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button-2" data-target="Payment-ig">Payment Due {% if ig_payment_due_proposals|length > 0 %}<sup>{{ig_payment_due_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button-2" data-target="Active-ig">Active {% if ig_active_proposals|length > 0 %}<sup>{{ig_active_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button-2" data-target="ContentApproval-ig">Content Approval {% if ig_content_approval_proposals|length > 0 %}<sup>{{ig_content_approval_proposals|length}}</sup>{% endif %}</button>
+                <button class="nav-button-2" data-target="Posting-ig">Posting {% if ig_posting_proposals|length > 0 %}<sup>{{ig_posting_proposals|length}}</sup>{% endif %}</button>
+            </div>     
+        </div>
+
+        <div class="content-2" id="Sent-ig">
+
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in ig_sent_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}">View <i class="fa-solid fa-up-right-from-square"></i> </a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Sent Proposals</p>
+                {% endfor %}
+
+                
+            </div>
+
+        </div>
+
+        <div class="content-2 hidden" id="Payment-ig">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in ig_payment_due_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_payment' proposal.id %}">Pay <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Proposals Due For Payment</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content-2 hidden" id="Active-ig">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in ig_active_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}"> View <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div>
+                {% empty %}
+                <p>No Active Deals</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content-2 hidden" id="ContentApproval-ig">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in ig_content_approval_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_content_review' proposal.id  %}"> Approve <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Deals Requiring Content Approval</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+
+        <div class="content-2 hidden" id="Posting-ig">
+            <div class="proposal-container">
+                <div class="proposal-row-header-ig">
+                    <p>Brand</p>
+                    <p>Timeline</p>
+                    <p>Duration Left</p>
+                    <p>Amount</p>
+                    <p>View</p>
+                </div>
+                {% for proposal in ig_posting_proposals %}
+                <div class="proposal-row-ig">
+
+                    <p>{{proposal.brand.brand_name}}</p>
+                    <p>{{proposal.timeline}} Days</p>
+                    
+                    <p>{% if proposal.duration_left != None %} {% if proposal.duration_left.days > 0 %} {{proposal.duration_left.days}} {% else %} Expired {% endif %} {% else %} Not Active {% endif %}</p>
+                    
+                    <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                    <p><a href="{% url 'brand_proposal_detail' proposal.id %}">View <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                         
+                </div> 
+                {% empty %}
+                <p>No Deals In Posting Content Phase</p>
+                {% endfor %}
+
+                
+            </div>
+        </div>
+        
+
+
+
+
+
+        
+          
+        
+          <script>
+
+            // Select all navigation buttons and content sections
+            // Select all navigation buttons and content sections
+            const navButtons = document.querySelectorAll(".nav-button");
+            const contentSections = document.querySelectorAll(".content");
+
+            // Add click event listener to each button
+            navButtons.forEach(button => {
+              button.addEventListener("click", () => {
+                const target = button.getAttribute("data-target");
+            
+                // Hide all sections
+                contentSections.forEach(section => {
+                  section.classList.add("hidden");
+                });
+            
+                // Show the targeted section
+                document.getElementById(target).classList.remove("hidden");
+            
+                // Remove 'active' class from all buttons
+                navButtons.forEach(btn => btn.classList.remove("active"));
+            
+                // Add 'active' class to the clicked button
+                button.classList.add("active");
+              });
+            });
+
+
+            const navButtons2 = document.querySelectorAll(".nav-button-2");
+            const contentSections2 = document.querySelectorAll(".content-2");
+
+            // Add click event listener to each button
+            navButtons2.forEach(button => {
+              button.addEventListener("click", () => {
+                const target = button.getAttribute("data-target");
+            
+                // Hide all sections
+                contentSections2.forEach(section => {
+                  section.classList.add("hidden");
+                });
+            
+                // Show the targeted section
+                document.getElementById(target).classList.remove("hidden");
+            
+                // Remove 'active' class from all buttons
+                navButtons2.forEach(btn => btn.classList.remove("active"));
+            
+                // Add 'active' class to the clicked button
+                button.classList.add("active");
+              });
+            });
+
+          </script>
 
     </section>
 

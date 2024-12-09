@@ -4,33 +4,18 @@
 
     <section id="main">
 
-        <!--
-        
-        <div class="header-flex">
-            <div class="account-info">
-                <h1>{{proposal.creator.name}}</h1>
-                <div class="link-flex">
-                    {% if proposal.creator.contact_email %}
-                    <a href="mailto:{{proposal.creator.contact_email}}"><i class="fa-solid fa-envelope"></i></a>
-                    {% endif %}
-                    {% if proposal.creator.website %}
-                    <a href="{{proposal.creator.website}}"><i class="fa-solid fa-globe"></i></a>
-                    {% endif %}
-                </div>    
-            </div>
-           
-            <a href="{% url 'home' %}"><button id="header">Home</button></a>
-
-        </div>
-        -->
-        
-
             <div class="proposal-detail-box">
                 <h2 id="amount">${{proposal.proposed_amount|floatformat}}</h2>
-                <h2 style="margin-top: 5px;">Brand Proposal {% if brand.creator.name %} For <b style="text-decoration-line: underline;">{{proposal.creator.name | title}}</b> {% endif %}</h2>
+                <h2 style="margin-top: 5px;">Brand Proposal {% if proposal.creator.name %} For <b style="text-decoration-line: underline;">{{proposal.creator.name | title}}</b> {% endif %}</h2>
                 {% if proposal.description %}
                 <p id="description">{{proposal.description}}</p>
                 {% endif %}
+
+                <div class="proposal-detail-flex">
+                    <h2>Platform</h2>
+                    <p id="sub">{% if proposal.platform == "tiktok" %}<i class="fa-brands fa-tiktok"></i> Tiktok {%else%} <i class="fa-brands fa-instagram"> </i> Instagram{% endif %}</p>
+                </div>
+
 
                 {% if proposal.duration_left %}
                     <h2>{{proposal.duration_left.days}} Days Left</h2>
@@ -46,23 +31,21 @@
                 
 
                 <div class="proposal-detail-flex">
-                    <h2>Content</h2>
+                    <h2>Content Type</h2>
                     <p id="sub">{{proposal.content_type}}</p>
                 </div>
 
+                {% if proposal.item_link %}
+                <a href="{{proposal.item_link}}"><button id="header">Item Link</button></a>
+                {% endif %}
 
-                    {% if proposal.item_link %}
-                    <a href="{{proposal.item_link}}"><button id="header">Item Link</button></a>
-                    {% endif %}
-
-                
-                
-
-
-                
+                <div class="proposal-detail-flex">
+                    <h2>Deal Status</h2>
+                    <p id="sub">{{proposal.proposal_status}}</p>
+                </div>
 
                 
-
+            
 
                 
             </div>

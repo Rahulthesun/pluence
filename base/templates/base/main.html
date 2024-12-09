@@ -511,6 +511,7 @@
 
   .proposal-detail-flex h2 {
     margin-right: 50px;
+    font-weight: 800;
   }
 
   .button-flex {
@@ -1313,6 +1314,86 @@
 
     h1#tiktok-rate {
       font-size: 40px;
+    }
+
+    /* Type-bar (navbar) styling */
+    .type-bar {
+      width: 60%;
+      display: flex;
+      flex-direction: row;
+      justify-content: right;
+      padding: 10px 5px ;
+      text-align: left;
+      align-items: center;
+    }
+
+    .type-bar .nav-button , .type-bar .nav-button-2  {
+      width: auto;
+      background-color: white;
+      color: rgb(56, 56, 56);
+      font-size: 20px;
+      font-weight: 600;
+      margin-right: 20px;
+      padding: 10px 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+
+    .type-bar .nav-button.active , .type-bar .nav-button-2.active {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    .type-bar .nav-button:hover , .type-bar .nav-button-2:hover {
+      text-decoration: underline;
+      border: none;
+    }
+
+    /* Content styling */
+
+    .content:not(.hidden) ,.content-2:not(.hidden) {
+      display: block;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .brand-proposal-main {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 25px auto;
+    }
+
+     sup {
+      font-size: 15px; /* Reduce size relative to surrounding text */
+      vertical-align: super;
+      font-weight: 700;
+    }
+
+    .content-approval-flex {
+      display: flex;
+      flex-direction: row;
+      height: auto;
+      justify-content: space-between;
+    }
+
+    .content-video {
+      width: 40%;
+      margin-right: 10px;
+    }
+
+    .content-video video {
+      width: 100%;
+      height: auto;
+      border: 2px solid black;
+    }
+
+    .content-input {
+      width: 50%;
     }
 
 </style>

@@ -2,70 +2,49 @@
 
 {% block content %}
     <section id="main">
-        {% if content.proposal.brand.brand_name %}
-
-        <!--
-            <div class="header-flex">
-            <div class="account-info">
-                <h1>{{content.proposal.brand.brand_name}}</h1>
-                <div class="link-flex">
-                    {% if content.proposal.brand.website %}
-                    <a href="{{content.proposal.brand.website}}"><i class="fa-solid fa-globe"></i></a>
-                    {% endif %}
-                    {% if content.proposal.brand.email %}
-                    <a href="mailto:{{content.proposal.brand.email}}"><i class="fa-solid fa-envelope"></i></a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
-                </div>
-                <p id="account-type"> Brand</p>
-            </div>
-
-            <div class="link-flex-box">
-                <a href="{% url 'home' %}"><button id="header">Home</button></a>
-            </div>
-            
-
-        </div>
-
         
-        -->
-        
-        
-
-
         <div class="proposal-detail-box">
-            <div class="brand-image">
-                {% if content.proposal.account.dashboard_img %}
-                <img src="{{content.proposal.account.dashboard_img}}">
-                {% else %}
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrP-nJ_gjguvf8-Kf7pS7_CS1FkEYR_spJpw&s">
-                {% endif %}
-                
-            </div>
-            <h2 id="amount">${{content.proposal.proposed_amount|floatformat}}</h2>
-            <h2 style="margin-top: 5px;">Content By <b style="text-decoration-line: underline;"> {{content.proposal.account.username | title}}</b></h2>
-
-            <div class="proposal-detail-flex">
-                <h2>Content</h2>
-                <p id="sub">{{content.proposal.content_type}}</p>
-            </div>
-
-
-             {% for image in content_list  %}
-                <div class="content-image">
-                    <img src="{{image.url}}">
-                </div>
-                
-             {% endfor %}
+            <div class="content-approval-flex">
+                {% if content.video %}
             
-                
+                <div class="content-video">
+                    <video controls autoplay loop>
+                        <source src="{{content.video.url}}" type="video/mp4">
+                        Your browser does not support HTML video. Please upgrade your browser.
+                    </video>
+                </div>
+
+                {% endif %}
+
+                <div class="content-input">
+                    {% if content.image %}
+                    <div class="content-image">
+                        <img src="{{content.image.url}}">
+                    </div>
+
+                    {% endif %}
+                    <h2 id="amount">${{content.proposal.proposed_amount|floatformat}}</h2>
+                    <h2 style="margin-top: 5px;">Content By </h2>
+                    <p style="margin-top: 5px;"><b style="text-decoration-line: underline;"> {% if content.proposal.platform == "tiktok" %} {{content.proposal.tiktok_account.display_name | title}} {% else %} {{content.proposal.ig_account.username | title}} {% endif %}</b> </p>
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <textarea name="remarks" placeholder="Enter Any Remarks" cols="30%" rows="5%"></textarea>
+                        <p><input type="checkbox" name="auto-complete" value="True" checked> Auto Complete </input></p>
+                        <button id="sendproposal" type="submit">Approve Content <i class="fa-solid fa-check"></i></button>
+                    </form>
+                    
+                </div>
+
+            </div>
+            
+
             
             <div class="button-flex">
-                <a href="{% url 'approve_content' content.proposal.id %}"><button id="view">Approve Content</button></a>
-            
+               
+            </div>
+
         </div>
 
-        {% endif %}
 
     </section>
 

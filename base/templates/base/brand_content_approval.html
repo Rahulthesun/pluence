@@ -2,60 +2,68 @@
 
 {% block content %}
     <section id="main">
-        {% if account.brand_name %}
 
-        <!--
-        
-        <div class="header-flex">
-            <div class="account-info">
-                <h1>{{account.brand_name}}</h1>
-                <div class="link-flex">
-                    {% if account.website %}
-                    <a href="{{account.website}}"><i class="fa-solid fa-globe"></i></a>
-                    {% endif %}
-                    {% if account.email %}
-                    <a href="mailto:{{account.email}}"><i class="fa-solid fa-envelope"></i></a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i></a>
-                </div>
-                <p id="account-type"> Brand</p>
-            </div>
-
-            <a href="{% url 'brand_proposals'  account.id %}"><button id="header">Your Proposals</button></a>
-
-        </div>
-        -->
         <h1>Content Approval Requests</h1>
-
-        <hr>
-
-
-        {% if pending_proposals %}
             
-            <div class="active-proposal-box" style="margin-top: 20px;">
-            {% for proposal in pending_proposals %}
-
-            <div class="active-proposal-flex">
-                <p style="color: rgb(16, 151, 241); text-decoration: underline;"><a href="{{proposal.creator.website}}"></a>{{proposal.account.username}}</p>
-                <p id="sub">Approval Pending</p>
-                <p id="sub">{{proposal.content_type}}</p>
-                <p id="sub">{{proposal.timeline}} Days</p>
-                <p id="amount">${{proposal.proposed_amount|floatformat}}</p>
-                <a href="{% url 'brand_content_review' proposal.id %}"><button id="proposal-view">View Content</button></a>
-            
+        <h2>Tiktok Proposals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Actions Required</p>
+                <p>Amount</p>
+                <p>View</p>
+                
             </div>
+            {% for proposal in tiktok_pending_proposals %}
+            <div class="proposal-row-ig">
+
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                
+                <p style="font-size: 16px; font-weight: 700;">Content Approval</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                <p><a href="{% url 'brand_content_review' proposal.id %}">Approve <i class="fa-solid fa-up-right-from-square"></i> </a></p>
+                     
+            </div> 
             {% empty %}
-            
-            <h2>No Content Approval Requests Left!!</h2>
-    
-            
+
+            <p>You don't have any Deals That Need Content Approval Right Now</p>
+
             {% endfor %}
+        </div>
+    
 
-            {% endif %}
             
-        {% endif %}
-    </section>
+        <h2>Instagram Proposals</h2>
+        <div class="proposal-container">
+            <div class="proposal-row-header-ig">
+                <p>Brand</p>
+                <p>Timeline</p>
+                <p>Actions Required</p>
+                <p>Amount</p>
+                <p>View</p>
+                
+            </div>
+            {% for proposal in ig_pending_proposals %}
+            <div class="proposal-row-ig">
 
+                <p>{{proposal.brand.brand_name}}</p>
+                <p>{{proposal.timeline}} Days</p>
+                
+                <p style="font-size: 16px; font-weight: 700;">Content Approval</p>
+                <p id="bold">${{proposal.proposed_amount|floatformat}}</p>
+                <p><a href="{% url 'brand_content_review' proposal.id %}">Approve <i class="fa-solid fa-up-right-from-square"></i> </a></p>
+                     
+            </div> 
+            {% empty %}
+
+            <p>You don't have any Deals That Need Content Approval Right Now</p>
+
+            {% endfor %}
+        </div>
+
+    </section>
     
 
 {% endblock %}

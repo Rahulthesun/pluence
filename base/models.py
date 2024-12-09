@@ -204,10 +204,19 @@ class TiktokDashboard(models.Model):
     def __str__(self):
         return f"{self.display_name}-{self.follower_count}-{self.created}"
 
-class BrandProposal(models.Model):
+class BrandDeal(models.Model):
     brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
     creator = models.ForeignKey(CreatorProfile , on_delete= models.CASCADE , null=True)
-    account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True)
+
+    class Platforms(models.TextChoices):
+        TIKTOK = 'tiktok'
+        INSTAGRAM = 'instagram'
+
+    platform = models.CharField(max_length=200 , null=True , blank=True , choices=Platforms.choices)
+
+    #ASSIGN VALUE TO EITHER IG_ACCOUNT OR TIKTOK_ACCOUNT BASED ON VALUE OF PLATFORMS.
+    ig_account = models.OneToOneField(InstagramAccountDashBoard ,on_delete= models.SET_NULL , null=True , blank=True)
+    tiktok_account = models.OneToOneField(TiktokDashboard ,on_delete= models.SET_NULL , null=True , blank=True)
 
     description = models.TextField(null=True , blank=True)
     timeline = models.IntegerField(help_text="Brand Deal Timeline in Days",default=3 , blank=False , validators=[MinValueValidator(0)] , )
@@ -215,30 +224,34 @@ class BrandProposal(models.Model):
     product_link = models.URLField(help_text="Link of Your Product (if any)",null=True , blank=True)
 
     class Content_Choices(models.TextChoices):
-        REELS = 'Reels'
-        STORY = 'Story'
-        POST = 'Post'
-        ALL = 'Reels + Post + Story'
+        IG_REELS = 'Reels'
+        IG_STORY = 'Story'
+        IG_POST = 'Post'
+        IG_ALL = 'Reels + Post + Story'
+        TIKTOK_SHORT = 'Tiktok Short'
 
-    content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.ALL)
+    content_type = models.CharField(max_length=200 , null=False , blank = False ,choices=Content_Choices.choices , default=Content_Choices.IG_ALL)
     
     class Proposal_Status(models.TextChoices):
-        REQUESTED = 'Requested'
-        REJECTED = 'Rejected'
-        ACCEPTED = 'Accepted'
-        PAID = 'Paid'
-        CONTENT_APPROVAL_PENDING = 'Content Approval Pending'
-        POSTING_CONTENT = 'Posting Content'
-        COMPLETED ='Completed'
+        PROPOSAL_SENT = 'Sent'
+        PROPOSAL_REJECTED = 'Rejected'
+        PROPOSAL_ACCEPTED = 'Accepted' #used to see if email is sent (switched to Payment Due if email is sent)
+        DEAL_PAYMENT_DUE = 'Deal Payment Due'
+        DEAL_PAID = 'Paid' #used to see if email is sent (switched to brand Deal Active if email is sent)
+        DEAL_ACTIVE = 'Brand Deal Active'
+        DEAL_CONTENT_APPROVAL_PENDING = 'Content Approval Pending'
+        DEAL_CONTENT_APPROVED = 'Content Approved' #used to see if email is sent (switched to Posting if email is sent)
+        DEAL_POSTING_CONTENT = 'Posting Content'
+        DEAL_COMPLETED ='Completed'
 
     proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
 
+    auto_complete = models.BooleanField(default=True)
+
+    #date-fields    
     date_created = models.DateTimeField(auto_now_add=True)
-
     date_paid = models.DateTimeField(null=True , blank=True)
-
     duration_left = models.DurationField(null=True , blank=True)
-
     date_completed = models.DateTimeField(null=True , blank=True)
 
     def __str__(self):
@@ -246,6 +259,7 @@ class BrandProposal(models.Model):
         creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
         return f"{brand_user_email}({self.brand.brand_name}) - {creator_user_email}({self.creator.name}) - {self.id}"
 
+'''
 class TiktokProposal(models.Model):
     brand = models.ForeignKey(BrandProfile , on_delete= models.CASCADE , null = True)
     creator = models.ForeignKey(CreatorProfile , on_delete= models.CASCADE , null=True)
@@ -268,6 +282,8 @@ class TiktokProposal(models.Model):
 
     proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
 
+    auto_complete = models.BooleanField(default=True)
+
     #datefields
     date_created = models.DateTimeField(auto_now_add=True)
     date_paid = models.DateTimeField(null=True , blank=True)
@@ -279,10 +295,21 @@ class TiktokProposal(models.Model):
         creator_user_email = self.creator.user.email.split('@')[0] if self.creator and self.creator.user else "No Creator"
         return f"{brand_user_email}({self.brand.brand_name}) - {creator_user_email}({self.creator.name}) - {self.id}"
 
-class Content_Approval_Images(models.Model):
-    proposal = models.ForeignKey(BrandProposal , on_delete=models.CASCADE)
-    url = models.URLField(null=True)
+
+'''
+
+
+class Content_Approval_Media(models.Model):
+    proposal = models.ForeignKey(BrandDeal , on_delete=models.CASCADE , null=True , blank=True)
+    image = models.FileField(null=True , upload_to='deal/images/') 
+    video = models.FileField(null=True , upload_to='deal/videos/') 
+    remarks = models.TextField(null=True , blank=True)
+    autocomplete = models.BooleanField(default=True)
+
     verified = models.BooleanField(default=False)
+
+    updated = models.DateField(auto_now = True)
+    uploaded = models.DateField(auto_now_add=True)
 
 class Referral(models.Model):
     referrer = models.ForeignKey(CreatorProfile, related_name="referrals", on_delete=models.CASCADE)
@@ -294,4 +321,16 @@ class Referral(models.Model):
         return f"{self.referrer.user.email} referred {self.referred_email}"
 
     
+class UnsentEmails(models.Model):
+    purpose = models.CharField(max_length=400 , null=True , blank=True)
+    send_to_email = models.EmailField(null=True , blank=True)
+    
+    send_to = models.ForeignKey(EmailUser ,  related_name='email_to_account' , on_delete=models.SET_NULL, null=True , blank=True)
+    send_from = models.ForeignKey(EmailUser ,  related_name='emails_from_account' ,on_delete=models.SET_NULL, null=True , blank=True)
 
+    param_link  = models.URLField(null=True , blank=True) 
+
+    issue_raised = models.DateTimeField(auto_now=True)
+    issue_fixed = models.DateTimeField(null=True , blank=True)
+
+    
