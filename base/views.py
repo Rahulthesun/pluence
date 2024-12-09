@@ -39,6 +39,7 @@ from sib_api_v3_sdk.rest import ApiException
 from pluence.settings import TIKTOK_CLIENT_KEY , TIKTOK_CLIENT_SECRET , FERNET_KEY
 
 from cryptography.fernet import Fernet
+from django.utils.crypto import get_random_string
 
 '''
 EMAIL SENDING CODE W BREVO API
@@ -304,21 +305,26 @@ class EmailLogin(LoginView):
 class EmailSignUp(UserPassesTestMixin , FormView):
     form_class = EmailUserCreationForm
     template_name = "base/signup.html"
-    def get_success_url(self):
-        return reverse("EmailVerificationView", kwargs={"pk": self.request.user.id, "verify_id": self.verification.id})
+    
     
     def form_valid(self , form):
-        user = form.save(commit=False)
-        user.is_verified = False
-        from django.utils.crypto import get_random_string
+        email = form.cleaned_data['email']
+        self.email = email
         verification_code = get_random_string(length=6)
-        verification=VerifyEmail.objects.create(email=user.email, verification_code=verification_code)
-        self.verification = verification
-        self.send_verification_email(user.email, verification_code)
-        return HttpResponseRedirect(
-        reverse("EmailVerificationView", kwargs={"pk": user.email, "verify_id": verification.id}))
+        verification , created = VerifyEmail.objects.get_or_create(
+            email=email, 
+            verification_code=verification_code
+        )
+        self.verification_id = verification.id
+        self.send_verification_email(email, verification_code)
 
+        user = form.save(commit=False)
+        user.is_active = False #Disabling user untill verification is created
+        user.save()
+
+        '''
         #login(self.request, user)
+        '''
         return super().form_valid(form)
 
     def send_verification_email(self, email, verification_code):
@@ -337,39 +343,50 @@ class EmailSignUp(UserPassesTestMixin , FormView):
         except ApiException as e:
             print(f"Error: {e}")
 
-        """"
-=======
-            '''
->>>>>>> d6db619a5c70cdc9af0a12524861e1b5aedbdb1f
-            referral_code = Referral.generate_code()
-            Referral.objects.create(user=user, code=referral_code)
-
-            # Handle the referral logic
-            ref_code = self.request.GET.get('ref', None)
-            if ref_code:
-                try:
-                    referrer = Referral.objects.get(code=ref_code).user
-                    referrer_profile = referrer.creatorprofile if hasattr(referrer,
-                                                                          'creatorprofile') else referrer.brandprofile
-                    referrer_profile.referrals += 1
-                    referrer_profile.save()
-
-                    # Optional: Give reward for referral
-                    messages.success(self.request,
-                                     f"Referral successful! Thank you for joining via {referrer.username}'s referral.")
-                except Referral.DoesNotExist:
-<<<<<<< HEAD
-                    messages.error(self.request, "Invalid referral code.")"""
-
-
-    
-
+    def get_success_url(self):
+        #hashing email as one of the attributes so it's not visible
+        return reverse("signup_email_verification", kwargs={"pk": hash_token(self.email), "verify_id": self.verification_id})
 
     def test_func(self):
         return self.request.user.is_anonymous
     
     def handle_no_permission(self):
         return HttpResponseRedirect(reverse_lazy("home"))
+    
+class SignupEmailVerification(FormView):
+    template_name = "base/email_verification.html"
+    form_class = EmailVerificationForm
+
+    def form_valid(self, form):
+        verification_code = form.cleaned_data['verification_code']
+        verify_id = self.kwargs.get('verify_id')
+        email = unhash_token(self.kwargs.get('pk'))
+
+
+        verification = get_object_or_404(VerifyEmail, id=verify_id)
+
+        if verification.verification_code == verification_code:
+            if verification.verified:
+                messages.error(self.request, "This email has already been verified.")
+                return self.form_invalid(form)
+            verification.verified = True
+            verification.save()
+            user = get_object_or_404(EmailUser , email = verification.email)
+            user.is_active = True
+            user.save()
+            login(self.request, user)
+            verification.user = self.request.user
+            verification.save()
+            return redirect(reverse_lazy('account_selection'))
+        else:
+            form.add_error('verification_code', 'Invalid verification code.')
+            return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['email'] = self.request.GET.get('email')  # Pass the email to the template
+        return context
+
     
 
 class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
@@ -396,9 +413,15 @@ class AccountType(UserPassesTestMixin ,FormView,LoginRequiredMixin):
         if account_type == "brand":
             self.brand_account = True
             account,created = BrandProfile.objects.get_or_create(user = self.request.user , email = self.request.user.email)
+            verification = get_object_or_404(VerifyEmail , email = self.request.user.email)
+            verification.account_type = VerifyEmail.AccountType.BRAND
         else:
             account,created = CreatorProfile.objects.get_or_create(user = self.request.user, contact_email =self.request.user.email)
+            verification = get_object_or_404(VerifyEmail , email = self.request.user.email)
+            verification.account_type = VerifyEmail.AccountType.CREATOR
+            
         account.save()
+        verification.save()
         return super().form_valid(form)
     
     def get_success_url(self):
@@ -475,23 +498,53 @@ class CreatorProfileUpdate(UserPassesTestMixin , LoginRequiredMixin , UpdateView
     def form_valid(self, form):
         creator_profile = form.save(commit=False)
         verification , created = VerifyEmail.objects.get_or_create(
+            #user = self.request.user ,
             email = creator_profile.contact_email,
-            account_type = VerifyEmail.AccountType.CREATOR,
+            account_type = VerifyEmail.AccountType.CREATOR
         )
-        if created == False and verification.verified == True:
-            form.save(commit=True)
-            self.verify_id = None
-        else:
+
+        #IF A VERIFYEMAIL INSTANCE EXISTS WITH SAME EMAIL ENTERED AS INPUT FOR CREATOR ACCOUNTS , 
+        #THEN IT IS CHECKED IF IT'S THE SAME USER , OR ELSE IT SHOWS ERROR 'EMAIL ALREADY EXISTS'
+        #IF VERIFIED IS FALSE , IT'S SENT FOR VERIFICATION
+        #IF VERIFYEMAIL DOES NOT EXIST , IT CREATES A VERIFYEMAIL INSTANCE W EMAIL FOR CREATOR ACCOUNTS  AND VERIFIES IT  
+
+        if created == False:
+            if verification.user == self.request.user:
+                if verification.verified == True:
+                    form.save(commit=True)
+                    self.verify_id = None
+                else:
+                    creator_profile.contact_email = None
+                    creator_profile.save()
+                    verification.generate_verification_code()
+                    self.verify_id = verification.id
+
+                    #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
+                    if verification.verification_code:
+                        email_sent = verification.send_verification_email()
+                        if email_sent == False:
+                            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+                            return redirect(reverse_lazy("home"))
+            else:
+                form.add_error('contact_email' , "Email Already Exists! Use Another Email")
+                return self.form_invalid(form)
+        
+        elif created == True:
             creator_profile.contact_email = None
+            creator_profile.save()
             verification.generate_verification_code()
             self.verify_id = verification.id
-            
-            #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
+     #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
             if verification.verification_code:
+                #SETTING VERIFYEMAIL INSTANCE TO SPECIFIC USER
+                verification.user = self.request.user
+                verification.save()
                 email_sent = verification.send_verification_email()
                 if email_sent == False:
                     messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
                     return redirect(reverse_lazy("home"))
+
+
         
         return super().form_valid(form)
 
@@ -516,31 +569,54 @@ class BrandProfileUpdate(UserPassesTestMixin , LoginRequiredMixin , UpdateView):
 
     def form_valid(self, form):
         brand_profile = form.save(commit=False)
-        
         #the account type and email fields change
+
         verification , created = VerifyEmail.objects.get_or_create(
             email =brand_profile.email,
-            account_type = VerifyEmail.AccountType.BRAND,
+            account_type = VerifyEmail.AccountType.BRAND
         )
 
-        if created == False and verification.verified == True:
-            form.save(commit=True)
-            self.verify_id = None
-        else:
+
+        if created == False:
+            if verification.user == self.request.user:
+                if verification.verified == True:
+                    form.save(commit=True)
+                    self.verify_id = None
+                else:
+                    brand_profile.email = None
+                    brand_profile.save()
+                    verification.generate_verification_code()
+                    self.verify_id = verification.id
+
+                    #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
+                    if verification.verification_code:
+                        email_sent = verification.send_verification_email()
+                        if email_sent == False:
+                            messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
+                            return redirect(reverse_lazy("home"))
+            else:
+                form.add_error('email' , "Email Already Exists! Use Another Email")
+                return self.form_invalid(form)
+        
+        elif created == True:
             brand_profile.email = None
             brand_profile.save()
             verification.generate_verification_code()
             self.verify_id = verification.id
-
-            #same method as in CreatorProfileUpdate
+     #sending Verification email using send_verification_email() method defined in the VerifyEmail Model's methods
             if verification.verification_code:
+                #SETTING VERIFYEMAIL INSTANCE TO SPECIFIC USER
+                verification.user = self.request.user
+                verification.save()
                 email_sent = verification.send_verification_email()
                 if email_sent == False:
                     messages.add_message(self.request, messages.ERROR, f"An unexpected error occurred , Try Again Sometime Later")
                     return redirect(reverse_lazy("home"))
+
+
         
         return super().form_valid(form)
-        
+    
         
     # sends brand user to verify email 
     def get_success_url(self):
@@ -557,14 +633,14 @@ class EmailVerification(UserPassesTestMixin , LoginRequiredMixin , FormView):
 
     def test_func(self):
         verification = get_object_or_404(VerifyEmail, id=self.kwargs.get("verify_id"))
-        if (verification.email != self.request.user.email):
+        if (verification.user != self.request.user):
             return False  # Return False if creator not found
         return True
 
 
     def form_valid(self, form):
         email_list_id = []
-        email_code = form.cleaned_data['email_code']
+        email_code = form.cleaned_data['verification_code']
         verification = get_object_or_404(VerifyEmail , id = self.kwargs.get("verify_id"))
         if email_code == verification.verification_code:
             if verification.account_type == VerifyEmail.AccountType.CREATOR:
@@ -1663,32 +1739,3 @@ class TiktokDashboardEdit(UpdateView , LoginRequiredMixin , UserPassesTestMixin)
 
 
 
-class EmailVerificationView(FormView):
-    template_name = "base/email_verification.html"
-    form_class = EmailVerificationForm
-
-    def form_valid(self, form):
-        email = self.request.POST.get('email')
-        verification_code = form.cleaned_data['verification_code']
-        verify_id = self.kwargs.get('verify_id')
-
-
-        verification =VerifyEmail.objects.filter(email=email, id=verify_id).first()
-        if verification and  verification.verification_code == verification_code:
-            if verification.verified:
-                messages.error(self.request, "This email has already been verified.")
-                return self.form_invalid(form)
-            user = EmailUser .objects.get(email=email)
-            user.is_verified = True
-            user.save()
-            login(self.request, user)
-            verification.delete()
-            return redirect('account_selection')
-        else:
-            form.add_error('verification_code', 'Invalid verification code.')
-            return self.form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['email'] = self.request.GET.get('email')  # Pass the email to the template
-        return context

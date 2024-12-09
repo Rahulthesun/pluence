@@ -30,12 +30,15 @@ class CreatorProfile(models.Model):
         return f"{self.user.email.split('@')[0]} - Creator Profile"
     
 class VerifyEmail(models.Model):
+    user = models.ForeignKey(EmailUser , null=True , blank=True , on_delete=models.SET_NULL)
     email = models.EmailField(max_length=60 , null=False , blank= False)
     class AccountType(models.TextChoices):
         CREATOR='Creator'
         BRAND='BRAND'
+        SIGNUP ='SIGNUP'
+        
 
-    account_type = models.CharField(max_length=100 , choices=AccountType.choices , null=False , blank=False)
+    account_type = models.CharField(max_length=100 , choices=AccountType.choices , default=AccountType.SIGNUP)
     
     verification_code = models.CharField(max_length=200 ,null=True , blank=True)
     code_sent_at = models.DateTimeField(null=True , blank=True)
@@ -51,7 +54,7 @@ class VerifyEmail(models.Model):
         self.save()
 
     def send_verification_email(self):
-        template_id = 12
+        template_id = 18
         to = [{"email": self.email}]
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=to,

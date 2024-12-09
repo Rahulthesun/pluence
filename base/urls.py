@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 from .views import ResetPasswordView
 from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetCompleteView
 
-from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal ,CreateTiktokBrandProposal, DashboardImageUpdate , EmailVerification , BrandAccountSubscription,EmailVerificationView
-from .views import TiktokDashboardEdit
+from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal ,CreateTiktokBrandProposal, DashboardImageUpdate , EmailVerification , BrandAccountSubscription
+from .views import TiktokDashboardEdit , SignupEmailVerification
 
 urlpatterns = [
 
@@ -69,7 +69,7 @@ urlpatterns = [
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
      path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),
-     path('verify-email/<str:pk>/<int:verify_id>/', EmailVerificationView.as_view(), name='EmailVerificationView'),
+     path('verify-email/<str:pk>/<int:verify_id>/', SignupEmailVerification.as_view(), name='signup_email_verification'),
 
 ]
 
