@@ -219,7 +219,7 @@ def brand_demo_home(request , slug=None):
                     dashboard_img="https://example.com/dashboard5.png",
                     creator=creator5,
                     username="creator_five",
-                    tags="food, recipes",
+                    tags="food, tech",
                     followers=25000,
                     reach=20000,
                     profile_link_clicks=600,
@@ -235,7 +235,7 @@ def brand_demo_home(request , slug=None):
                     dashboard_img="https://example.com/dashboard6.png",
                     creator=creator6,
                     username="creator_six",
-                    tags="travel, adventure",
+                    tags="travel, adventure,recipes",
                     followers=30000,
                     reach=25000,
                     profile_link_clicks=700,
@@ -257,7 +257,7 @@ def brand_demo_home(request , slug=None):
                     creator_accounts = sorted(instagram_dashboards , key = lambda d: d.followers , reverse=True)
 
             elif search_query:
-                searched_instagram_dashboards = filter(lambda dashboard: search_query.upper() in dashboard.tags.upper() , instagram_dashboards)
+                searched_instagram_dashboards = list(filter(lambda dashboard: search_query.lower() in dashboard.tags.lower() , instagram_dashboards))
                 if sort_query == "":
                     creator_accounts = sorted(searched_instagram_dashboards , key = lambda d: d.date_created , reverse=True)
                 if sort_query == 'followers-asc':
@@ -324,7 +324,7 @@ def brand_demo_home(request , slug=None):
                 video_count=500,
                 engagement_rate=decimal.Decimal('20.0'),
                 deal_count=15,
-                tags="fitness, health",
+                tags="fitness, health, food",
                 pricing_per_promotion=decimal.Decimal('1500.00'),
                 created=timezone.now()
             ),
@@ -342,7 +342,7 @@ def brand_demo_home(request , slug=None):
                 video_count=250,
                 engagement_rate=decimal.Decimal('10.5'),
                 deal_count=8,
-                tags="travel, adventure, wanderlust",
+                tags="travel, adventure, wanderlust,tech",
                 pricing_per_promotion=decimal.Decimal('950.00'),
                 created=timezone.now() - datetime.timedelta(days=3)
             ),
@@ -360,7 +360,7 @@ def brand_demo_home(request , slug=None):
                 video_count=400,
                 engagement_rate=decimal.Decimal('17.0'),
                 deal_count=12,
-                tags="food, recipes, cooking",
+                tags="food, recipes, cooking ,learning",
                 pricing_per_promotion=decimal.Decimal('1200.00'),
                 created=timezone.now() - datetime.timedelta(days=4)
             ),
@@ -378,7 +378,7 @@ def brand_demo_home(request , slug=None):
                 video_count=150,
                 engagement_rate=decimal.Decimal('8.0'),
                 deal_count=4,
-                tags="education, edutok, learning",
+                tags="education, edutok, learning,travel",
                 pricing_per_promotion=decimal.Decimal('700.00'),
                 created=timezone.now() - datetime.timedelta(days=5)
             )
@@ -391,7 +391,7 @@ def brand_demo_home(request , slug=None):
             else:
                 creator_accounts = sorted(tiktok_dashboards , key = lambda d: d.follower_count , reverse=True)
         elif search_query:
-            searched_tiktok_dashboards = filter(lambda dashboard: search_query.upper() in dashboard.tags.upper() , tiktok_dashboards)
+            searched_tiktok_dashboards = list(filter(lambda dashboard: search_query.upper() in dashboard.tags.upper() , tiktok_dashboards))
             if sort_query == "":
                 creator_accounts = sorted(searched_tiktok_dashboards , key = lambda d: d.created , reverse=True)
             if sort_query == 'followers-asc':
@@ -1040,6 +1040,8 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
     def form_valid(self, form):
         creator = get_object_or_404(CreatorProfile ,user = self.request.user)
         avg_rate = (form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
+        
+        #ENGAGEMENT RATE FORMULA : 
         engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / form.cleaned_data['followers'])*100)
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
