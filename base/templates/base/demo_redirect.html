@@ -1,0 +1,25 @@
+{% extends 'base/landing_main.html' %}
+
+{% block content %}
+
+<body>
+    <section id="redirect">
+        <div class="main-content">
+            <div class="main-text">
+              <h1 id="headline-bold" style="font-size: 120px;"> <i class="fa-solid fa-bomb"></i></h1>
+              <h1 id="headline-bold">End of Demo</h1>
+              <h1>Join Pluence to Grow your Sales</h1>
+              <p>Signup to Send Deals to our Creators</p>
+              <div class="brand-signup" style="justify-content: center; width: 100%;">
+                <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+              </div>
+              <a href="mailto:hello@pluence.in">Want a Discount ? Try Emailing Us </a>
+            </div>
+        </div>
+    </section>
+    
+</body>
+
+
+
+{% endblock %}

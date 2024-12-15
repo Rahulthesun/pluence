@@ -28,7 +28,11 @@
         <p><span id="error">{{error}}</span></p>
         {% endfor %}
 
-        <p>Already Have a Account ? <a href="{% url 'login' %}">Login here</a></p>
+        <div class="signup-flex">
+            <p><a href="{% url 'login' %}">Login </a></p>
+            <p><a href="{% url 'landing_page' %}">Home</a></p>
+        </div>
+        
 
         <button type="submit">Signup</button>
 

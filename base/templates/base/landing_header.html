@@ -1,9 +1,11 @@
 <div class="top-nav">
     <a href="{% url 'landing_page' %}" id="top-pluence">Pluence</a>
     <div class="nav-links">
-      <a href="{% url 'landing_page' %}" class="top_brand">Brands</a>
+      <a href="{% url 'landing_page' %}" class="top_brand">Home</a>
+      <a href="{% url 'landing_page' %}#features" class="top_brand">Features</a>
+      <a href="{% url 'landing_page' %}#pricing" class="top_pricing">Pricing</a>
       <a href="{% url 'landing_page_creator' %}" class="top_creator">Creators</a>
-      <a href="{% url 'landing_page_pricing' %}" class="top_pricing">Pricing</a>
+      
       <a href="{% url 'signup' %}" class="top_signup">Sign Up</a>
     </div>
 
@@ -14,10 +16,11 @@
 
 <div class="mobile-nav-menu">
   <a href="#" id="close-menu"><i class="fa-solid fa-x"></i></a>
-  <a href="{% url 'landing_page' %}">Brands</a>
-  <a href="{% url 'landing_page_creator' %}">Creators</a>
-  <a href="{% url 'landing_page_pricing' %}">Pricing</a>
-  <a href="{% url 'signup' %}">Sign Up</a>
+  <a href="{% url 'landing_page' %}" class="top_brand">Home</a>
+  <a href="{% url 'landing_page' %}#features" class="top_brand">Features</a>
+  <a href="{% url 'landing_page' %}#pricing" class="top_pricing">Pricing</a>
+  <a href="{% url 'landing_page_creator' %}" class="top_creator">Creators</a>
+  <a href="{% url 'signup' %}" class="top_signup">Sign Up</a>
 </div>
 
 

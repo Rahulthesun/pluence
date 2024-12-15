@@ -9,8 +9,15 @@
     background-color: #ffffff;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  
+
+  /* Default scrollbar (hidden by default) */
   ::-webkit-scrollbar {
-    display: none;
+      display: none;
   }
 
   #top-pluence {
@@ -26,7 +33,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
+    padding: 2px 40px;
     background-color: #fff;
   }
 
@@ -36,7 +43,7 @@
     font-weight: 600;
     font-size: 20px;
     letter-spacing: -0.08em;
-    margin: 0 30px;
+    margin: 0 15px;
   }
 
   .top-nav .top_signup {
@@ -47,12 +54,17 @@
     font-weight: 600;
   }
 
+  .top-nav .top_signup:hover {
+    background-color: white;
+    border: 3px solid black;
+    color: black;
+  }
+
   .main-content {
     display: flex;
     flex-direction: row;
-    min-height: 90vh;
     height: auto;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 0px 70px;
     padding-top: 0px;
@@ -60,18 +72,68 @@
   }
 
   .main-text {
+    width: 100%;
     max-width: 60%;
     letter-spacing: -0.08em;
-
+    text-align: center;
 
   }
 
   .main-text h1 {
-    font-size: 5vw;
+    font-size: 45px;
     font-weight: 600;
-    line-height: 80px;
+    line-height: 60px;
     margin: 0;
     margin-bottom: 0px;
+  }
+
+  
+  h1#headline-bold {
+
+    font-weight: 800;
+    font-size: 75px;
+    line-height: 120px;
+    text-align: center;
+    letter-spacing: -0.03em;
+    color: #000000;
+
+  }
+
+  .main-text p#approved {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .main-text .logo-flex {
+    width: 20%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+
+  }
+
+  .main-text .logo-flex i {
+    font-size: 60px;
+  }
+
+
+  .main-text p , #demo p , p#footer-text , #one-click p{
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 40px;
+    text-align: center;
+    letter-spacing: -0.06em;
+
+    color: #000000;
+
+
+  }
+
+  .main-text p {
+    line-height: 20px;
   }
 
   .main-text .signup-now {
@@ -82,7 +144,7 @@
     font-weight: 600;
     font-size: 2vw;
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 10px;
     text-decoration: none;
 
 
@@ -92,6 +154,83 @@
     background-color: white;
     border: 4px solid black;
     color: black;
+  }
+
+  #demo , #one-click{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 50px;
+    padding: 50px 0px;
+  }
+
+  #one-click {
+    padding: 100px 0px;
+  }
+
+  #one-click .row-flex {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #one-click .row-flex img {
+    width: 35%;
+    margin-right: 50px;
+  }
+
+  #one-click .row-flex .main-text {
+    width: 65%;
+    align-items: center;
+    margin: auto 0px;
+    text-align: left;
+  }
+
+  #demo h1 , #one-click h1 ,#features h1#heading  , h1#footer-bold , #pricing h1{
+    font-size: 50px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: -0.06em;
+  }
+  
+  #demo img {
+    width: 60%;
+    height: auto;
+    margin: 10px auto;
+    box-shadow: -2px -3px 48.1px 4px rgba(66, 66, 66, 0.288);
+    border: 4px solid rgba(0, 0, 0, 0.78);
+  }
+
+ 
+
+  #features h1#heading {
+    margin-bottom: 0px;
+    margin-top: 10%;
+  }
+
+  #pricing .pricing-box {
+    width: 40%;
+    margin: 0px auto;
+    background: #FFFFFF;
+    border: 4px solid rgba(0, 0, 0, 0.78);
+    border-radius: 40px;
+
+  }
+
+  #pricing .pricing-box .pricing-box-price h1 {
+    font-size: 120px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: -0.06em;
+  }
+
+  #pricing .pricing-box .pricing-box-features {
+    height: auto;
+    width: 80%;
+    margin-bottom: 10px;
   }
 
   .main img {
@@ -146,6 +285,8 @@
   .main-text h1 {
     line-height: 1.2;
   }
+
+
 
   #footer {
     width: 100%;
@@ -240,6 +381,8 @@
 
   }
 
+
+
   .pricing-signup , .brand-signup {
     width: 80%;
     display: flex;
@@ -321,14 +464,17 @@
 
   }
 
-  .pricing-box-features h3 {
+  .pricing-box-features h3 , h3#pricing-box-h3 {
     margin-top: 0px;
     font-weight: 800;
     font-size: 24px;
     line-height: 20px;
     letter-spacing: -0.06em;
+  }
 
-
+  h3#pricing-box-h3 {
+    margin-top: 20px;
+    margin-bottom: 0px;
   }
 
 
@@ -441,6 +587,27 @@
 
   }
 
+  #redirect {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto auto;
+  }
+
+  #redirect .main-content {
+    width: 100%;
+  }
+
+  #redirect a {
+    font-size: 20;
+    color: black;
+    font-weight: 500;
+  }
+
+
 
   /* Responsive Styles for Mobile Devices */
 
@@ -540,7 +707,7 @@
 
   @media (max-width: 480px) {
     .top-nav {
-      padding: 10px;
+      padding-top: 10px;
     }
 
     .top-nav a {
@@ -577,6 +744,48 @@
 
     h1#pluence-footing {
       line-height: 60px;
+    }
+
+    .main-text h1#headline-bold {
+      margin-top: 0px;
+      font-size: 50px;
+      line-height: 20px;
+    }
+
+    .main-text h1 {
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .main-text .logo-flex {
+      width: 50%;
+    }
+
+    #one-click {
+      padding: 20px 0px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #one-click .row-flex {
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #one-click .row-flex img {
+      width: 70%;
+      margin: 20px auto;
+      margin-bottom: 50px;
+    }
+
+    #one-click .row-flex .main-text {
+      margin: 0 auto;
+      width: 85%;
+    }
+
+    #pricing .pricing-box{
+      width: 95%;
+      margin: 0 auto;
     }
   }
 </style>

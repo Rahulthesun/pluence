@@ -6,16 +6,20 @@ from .views import ResetPasswordView
 from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView,PasswordResetCompleteView
 
 from .views import EmailLogin ,EmailSignUp, LogoutView , AccountType , CreatorProfileUpdate , AccountIntegration , AccountIntegrationUpdate , BrandProfileUpdate, CreateBrandProposal ,CreateTiktokBrandProposal, DashboardImageUpdate , EmailVerification , BrandAccountSubscription
-from .views import TiktokDashboardEdit , SignupEmailVerification
+from .views import TiktokDashboardEdit , SignupEmailVerification , CreateDemoProposal
 
 urlpatterns = [
 
     path("" , views.landing_page , name="landing_page"),
+
+    #testing new landing pages 
+    #path("new/home" , views.new_home , name="new_home"),
+
     path("creator/" , views.landing_page_creator , name="landing_page_creator"),
     path("pricing/" , views.landing_page_pricing , name="landing_page_pricing"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
     path("terms-and-conditions/", views.terms_and_conditions, name="terms_and_conditions"),
-    
+
     path("home/" , views.home , name='home'),
     path("home/<slug:slug>/" , views.home , name='home_with_slug'),
     path("login/" , EmailLogin.as_view() , name="login"),
@@ -70,6 +74,14 @@ urlpatterns = [
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
      path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),
      path('verify-email/<str:pk>/<int:verify_id>/', SignupEmailVerification.as_view(), name='signup_email_verification'),
+
+
+     #DEMO URLS (THEY ARE WORKING , BUT JUST FOR BRAND DEMO)
+     path("demo/brand/home/" , views.brand_demo_home , name="demo"),     
+     path("demo/brand/home/<slug:slug>/" , views.brand_demo_home , name="demo_with_slug"),
+
+     path("demo/brand/sendproposal/" , CreateDemoProposal.as_view() , name="demo_sendproposal"),
+     path("demo/brand/redirect/" , views.demo_redirect , name="demo_redirect"),
 
 ]
 

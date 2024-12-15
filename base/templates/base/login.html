@@ -15,8 +15,12 @@
 
         <p>{{form.password.label_tag}}</p>
         {{form.password}}
-        <p>No Account Yet ? <a href="{% url 'signup' %}">SignUp here</a> </p>
-        <p><a href="{% url 'password_reset' %}"><i>Forgot Password?</i></a></p>
+
+        <div class="signup-flex">
+            <p><a href="{% url 'signup' %}">SignUp </a> </p>
+            <p><a href="{% url 'landing_page' %}">Home</a></p>
+            <p><a href="{% url 'password_reset' %}"><i>Forgot Password?</i></a></p>
+        </div>
         
         <button type="submit">Login</button>
         

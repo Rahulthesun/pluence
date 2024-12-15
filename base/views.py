@@ -114,6 +114,12 @@ def unhash_token(hashed_token:str) ->str:
     return fernet.decrypt(hashed_token.encode()).decode()
 
 
+#testing new landing pages
+
+def new_home(request):
+    return render(request , 'base/landing_home.html')
+
+
 
 # Create your views here.
 
@@ -121,7 +127,8 @@ def landing_page(request):
     if request.user.is_authenticated:
         return redirect(reverse_lazy("home"))
     else:
-        return render(request ,'base/landing_brand.html')
+        return render(request ,'base/landing_home.html')
+
 
 def landing_page_creator(request):
     return render(request , 'base/landing_creator.html')
@@ -134,6 +141,290 @@ def privacy_policy(request):
 
 def terms_and_conditions(request):
     return render(request, 'base/termsandconditions.html')
+
+#demo view (for brand demo experience)
+def brand_demo_home(request , slug=None):
+    context = {}
+    if slug is None or slug=="instagram":
+            social_media = "instagram"
+            search_query = request.GET.get("search" , "")
+            sort_query = request.GET.get("sort" , "")
+            creator1 , creator2 , creator3 , creator4 , creator5 , creator6 = [None] * 6
+            instagram_dashboards = [
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard1.png",
+                    creator=creator1,
+                    username="creator_one",
+                    tags="fashion, travel",
+                    followers=10000,
+                    reach=8000,
+                    profile_link_clicks=200,
+                    engagement=1200,
+                    engagement_rate=15.0,
+                    audience_country="United States",
+                    story_rates=500.00,
+                    reel_rates=800.00,
+                    average_rate=650.00,
+                    date_created=timezone.now() - datetime.timedelta(days=1)
+                ),
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard2.png",
+                    creator=creator2,
+                    username="creator_two",
+                    tags="tech, gadgets",
+                    followers=20000,
+                    reach=15000,
+                    profile_link_clicks=500,
+                    engagement=3000,
+                    engagement_rate=20.0,
+                    audience_country="India",
+                    story_rates=700.00,
+                    reel_rates=1000.00,
+                    average_rate=850.00,
+                    date_created=timezone.now() - datetime.timedelta(days=2)
+                ),
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard3.png",
+                    creator=creator3,
+                    username="creator_three",
+                    tags="fitness, health",
+                    followers=15000,
+                    reach=12000,
+                    profile_link_clicks=300,
+                    engagement=1800,
+                    engagement_rate=12.0,
+                    audience_country="Canada",
+                    story_rates=600.00,
+                    reel_rates=900.00,
+                    average_rate=750.00,
+                    date_created=timezone.now()
+                ),
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard4.png",
+                    creator=creator4,
+                    username="creator_four",
+                    tags="beauty, skincare",
+                    followers=18000,
+                    reach=14000,
+                    profile_link_clicks=350,
+                    engagement=2000,
+                    engagement_rate=11.1,
+                    audience_country="United Kingdom",
+                    story_rates=550.00,
+                    reel_rates=850.00,
+                    average_rate=700.00,
+                    date_created=timezone.now() - datetime.timedelta(days=3)
+                ),
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard5.png",
+                    creator=creator5,
+                    username="creator_five",
+                    tags="food, recipes",
+                    followers=25000,
+                    reach=20000,
+                    profile_link_clicks=600,
+                    engagement=3500,
+                    engagement_rate=14.0,
+                    audience_country="Australia",
+                    story_rates=750.00,
+                    reel_rates=1100.00,
+                    average_rate=925.00,
+                    date_created=timezone.now() - datetime.timedelta(days=4)
+                ),
+                InstagramAccountDashBoard(
+                    dashboard_img="https://example.com/dashboard6.png",
+                    creator=creator6,
+                    username="creator_six",
+                    tags="travel, adventure",
+                    followers=30000,
+                    reach=25000,
+                    profile_link_clicks=700,
+                    engagement=4000,
+                    engagement_rate=16.0,
+                    audience_country="Germany",
+                    story_rates=800.00,
+                    reel_rates=1200.00,
+                    average_rate=1000.00,
+                    date_created=timezone.now() - datetime.timedelta(days=5)
+                )
+            ]           
+            if not search_query:
+                if sort_query =="":
+                    creator_accounts = sorted(instagram_dashboards , key = lambda d: d.date_created , reverse=True)
+                elif sort_query == "followers-asc" :
+                    creator_accounts = sorted(instagram_dashboards , key = lambda d: d.followers , reverse=False)
+                else:
+                    creator_accounts = sorted(instagram_dashboards , key = lambda d: d.followers , reverse=True)
+
+            elif search_query:
+                searched_instagram_dashboards = filter(lambda dashboard: search_query.upper() in dashboard.tags.upper() , instagram_dashboards)
+                if sort_query == "":
+                    creator_accounts = sorted(searched_instagram_dashboards , key = lambda d: d.date_created , reverse=True)
+                if sort_query == 'followers-asc':
+                    creator_accounts = sorted(searched_instagram_dashboards , key = lambda d: d.followers , reverse=False)
+                else:
+                    creator_accounts = sorted(searched_instagram_dashboards , key = lambda d: d.followers , reverse=True)
+            #testing out brand account dynamic navbar 
+
+            context['social_media'] = social_media
+            context['creators'] = creator_accounts
+    elif slug == "tiktok":
+        social_media = "tiktok"
+        search_query = request.GET.get("search" , "")
+        sort_query = request.GET.get("sort" , "")
+        creator1 , creator2 , creator3 , creator4 , creator5 , creator6 = [None] * 6
+        tiktok_dashboards = [
+            TiktokDashboard(
+                creator=creator1,
+                access_token="example_access_token_1",
+                refresh_token="example_refresh_token_1",
+                avatar_url="https://i1.sndcdn.com/artworks-rt0SRHC7TbqoV1vz-TpU0sw-t500x500.jpg",
+                open_id="open_id_1",
+                display_name="creator_one",
+                profile_deep_link="https://tiktok.com/@creator_one",
+                is_verified=True,
+                follower_count=50000,
+                likes_count=250000,
+                video_count=300,
+                engagement_rate=decimal.Decimal('15.0'),
+                deal_count=10,
+                tags="beauty, fashion",
+                pricing_per_promotion=decimal.Decimal('1000.00'),
+                created=timezone.now() - datetime.timedelta(days=1)
+            ),
+            TiktokDashboard(
+                creator=creator2,
+                access_token="example_access_token_2",
+                refresh_token="example_refresh_token_2",
+                avatar_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDZg9g8y-0ZEuouxoqwc5vNvPzx5no2s9mhw&s",
+                open_id="open_id_2",
+                display_name="creator_two",
+                profile_deep_link="https://tiktok.com/@creator_two",
+                is_verified=False,
+                follower_count=30000,
+                likes_count=150000,
+                video_count=200,
+                engagement_rate=decimal.Decimal('12.0'),
+                deal_count=5,
+                tags="tech, gadgets,techtok,new,apple",
+                pricing_per_promotion=decimal.Decimal('800.00'),
+                created=timezone.now() - datetime.timedelta(days=2)
+            ),
+            TiktokDashboard(
+                creator=creator3,
+                access_token="example_access_token_3",
+                refresh_token="example_refresh_token_3",
+                avatar_url="https://i1.sndcdn.com/artworks-nkVzxkkJNjLVDWQc-fYrUHw-t500x500.jpg",
+                open_id="open_id_3",
+                display_name="creator_three",
+                profile_deep_link="https://tiktok.com/@creator_three",
+                is_verified=True,
+                follower_count=70000,
+                likes_count=400000,
+                video_count=500,
+                engagement_rate=decimal.Decimal('20.0'),
+                deal_count=15,
+                tags="fitness, health",
+                pricing_per_promotion=decimal.Decimal('1500.00'),
+                created=timezone.now()
+            ),
+            TiktokDashboard(
+                creator=creator4,
+                access_token="example_access_token_4",
+                refresh_token="example_refresh_token_4",
+                avatar_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqB1tMiBMaCr3D44TRQ5iVQuBhBwdmfQnrMw&s",
+                open_id="open_id_4",
+                display_name="creator_four",
+                profile_deep_link="https://tiktok.com/@creator_four",
+                is_verified=False,
+                follower_count=45000,
+                likes_count=220000,
+                video_count=250,
+                engagement_rate=decimal.Decimal('10.5'),
+                deal_count=8,
+                tags="travel, adventure, wanderlust",
+                pricing_per_promotion=decimal.Decimal('950.00'),
+                created=timezone.now() - datetime.timedelta(days=3)
+            ),
+            TiktokDashboard(
+                creator=creator5,
+                access_token="example_access_token_5",
+                refresh_token="example_refresh_token_5",
+                avatar_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL0Yl9xq7Bp89j-yw21WbqpiI5yPdShUBo5hiz5VsluHMD6uZWES6xJYsJZU1tTNF43b8&usqp=CAU",
+                open_id="open_id_5",
+                display_name="creator_five",
+                profile_deep_link="https://tiktok.com/@creator_five",
+                is_verified=True,
+                follower_count=60000,
+                likes_count=350000,
+                video_count=400,
+                engagement_rate=decimal.Decimal('17.0'),
+                deal_count=12,
+                tags="food, recipes, cooking",
+                pricing_per_promotion=decimal.Decimal('1200.00'),
+                created=timezone.now() - datetime.timedelta(days=4)
+            ),
+            TiktokDashboard(
+                creator=creator6,
+                access_token="example_access_token_6",
+                refresh_token="example_refresh_token_6",
+                avatar_url="https://i.pinimg.com/236x/7f/5a/93/7f5a93164763d62faec8fa300dc28b7e.jpg",
+                open_id="open_id_6",
+                display_name="creator_six",
+                profile_deep_link="https://tiktok.com/@creator_six",
+                is_verified=False,
+                follower_count=25000,
+                likes_count=120000,
+                video_count=150,
+                engagement_rate=decimal.Decimal('8.0'),
+                deal_count=4,
+                tags="education, edutok, learning",
+                pricing_per_promotion=decimal.Decimal('700.00'),
+                created=timezone.now() - datetime.timedelta(days=5)
+            )
+        ]
+        if not search_query:
+            if sort_query =="":
+                creator_accounts = sorted(tiktok_dashboards , key = lambda d: d.created , reverse=True)
+            elif sort_query == "followers-asc" :
+                creator_accounts = sorted(tiktok_dashboards , key = lambda d: d.follower_count , reverse=False)
+            else:
+                creator_accounts = sorted(tiktok_dashboards , key = lambda d: d.follower_count , reverse=True)
+        elif search_query:
+            searched_tiktok_dashboards = filter(lambda dashboard: search_query.upper() in dashboard.tags.upper() , tiktok_dashboards)
+            if sort_query == "":
+                creator_accounts = sorted(searched_tiktok_dashboards , key = lambda d: d.created , reverse=True)
+            if sort_query == 'followers-asc':
+                creator_accounts = sorted(searched_tiktok_dashboards , key = lambda d: d.follower_count , reverse=False)
+            else:
+                creator_accounts = sorted(searched_tiktok_dashboards , key = lambda d: d.follower_count , reverse=True)
+        #testing out brand account dynamic navbar 
+        context['social_media'] = social_media
+        context['creators'] = creator_accounts
+
+    return render(request , 'base/demo_brand_home.html' , context)
+
+def demo_redirect(request):
+    return render(request , 'base/demo_redirect.html')
+
+class CreateDemoProposal(FormView):
+    form_class = TiktokBrandProposalForm
+    template_name = "base/create_proposal.html"
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.session.get('demo_message_shown'):
+            messages.info(self.request, "This is a demo version. No data will be saved.")
+            self.request.session['demo_message_shown'] = True  # Mark as shown
+        return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        return redirect(reverse_lazy("demo_redirect"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            messages.get_messages(self.request).used = True
+        return context
 
 @login_required
 def home(request, slug=None):
@@ -701,6 +992,7 @@ class EmailVerification(UserPassesTestMixin , LoginRequiredMixin , FormView):
     def get_success_url(self):
         return reverse_lazy("home")
 
+@login_required
 def integration_dashboard(request , pk):
         creator_profile = get_object_or_404(CreatorProfile , id=pk)
         if request.user != creator_profile.user :
@@ -820,7 +1112,8 @@ class DashboardImageUpdate(UserPassesTestMixin,LoginRequiredMixin , FormView):
     def get_success_url(self):
         id = self.kwargs.get('pk')
         return reverse("integration_dashboard" , kwargs= {"pk": id})
-    
+
+@login_required    
 def brand_proposal_view(request , pk):
     proposal = get_object_or_404(BrandDeal , id=pk)
     if proposal.brand.user != request.user:
@@ -844,6 +1137,7 @@ def brand_proposal_view(request , pk):
 
     return render(request , 'base/brand_proposal_view.html' , context)
 
+@login_required
 def creator_proposal_view(request , pk):
     proposal = get_object_or_404(BrandDeal , id = pk)
     #restrict other users from using link
@@ -879,7 +1173,7 @@ def creator_proposal_view(request , pk):
 
 
 
-
+@login_required
 def get_brand_proposals(request, brand_id):
     brand = get_object_or_404(BrandProfile , id = brand_id)
     if brand.user != request.user:
@@ -1170,7 +1464,9 @@ def accept_brand_proposal(request , proposal_id , slug=None):
         )
 
     return redirect(reverse_lazy("home"))
+
 #Implement brand emailing feature when creator rejects proposal
+@login_required
 def reject_brand_proposal(request , proposal_id , slug=None):
     proposal = get_object_or_404(BrandDeal , id = proposal_id)
     if request.user != proposal.creator.user:
@@ -1181,6 +1477,7 @@ def reject_brand_proposal(request , proposal_id , slug=None):
 
     return redirect(reverse_lazy("home"))
 
+@login_required
 def creator_active_proposals(request , creator_id):
     creator = get_object_or_404(CreatorProfile , id = creator_id)
     if creator.user != request.user:
@@ -1419,6 +1716,7 @@ def content_approval_process(request, proposal_id ):
     else:
         return render(request, 'base/content_approval_form.html')
 
+@login_required
 def brand_pending_approval_view(request):
     brand_profile = get_object_or_404(BrandProfile , user = request.user)
     ig_proposals = BrandDeal.objects.filter(brand = brand_profile , platform = BrandDeal.Platforms.INSTAGRAM ,proposal_status = BrandDeal.Proposal_Status.DEAL_CONTENT_APPROVAL_PENDING)
@@ -1439,6 +1737,7 @@ def brand_pending_approval_view(request):
 
     return render(request , 'base/brand_content_approval.html' , context)
 
+@login_required
 def brand_content_review(request , proposal_id):
     approval_content = get_object_or_404(Content_Approval_Media , proposal__id = proposal_id)
     proposal = get_object_or_404(BrandDeal , id = proposal_id)
@@ -1478,6 +1777,7 @@ def brand_content_review(request , proposal_id):
 
         return render(request , 'base/brand_content_review.html' , context) 
 
+@login_required
 def approve_content(request , proposal_id):
     approved_content = get_object_or_404(Content_Approval_Media , proposal__id = proposal_id)
 
@@ -1517,7 +1817,7 @@ def approve_content(request , proposal_id):
 
         return render(request, 'base/approved.html')
 
-
+@login_required
 def claim_referral_bonus(request):
     profile = get_object_or_404(CreatorProfile, user=request.user)
 

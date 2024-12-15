@@ -1,0 +1,127 @@
+{% extends 'base/landing_main.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<body>
+  {% include 'base/landing_header.html' %}
+  
+  <div class="main-content">
+    <div class="main-text">
+      <p id="approved"><i class="fa-solid fa-circle-check" style="color: rgb(0, 183, 255);"></i> Tiktok API Approved</p>
+      <h1>Boost Sales With </h1>
+      <h1 id="headline-bold">Super Fast <i class="fa-regular fa-paper-plane"></i></h1>
+      <h1>Influencer Marketing</h1>
+      <p>Faster , Simpler & Secure</p>
+      <div class="brand-signup" style="justify-content: center; width: 100%;">
+        <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+      </div>
+      <p>Platforms We're On</p>
+      <div class="logo-flex">
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-tiktok"></i>
+      </div>
+    </div>
+  </div>
+
+
+  <section id="demo">
+    <h1>Analyse Creator Data</h1>
+    <img src="{% static 'base/images/pluence_creator_tool.png' %}" >
+
+    <p>Use our Data-first Approach to Analyse a <br> Influencer’s Performance</p>
+
+    <div class="brand-signup" style="justify-content: center; width: 100%;">
+        <a href="{% url 'demo' %}" target="_blank"><button>Try Demo Now</button></a>
+      </div>
+  </section>
+
+  <section id="pricing">
+    <h1>Pricing</h1>
+
+    <div class="pricing-box">
+        <h3 id="pricing-box-h3">Brands</h3>
+        <div class="pricing-box-price">
+          <h1>$5</h1>
+          <p>/month</p>
+        </div>
+
+        <div class="pricing-box-features">
+          <h3>Features</h3>
+          <ul>
+            <li>Access to Creator Search Tool for multiple platforms</li>        
+            <li>No hidden platform fees</li>
+            <li>Email Updates for brand deals</li>
+            <li>Guaranteed Quick Response Rates From Creators.</li>
+            <li>Safe Payments with Payment Hold.</li>
+            <li>Content Verification Process</li>
+            <li>Refund Claim Process </li>
+          </ul>
+        </div>
+
+        <div class="pricing-signup">
+          <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+        </div>
+    </div>
+
+  </section>
+
+  <section id="features">
+    <div class="main">
+        <h1 id="heading">Why  Pluence?</h1>
+        <div class="landing-flex">
+    
+            <div class="landing-flex-item">
+                <div class="flex-text">
+                <h1>Direct<br> Marketing</h1>
+                <p>Market your Product & Brand Directly <br> to your Niche Customers</p>
+                </div>
+                <img src="{% static 'base/images/direct-marketing.png' %}">
+            </div>
+    
+            <div class="landing-flex-item-reversed">
+                <div class="flex-text">
+                <h1>Safe & Secure<br>Payments</h1>
+                <p>With Payment Hold, payment is<br> released only upon deal completion</p>
+                </div>
+            <img src="{% static 'base/images/safe payments.png' %}">
+            </div>
+    
+    
+            <div class="landing-flex-item">
+                <div class="flex-text">
+                <h1>Low Cost<br>Marketing </h1>
+                <p>Market directly to your ideal<br> customers and save up to 30% on<br> Customer Acquisition.</p>
+                </div>
+            <img src="{% static 'base/images/low cost.png' %}">
+            </div>
+    
+            <div class="landing-flex-item-reversed">
+                <div class="flex-text">
+                <h1>Authenticated<br>Creators</h1>
+                <p>Influencer's Data is Collected & Verified By Official tiktok API</p>
+                </div>
+            <img src="{% static 'base/images/authenticated.png' %}">
+            </div>
+    
+    
+        </div>
+  </section>
+  
+
+    <h1 id="footer-bold">Pluence</h1>
+
+    <p id="footer-text">The Fastest Way to Reach Influencers</p>
+    <div class="brand-signup">
+      <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
+    </div>
+  </div>
+
+  {% include 'base/landing_footer.html' %}
+
+  
+
+</body>
+
+{% endblock %}

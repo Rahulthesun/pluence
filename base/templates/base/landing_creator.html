@@ -7,61 +7,110 @@
 
   <div class="main-content">
     <div class="main-text">
-      <h1>Monetize Your </h1>
-      <h1>Followers With </h1>
-      <h1>Brand Deals</h1>
-      <div class="brand-signup" style="justify-content: left; width: 100%;">
+      <p id="approved"><i class="fa-solid fa-circle-check" style="color: rgb(0, 183, 255);"></i> Tiktok API Approved</p>
+      <h1 id="headline-bold">Brand Deals</h1>
+      <h1>Faster , Simpler & Secure</h1>
+      <div class="brand-signup" style="justify-content: center; width: 100%;">
         <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
       </div>
-    </div>
-    <div class="main-image">
-      <img src="{% static 'base/images/brand_deal1.png' %}" >
+      <p>Platforms We're On</p>
+      <div class="logo-flex">
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-tiktok"></i>
+      </div>
     </div>
   </div>
 
-  <div class="main">
-    <h1 id="pluence-heading">Why Pluence?</h1>
-    <div class="landing-flex">
+  <section id="one-click">
+    <div class="row-flex">
+      <img src="{% static 'base/images/pluence_tiktok_dashboard.png' %}">
+      <div class="main-text">
+        <h1 style="text-align: left;">One -Click <br>
+          Tiktok Integration ! </h1>
+        <p style="text-align: left;">Connect Your Tiktok to Pluence <br> With just a single click </p>
+        <div class="brand-signup" style="justify-content: left; width: 100%;">
+          <a href="{% url 'signup' %}"><button>Connect Today <i class="fa-solid fa-link"></i></button></a>
+        </div>  
+      </div>
+    </div>
+  </section>
 
-        <div class="landing-flex-item">
-            <div class="flex-text">
-            <h1>Safe & Secure Payments</h1>
-            <p>Complete the Deal , <br>Get Paid</p>
-            </div>
-            <img src="{% static 'base/images/safe payments.png' %}">
+  <section id="pricing">
+    <h1>Pricing</h1>
+
+    <div class="pricing-box">
+        <h3 id="pricing-box-h3">Creators</h3>
+        <div class="pricing-box-price">
+          <h1>5%</h1>
+          <p>of every deal</p>
         </div>
 
-        <div class="landing-flex-item-reversed">
-            <div class="flex-text">
-            <h1>Brand Visibility</h1>
-            <p>Sign up, link your socials, and <br> showcase your content to brands on the platform</p>
-            </div>
-        <img src="{% static 'base/images/brandvisibility.png' %}">
+        <div class="pricing-box-features">
+          <h3>Features</h3>
+          <ul>
+            <li>Secure Payment Process Ensuring Payment After Completion</li>        
+            <li>Email Updates for Every Step in a Brand Deal</li>
+            <li>Full Control to Accept / Reject Brand Deals</li>
+            <li>Set Your Own Prices</li>
+            <li>Multiple Social Media Platform Support</li>
+            <li>Easy Integration</li>
+          </ul>
         </div>
 
-
-        <div class="landing-flex-item">
-            <div class="flex-text">
-            <h1>No Complex Legal Contracts</h1>
-            <p>Brands Send you a brief Proposal. You Either Accept or Reject Them.</p>
-            </div>
-        <img src="{% static 'base/images/low cost.png' %}">
+        <div class="pricing-signup">
+          <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
         </div>
-
-        <div class="landing-flex-item-reversed">
-            <div class="flex-text">
-            <h1>No Cluttered DM's & Emails</h1>
-            <p>We Email You when You Get a Brand Deal your Way.</p>
-            </div>
-        <img src="{% static 'base/images/authenticated.png' %}">
-        </div>
-
-
     </div>
 
-    <h1 id="pluence-footing">Pluence for Creators</h1>
+  </section>
 
-    <p id="pluence-footing">The Best Way to Discover, Secure, and Manage Brand Deals</p>
+
+  <section id="features">
+    <div class="main">
+      <h1 id="heading">Why Pluence?</h1>
+      <div class="landing-flex">
+  
+          <div class="landing-flex-item">
+              <div class="flex-text">
+              <h1>Safe & Secure Payments</h1>
+              <p>Complete the Deal , <br>Get Paid</p>
+              </div>
+              <img src="{% static 'base/images/safe payments.png' %}">
+          </div>
+  
+          <div class="landing-flex-item-reversed">
+              <div class="flex-text">
+              <h1>Brand Visibility</h1>
+              <p>Sign up, link your socials, and <br> showcase your content to brands on the platform</p>
+              </div>
+          <img src="{% static 'base/images/brandvisibility.png' %}">
+          </div>
+  
+  
+          <div class="landing-flex-item">
+              <div class="flex-text">
+              <h1>No Complex Legal Contracts</h1>
+              <p>Brands Send you a brief Proposal. You Either Accept or Reject Them.</p>
+              </div>
+          <img src="{% static 'base/images/low cost.png' %}">
+          </div>
+  
+          <div class="landing-flex-item-reversed">
+              <div class="flex-text">
+              <h1>No Cluttered DM's & Emails</h1>
+              <p>We Email You when You Get a Brand Deal your Way.</p>
+              </div>
+          <img src="{% static 'base/images/authenticated.png' %}">
+          </div>
+  
+  
+      </div>
+  </section>
+  
+
+    <h1 id="footer-bold">Pluence</h1>
+
+    <p id="footer-text">The Simplest Way to Get Brand Deals without being ripped off</p>
     <div class="brand-signup">
       <a href="{% url 'signup' %}"><button>Sign Up Now</button></a>
     </div>
