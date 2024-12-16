@@ -250,6 +250,7 @@ class BrandDeal(models.Model):
     proposal_status = models.CharField(max_length=200 , choices=Proposal_Status.choices , null = True , blank=True)
 
     auto_complete = models.BooleanField(default=True)
+    product_included = models.BooleanField(default=True ,verbose_name="Include Demo Product Shipped to Creator")
 
     #date-fields    
     date_created = models.DateTimeField(auto_now_add=True)

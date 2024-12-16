@@ -1043,6 +1043,7 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
         
         #ENGAGEMENT RATE FORMULA : 
         engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / form.cleaned_data['followers'])*100)
+        
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
             creator = creator,
