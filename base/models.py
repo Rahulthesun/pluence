@@ -4,8 +4,20 @@ import random
 from django.utils import timezone
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
-
 from django.core.validators import MinValueValidator
+
+from pluence.settings import FERNET_KEY
+from cryptography.fernet import Fernet
+from django.utils.crypto import get_random_string
+
+fernet = Fernet(FERNET_KEY) # fernet instance to encrypt/decrypt data 
+
+def hash_token(token:str)->str: #:str says token should be of str , and ->str means the function gives str value
+    return fernet.encrypt(token.encode()).decode()
+
+def unhash_token(hashed_token:str) ->str:
+    return fernet.decrypt(hashed_token.encode()).decode()
+
 
 configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key['api-key'] = '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'
@@ -26,8 +38,16 @@ class CreatorProfile(models.Model):
 
     date_created = models.DateTimeField(auto_now_add=True)
 
+    referral_link_code = models.CharField(max_length=500 , null=True)
+    referral_balance = models.DecimalField(default=0.00,validators=[MinValueValidator(0)] , max_digits=10 , decimal_places=2)
+    referral_link_used = models.IntegerField(default=0 , validators=[MinValueValidator(0)]) 
+ 
     def __str__(self):
         return f"{self.user.email.split('@')[0]} - Creator Profile"
+    
+    def generate_referral_link_code(self):
+        self.referral_link_code = hash_token("".join(random.choices("0123456789abcdefghijklmnopqrstuvwxyz", k=8)))
+        self.save()
     
 class VerifyEmail(models.Model):
     user = models.ForeignKey(EmailUser , null=True , blank=True , on_delete=models.SET_NULL)

@@ -25,6 +25,7 @@ urlpatterns = [
     path("login/" , EmailLogin.as_view() , name="login"),
     path("logout/" , LogoutView.as_view(next_page = 'login'), name="logout"),
     path("signup/" , EmailSignUp.as_view() , name="signup"),
+    path("signup/<str:referral_code>/" , EmailSignUp.as_view() , name="signup_with_referral"), #same view , but with and without referral code added in the link
     path("instagram_integration/" , AccountIntegration.as_view() , name="instagram_integration"),
     path("instagram_integration_update/<int:pk>/" , AccountIntegrationUpdate.as_view() , name="instagram_integration_update"),
     path("instagram_integration/dashboard_image/update/<int:pk>/" , DashboardImageUpdate.as_view() , name="dashboard_image_update"),
@@ -68,12 +69,19 @@ urlpatterns = [
     path('password-reset-complete/',
          PasswordResetCompleteView.as_view(template_name='base/password_reset_complete.html'),
          name='password_reset_complete'),
+
+
+     #referral URLs
+     path("referral/dashboard/<int:creator_id>" , views.referral_dashboard , name="referral_dashboard"),
+     path("referral/create_referral_link/<int:creator_id>" , views.create_referral_link , name="create_referral_link"),
      
+
      #Can't edit the root urls for just these URLS , because they are configured to tiktok api 
      path("tiktok/authorize/" , views.tiktok_authorize, name="tiktok_authorize"),
      path("tiktok/get-data/<int:dash_id>/" , views.tiktok_user_data , name="tiktok_get_data"),
      path("tiktok/edit_dashboard/<int:pk>/" , TiktokDashboardEdit.as_view() , name="edit_tiktok_dashboard"),
      path('verify-email/<str:pk>/<int:verify_id>/', SignupEmailVerification.as_view(), name='signup_email_verification'),
+     path('verify-email/<str:pk>/<int:verify_id>/<str:referral_code>/', SignupEmailVerification.as_view(), name='signup_email_verification_with_referral'),
 
 
      #DEMO URLS (THEY ARE WORKING , BUT JUST FOR BRAND DEMO)

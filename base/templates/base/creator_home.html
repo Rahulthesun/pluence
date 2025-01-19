@@ -6,8 +6,9 @@
 
         <h1>Brand Proposals</h1>
         <hr>
-        <h2>Instagram Brand Proposals</h2>
+        
         {% if ig_account %}      
+        <h2>Instagram Brand Proposals</h2>
         <div class="proposal-container">
             <div class="proposal-row-header-ig">
                 <p>Brand</p>
@@ -46,7 +47,8 @@
             {% endfor %}
         </div>
         {% else %}
-        <a href="{% url 'integration_dashboard' account.id %}">Connect Your Instagram Account Today</a>
+        <p><i class="fa-brands fa-instagram" style="font-size: 100px; font-weight: 500;"></i></p>
+        <a href="{% url 'integration_dashboard' account.id %}"><button id="sendproposal" style="margin-top: 5px;">Connect Your IG Today <i class="fa-solid fa-link"></i></button></a>
         {% endif %}
 
         {% if tiktok_account %}
@@ -88,7 +90,10 @@
             <p>You don't have any Tiktok Proposals Right Now</p>     
             {% endfor %}
         </div>    
-        
+
+        {% else %}
+        <p><i class="fa-brands fa-tiktok" style="font-size: 100px; font-weight: 500;margin-top: 20px;text-align: center;"></i></p>
+        <a href="{% url 'integration_dashboard' account.id %}"><button id="sendproposal" style="margin-top: 5px;">Connect Your Tiktok Today <i class="fa-solid fa-link"></i></button></a>
         {% endif %}
         
         {% if ig_account and tiktok_account %}
@@ -99,8 +104,8 @@
             {% endif %}
                 
         {% elif ig_account is None and tiktok_account is None %}
-                <h2>Integrate Your Socials (IG) To Reach Brands</h2>
-                <a  href="{% url 'integration_dashboard' account.id %}" >Create Integration </a>
+        <p style="color: rgb(124, 124, 124);"><i class="fa-solid fa-circle-info"></i> Integrate Your Social accounts to reach more Brands and Get Brand Deals on Pluence</p>
+            
         {% endif %}
      
         

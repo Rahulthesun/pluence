@@ -495,6 +495,11 @@ def home(request, slug=None):
             'url': reverse("creator_profile_update" , kwargs={"pk":creator_account[0].id}),
             'name': "Update Profile"
         }
+
+        links['referral_link'] = {
+            'url': reverse("referral_dashboard" , kwargs={"creator_id":creator_account[0].id}),
+            'name': "Referral Dashboard"
+        }
        
         context['links'] = links
         context['username']= creator_account[0].name
@@ -636,7 +641,11 @@ class EmailSignUp(UserPassesTestMixin , FormView):
 
     def get_success_url(self):
         #hashing email as one of the attributes so it's not visible
-        return reverse("signup_email_verification", kwargs={"pk": hash_token(self.email), "verify_id": self.verification_id})
+        referral_code = self.kwargs.get("referral_code")
+        if referral_code:
+            return reverse("signup_email_verification_with_referral", kwargs={"pk": hash_token(self.email), "verify_id": self.verification_id , "referral_code" : referral_code})
+        else:
+            return reverse("signup_email_verification", kwargs={"pk": hash_token(self.email), "verify_id": self.verification_id })
 
     def test_func(self):
         return self.request.user.is_anonymous
@@ -668,6 +677,21 @@ class SignupEmailVerification(FormView):
             login(self.request, user)
             verification.user = self.request.user
             verification.save()
+            referral_code = self.kwargs.get("referral_code")
+            if referral_code:
+                print(referral_code)
+                 #MATCHING THE REFERRAL CODE OF THE USER TO THE REFERRAL CODE OF ALL CREATORS
+                try:
+                    referrer_creator = CreatorProfile.objects.get(referral_link_code=referral_code)
+                except CreatorProfile.DoesNotExist:
+                    messages.error(self.request, "Invalid referral code. Normal signup completed.")
+                else:
+                    referrer_creator.referral_balance += decimal.Decimal(1)
+                    referrer_creator.referral_link_used += 1
+                    referrer_creator.save()
+                    messages.success(self.request, "Referral code processed successfully.")
+            else:
+                print("No REFERRAL CODE IS GIVEN")
             return redirect(reverse_lazy('account_selection'))
         else:
             form.add_error('verification_code', 'Invalid verification code.')
@@ -2039,6 +2063,40 @@ class TiktokDashboardEdit(UpdateView , LoginRequiredMixin , UserPassesTestMixin)
         creator = get_object_or_404(CreatorProfile , user = self.request.user)
         return reverse("integration_dashboard" , kwargs={"pk":creator.id})
 
+@login_required
+def referral_dashboard(request , creator_id):
+    creator_profile = get_object_or_404(CreatorProfile , id=creator_id)
+    if creator_profile.user != request.user :
+        raise PermissionDenied
+    context = {
+        'creator' : creator_profile
+    }
+    if creator_profile.referral_link_code:
+        referral_link = request.build_absolute_uri(reverse_lazy('signup'))
+        context["referral_link"] = f"{referral_link}{creator_profile.referral_link_code}" 
+    links ={}
+    
+    links['payment_dashboard'] = {
+            'url': reverse("creator_payment_dashboard" , kwargs={"creator_id":creator_profile.id}),
+            'name': "Payment Dashboard"
+    }
+
+    links['update_profile'] = {
+            'url': reverse("creator_profile_update" , kwargs={"pk":creator_profile.id}),
+            'name': "Update Profile"
+    }
 
 
+    context['links'] = links
+    context['username']= creator_profile.name
+    return render(request , "base/referral_dashboard.html" , context=context)
 
+@login_required
+def create_referral_link(request , creator_id):
+    creator = get_object_or_404(CreatorProfile , id=creator_id)
+    if creator.user != request.user :
+        raise PermissionDenied
+    if not creator.referral_link_code :
+        creator.generate_referral_link_code()
+    return redirect(reverse("referral_dashboard" , kwargs={"creator_id" : creator.id}))
+    
