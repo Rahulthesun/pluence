@@ -1065,8 +1065,8 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
         creator = get_object_or_404(CreatorProfile ,user = self.request.user)
         avg_rate = (form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
         
-        #ENGAGEMENT RATE FORMULA : 
-        engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / form.cleaned_data['followers'])*100)
+        #ENGAGEMENT RATE FORMULA : (New Engagement Rate Formula adjusted & normalized for higher denominator)
+        engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / (form.cleaned_data['engagement'] + form.cleaned_data['followers']) )*100)
         
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
@@ -1101,6 +1101,7 @@ class AccountIntegrationUpdate(UserPassesTestMixin ,LoginRequiredMixin , UpdateV
     def form_valid(self, form):
         dashboard = form.save(commit=False)
         dashboard.tags = dashboard.tags.replace("#" , " #")
+        dashboard.engagement_rate = decimal.Decimal((dashboard.engagement / (dashboard.engagement + dashboard.followers) )*100)
         dashboard.average_rate = ((dashboard.story_rates + dashboard.reel_rates) // 2)
         dashboard.save()
         return super().form_valid(form)
@@ -2038,7 +2039,7 @@ def tiktok_user_data(request , dash_id):
     tiktok_dash.video_count = user_info_response['video_count']
     tiktok_dash.save()
     if tiktok_dash.follower_count > 0  and tiktok_dash.video_count > 0:
-        tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/(tiktok_dash.video_count * tiktok_dash.follower_count))*100)
+        tiktok_dash.engagement_rate = decimal.Decimal((tiktok_dash.likes_count/(tiktok_dash.likes_count + (tiktok_dash.video_count * tiktok_dash.follower_count)))*100)
     else:
         tiktok_dash.engagement_rate = decimal.Decimal(0)    
     tiktok_dash.save()
