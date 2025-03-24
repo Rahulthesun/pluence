@@ -79,7 +79,7 @@ class Command(BaseCommand):
                                     dashboard.video_count = user_info.get('video_count')
                                     dashboard.save()
                                     if dashboard.follower_count > 0  and dashboard.video_count > 0:
-                                        dashboard.engagement_rate = decimal.Decimal((dashboard.likes_count/(dashboard.video_count * dashboard.follower_count))*100)
+                                        dashboard.engagement_rate = decimal.Decimal((dashboard.likes_count/(dashboard.likes_count + (dashboard.video_count * dashboard.follower_count)))*100)
                                     else:
                                         dashboard.engagement_rate = decimal.Decimal(0)    
                                     dashboard.save()
