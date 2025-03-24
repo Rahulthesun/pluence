@@ -65,12 +65,12 @@
 
                         <div class="rate-flex">
 
-                            <h1 id="rate"> $ {{ig_dashboard.average_rate | floatformat}} </h1>
-                            <p>Avg Cost</p>
+                            <h1 id="rate"> $ {% if ig_dashboard.average_rate > 1000000 %} {% widthratio ig_dashboard.average_rate 1000000 1 %}M {% elif ig_dashboard.average_rate > 1000 %} {% widthratio ig_dashboard.average_rate 1000 1 %}k {% else %} {{ig_dashboard.average_rate | floatformat}} {%endif%} </h1>
+                            <p style="font-size: 12px; font-weight:700; ">Cost Per Promotion</p>
                         </div>
                     </div>
 
-                    <h1 id="rate">{% if ig_dashboard.followers > 1000 %} {% widthratio ig_dashboard.followers 1000 1 %}k <span id="followers-2">Followers</span> {% else %} {{ig_dashboard.followers}} <span id="followers-2">Followers</span> {%endif%} </h1>
+                    <h1 id="rate"> {% if ig_dashboard.followers > 1000000 %} {% widthratio ig_dashboard.followers 1000000 1 %}M <span id="followers-2">Followers</span> {% elif ig_dashboard.followers > 1000 %} {% widthratio ig_dashboard.followers 1000 1 %}k <span id="followers-2">Followers</span> {% else %} {{ig_dashboard.followers}} <span id="followers-2">Followers</span> {%endif%} </h1>
 
             
 

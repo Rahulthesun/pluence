@@ -91,6 +91,10 @@ urlpatterns = [
      path("demo/brand/sendproposal/" , CreateDemoProposal.as_view() , name="demo_sendproposal"),
      path("demo/brand/redirect/" , views.demo_redirect , name="demo_redirect"),
 
+
+     #ADMIN DB_UPDATE URLS
+     path("admin_url/db/eng_rate_normalization/<str:perm_code>/" , views.db_eng_rate_update , name="db_eng_rate_update")
+
 ]
 
 if settings.DEBUG == True:

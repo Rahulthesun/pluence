@@ -1063,11 +1063,28 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
 
     def form_valid(self, form):
         creator = get_object_or_404(CreatorProfile ,user = self.request.user)
-        avg_rate = (form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
+        
         
         #ENGAGEMENT RATE FORMULA : (New Engagement Rate Formula adjusted & normalized for higher denominator)
         engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / (form.cleaned_data['engagement'] + form.cleaned_data['followers']) )*100)
-        
+        avg_rate = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1)))
+        if avg_rate < 5 :
+            avg_rate = 5
+
+        lower_bound = round(avg_rate * decimal.Decimal(0.9))
+        upper_bound = round(avg_rate * decimal.Decimal(1.1))
+
+        if avg_rate < 5:
+            avg_rate = 5
+            dashboard.average_rate = avg_rate
+        if avg_rate < lower_bound :
+            form.add_error("average_rate" , f"You're Pricing is Too low . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
+            return self.form_invalid(form)
+        if avg_rate > upper_bound :
+            form.add_error("average_rate" , f"You're Pricing is Too High . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
+            return self.form_invalid(form)
+        # 1 = Follower Factor , 0.02 = Base Rate 
+
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
         dashboard, created = InstagramAccountDashBoard.objects.get_or_create(
             creator = creator,
@@ -1078,8 +1095,6 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
             profile_link_clicks = form.cleaned_data['profile_link_clicks'],
             engagement = form.cleaned_data['engagement'],
             audience_country = form.cleaned_data['audience_country'],
-            story_rates = form.cleaned_data['story_rates'],
-            reel_rates = form.cleaned_data['reel_rates'],
             average_rate = avg_rate,
             engagement_rate = engagement_rate
             )
@@ -1102,7 +1117,23 @@ class AccountIntegrationUpdate(UserPassesTestMixin ,LoginRequiredMixin , UpdateV
         dashboard = form.save(commit=False)
         dashboard.tags = dashboard.tags.replace("#" , " #")
         dashboard.engagement_rate = decimal.Decimal((dashboard.engagement / (dashboard.engagement + dashboard.followers) )*100)
-        dashboard.average_rate = ((dashboard.story_rates + dashboard.reel_rates) // 2)
+        dashboard.save()
+        avg_rate = round((dashboard.engagement_rate/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(dashboard.followers) ** decimal.Decimal(1)))#(form.cleaned_data['story_rates'] + form.cleaned_data['reel_rates']) // 2
+        
+        lower_bound = round((dashboard.engagement_rate/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(dashboard.followers) ** decimal.Decimal(0.95)))
+        upper_bound = round((dashboard.engagement_rate/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(dashboard.followers) ** decimal.Decimal(1.05)))
+
+        if avg_rate < 5:
+            avg_rate = 5
+            dashboard.average_rate = avg_rate
+        if dashboard.average_rate < lower_bound :
+            form.add_error("average_rate" , f"You're Pricing is Too low . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
+            return self.form_invalid(form)
+        if dashboard.average_rate > upper_bound :
+            form.add_error("average_rate" , f"You're Pricing is Too High . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
+            return self.form_invalid(form)
+        
+        print(avg_rate)
         dashboard.save()
         return super().form_valid(form)
 
@@ -2101,3 +2132,28 @@ def create_referral_link(request , creator_id):
         creator.generate_referral_link_code()
     return redirect(reverse("referral_dashboard" , kwargs={"creator_id" : creator.id}))
     
+
+
+
+
+#ADMIN COMMANDS (DB Update)
+def db_eng_rate_update(request , perm_code):
+    if perm_code == "0212":
+        ig_accounts = InstagramAccountDashBoard.objects.all()
+        if ig_accounts:
+            for account in ig_accounts: 
+                print(f"{account.engagement_rate}- Earlier EG RAte" )
+                engagement_rate = round(decimal.Decimal((account.engagement / (account.engagement + account.followers))*100),2)
+                account.engagement_rate = engagement_rate
+                account.average_rate = round((account.engagement_rate/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(account.followers) ** decimal.Decimal(1)))
+                if account.average_rate < 5 :
+                    account.average_rate = 5
+                account.save()
+                print(f"{account.engagement_rate}- Normalized EG RAte" )  
+                print(f"{account.average_rate}- Normalized Avg Rate" )  
+                print("------------------")
+            return HttpResponse("DB Engagement Values Updated Successfully")
+        else:
+            print("No ig accounts found")
+    else:
+        raise PermissionDenied

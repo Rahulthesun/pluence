@@ -28,7 +28,7 @@ class DashboardImageForm(forms.Form):
 class AccountIntegrationForm(forms.ModelForm):
     class Meta:
         model = InstagramAccountDashBoard
-        fields = ('username' , 'tags' ,'followers' , 'reach' , 'profile_link_clicks' ,'engagement' , 'audience_country' , 'story_rates' , 'reel_rates' ,)
+        fields = ('username' , 'tags' ,'followers' , 'reach' , 'profile_link_clicks' ,'engagement' , 'audience_country' , 'average_rate' ,)
 
 class BrandProposalForm(forms.ModelForm):
     class Meta:
