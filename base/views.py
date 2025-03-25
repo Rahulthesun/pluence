@@ -1066,13 +1066,13 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
         
         
         #ENGAGEMENT RATE FORMULA : (New Engagement Rate Formula adjusted & normalized for higher denominator)
-        engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / (form.cleaned_data['engagement'] + form.cleaned_data['followers']) )*100)
+        engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / (form.cleaned_data['engagement'] + form.cleaned_data['followers']))*100)
         avg_rate = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1)))
         if avg_rate < 5 :
             avg_rate = 5
 
-        lower_bound = round(avg_rate * decimal.Decimal(0.9))
-        upper_bound = round(avg_rate * decimal.Decimal(1.1))
+        lower_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(0.95)))
+        upper_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1.05)))
 
         if avg_rate < 5:
             avg_rate = 5
