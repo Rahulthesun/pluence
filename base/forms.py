@@ -25,6 +25,12 @@ class DashboardImageForm(forms.Form):
         )
     )
 
+class AccountCreationForm(forms.ModelForm):
+    class Meta:
+        model = InstagramAccountDashBoard
+        fields = ('username' , 'tags' ,'followers' , 'reach' , 'profile_link_clicks' ,'engagement' , 'audience_country')
+    
+
 class AccountIntegrationForm(forms.ModelForm):
     class Meta:
         model = InstagramAccountDashBoard

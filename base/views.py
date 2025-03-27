@@ -15,7 +15,7 @@ from django.db.models import Q
 
 
 from users.forms import EmailUserCreationForm
-from .forms import AccountTypeForm , AccountIntegrationForm , BrandProposalForm ,TiktokBrandProposalForm, DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
+from .forms import AccountTypeForm ,AccountCreationForm, AccountIntegrationForm , BrandProposalForm ,TiktokBrandProposalForm, DashboardImageForm , EmailVerificationForm , BrandSubscriptionForm
 from users.models import EmailUser
 from .models import CreatorProfile ,BrandProfile , BrandDeal , InstagramAccountDashBoard , Content_Approval_Media , VerifyEmail,Referral , TiktokDashboard 
 from .models import UnsentEmails
@@ -1056,7 +1056,7 @@ def integration_dashboard(request , pk):
 
 
 class AccountIntegration(LoginRequiredMixin ,FormView):
-    form_class = AccountIntegrationForm
+    form_class = AccountCreationForm
     template_name = 'base/account_integration.html'
     success_url = reverse_lazy("home")
     
@@ -1067,22 +1067,17 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
         
         #ENGAGEMENT RATE FORMULA : (New Engagement Rate Formula adjusted & normalized for higher denominator)
         engagement_rate = decimal.Decimal((form.cleaned_data['engagement'] / (form.cleaned_data['engagement'] + form.cleaned_data['followers']))*100)
-        avg_rate = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1)))
-        if avg_rate < 5 :
-            avg_rate = 5
-
-        lower_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(0.95)))
-        upper_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1.05)))
-
-        if avg_rate < 5:
-            avg_rate = 5
-            dashboard.average_rate = avg_rate
-        if avg_rate < lower_bound :
+        avg_rate = round((engagement_rate/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1)))
+    
+        '''
+         if avg_rate < lower_bound :
             form.add_error("average_rate" , f"You're Pricing is Too low . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
             return self.form_invalid(form)
         if avg_rate > upper_bound :
             form.add_error("average_rate" , f"You're Pricing is Too High . Ideal Pricing For you is ${lower_bound} - ${upper_bound}")
             return self.form_invalid(form)
+        '''
+       
         # 1 = Follower Factor , 0.02 = Base Rate 
 
         formatted_tags = form.cleaned_data['tags'].replace("#" , " #")
@@ -1098,11 +1093,19 @@ class AccountIntegration(LoginRequiredMixin ,FormView):
             average_rate = avg_rate,
             engagement_rate = engagement_rate
             )
+        
+        #lower_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(0.95)))
+        #upper_bound = round((form.cleaned_data['engagement']/ decimal.Decimal(100)) * decimal.Decimal(0.02) * (decimal.Decimal(form.cleaned_data['followers']) ** decimal.Decimal(1.05)))
+
+        if avg_rate < 5:
+            avg_rate = 5
+            dashboard.average_rate = avg_rate
         self.id = dashboard.id
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse("integration_dashboard" , kwargs= {"pk": self.id})
+        dashboard = get_object_or_404(InstagramAccountDashBoard , id = self.id)
+        return reverse("integration_dashboard" , kwargs= {"pk": dashboard.creator.id})
     
 class AccountIntegrationUpdate(UserPassesTestMixin ,LoginRequiredMixin , UpdateView):
     model = InstagramAccountDashBoard
@@ -1139,7 +1142,8 @@ class AccountIntegrationUpdate(UserPassesTestMixin ,LoginRequiredMixin , UpdateV
 
     def get_success_url(self):
         id = self.kwargs.get('pk')
-        return reverse("integration_dashboard" , kwargs= {"pk": id})
+        dashboard = get_object_or_404(InstagramAccountDashBoard , id = id)
+        return reverse("integration_dashboard" , kwargs= {"pk": dashboard.creator.id})
     
 class DashboardImageUpdate(UserPassesTestMixin,LoginRequiredMixin , FormView):
     form_class = DashboardImageForm
