@@ -11,19 +11,21 @@
             <p><span id="error">{{ error }}</span></p>
         {% endfor %}
 
+        <p>{{months.error}}</p>
+
         <div class="pricing-content">
             <h1>Choose Your Subscription Plan</h1>
 
             <div class="pricing-types">
                 <!-- 3 Months Plan -->
-                <div class="pricing-box" data-plan="3">
-                    <h2>3 Months</h2>
+                <div class="pricing-box" data-plan="1">
+                    <h2>1 Month <span style="font-size: 18px; font-weight: 700;"> + 2 Months Free</span></h2>
                     <div class="pricing-box-price">
-                        <h1>$15</h1>
-                        <p>/ 3 months</p>
+                        <h1>$5</h1>
+                        <p>/month</p>
                     </div>
                     <div class="pricing-signup">
-                        <button type="button" class="select-plan-button" data-months="3">
+                        <button type="button" class="select-plan-button" data-months="1">
                             Select Plan
                         </button>
                     </div>
@@ -59,7 +61,7 @@
             </div>
 
             <!-- Hidden input to store selected plan duration -->
-            <input type="hidden" name="months" id="selected-months" value="3">
+            <input type="hidden" name="months" id="selected-months" value="1">
 
             <!-- Submit Button -->
 

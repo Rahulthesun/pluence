@@ -48,7 +48,7 @@ class EmailVerificationForm(forms.Form):
 class BrandSubscriptionForm(forms.Form):
     # ChoiceField to restrict user to 3, 6, or 12 months
     MONTH_CHOICES = [
-        (3, '3 Months - $15'),
+        (1, '1 Month - $5'),
         (6, '6 Months - $30'),
         (12, '12 Months - $60'),
     ]
